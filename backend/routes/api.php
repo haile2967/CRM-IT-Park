@@ -57,8 +57,35 @@ Route::prefix('v1')->group(function () {
         ]);
     });
 
-    // Authenticated User Profile
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    })->middleware('auth:sanctum');
+    // Authentication Endpoints (Public)
+    Route::prefix('auth')->group(function () {
+        Route::post('/login', [\App\Http\Controllers\Api\AuthController::class, 'login']);
+    });
+
+    // Protected Routes (Requires active authenticated session)
+    Route::middleware(['auth:sanctum', 'active'])->group(function () {
+        // Authenticated User & Profile
+        Route::prefix('auth')->group(function () {
+            Route::post('/logout', [\App\Http\Controllers\Api\AuthController::class, 'logout']);
+            Route::get('/me', [\App\Http\Controllers\Api\AuthController::class, 'me']);
+            Route::put('/profile', [\App\Http\Controllers\Api\AuthController::class, 'updateProfile']);
+            Route::put('/change-password', [\App\Http\Controllers\Api\AuthController::class, 'changePassword']);
+        });
+
+        // Roles Reference
+        Route::get('/roles', [\App\Http\Controllers\Api\RoleController::class, 'index']);
+
+        // User Management (Admin & Manager can view)
+        Route::middleware('role:admin,manager')->group(function () {
+            Route::get('/users', [\App\Http\Controllers\Api\UserController::class, 'index']);
+            Route::get('/users/{id}', [\App\Http\Controllers\Api\UserController::class, 'show']);
+        });
+
+        // User Management Modifications (Admin only)
+        Route::middleware('role:admin')->group(function () {
+            Route::post('/users', [\App\Http\Controllers\Api\UserController::class, 'store']);
+            Route::put('/users/{id}', [\App\Http\Controllers\Api\UserController::class, 'update']);
+            Route::patch('/users/{id}/status', [\App\Http\Controllers\Api\UserController::class, 'toggleStatus']);
+        });
+    });
 });
