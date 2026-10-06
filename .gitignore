@@ -1,0 +1,44 @@
+# Environment variables
+.env
+backend/.env
+frontend/.env.local
+frontend/.env.*.local
+
+# Backend dependencies & caches
+backend/vendor/
+backend/bootstrap/cache/
+backend/storage/framework/cache/*
+backend/storage/framework/sessions/*
+backend/storage/framework/views/*
+backend/storage/logs/*
+!backend/storage/framework/cache/.gitignore
+!backend/storage/framework/sessions/.gitignore
+!backend/storage/framework/views/.gitignore
+!backend/storage/logs/.gitignore
+backend/database/*.sqlite
+backend/database/*.sqlite-journal
+
+# Frontend dependencies & builds
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+node_modules/
+
+# Logs & temp
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# System & IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Docker / volume data
+pgdata/
+redisdata/
