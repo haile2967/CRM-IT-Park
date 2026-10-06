@@ -1,18 +1,38 @@
 # Ethiopian IT Park — CRM System
 
-A full-stack, enterprise Customer Relationship Management (CRM) platform engineered for **Ethiopian IT Park** to manage relationships with startups, investors, partners, and corporate clients.
+A modern, full-stack, enterprise Customer Relationship Management (CRM) platform engineered for the **Ethiopian IT Park** to manage end-to-end interactions with tech startups, investors, development partners, and commercial tenants.
 
 Built in strict compliance with **SRS v1.0** and **CRM Database Design v2.0**.
 
 ---
 
+## Project Status & Implemented Milestones
+
+| Milestone / Component | Specification | Status | Description |
+|---|---|---|---|
+| **Multi-Container Stack** | Docker Compose | ✅ Complete | 8 services: PostgreSQL 16, Redis 7, PHP 8.3 FPM, Nginx, React 19, Mailpit, Queue & Scheduler |
+| **Complete Database Schema** | Database Design v2.0 | ✅ Complete | 29 relational tables across 5 dependency migration waves with strict FKs & soft deletes |
+| **Baseline Seed Data** | SRS v1.0 §3.2 | ✅ Complete | 4 core roles, system users, calendars, SLA policies, lead sources, and reference taxonomies |
+| **Eloquent ORM Models** | Laravel 11 | ✅ Complete | All 29 Eloquent models with custom primary keys (`*_id`), casts, and relational mappings |
+| **Headless Architecture** | Separation of Concerns | ✅ Complete | Backend stripped of Blade/Vite assets to run purely as headless REST API; frontend in `frontend/` |
+| **Frontend Foundation** | React 19 + Tailwind v4 | ✅ Complete | Vite dev server running on port `5174` with Tailwind CSS v4 (`@tailwindcss/vite`) and branded shell |
+| **Authentication & Tokens** | SEC-003, SEC-005 | ✅ Complete | Laravel Sanctum token auth, profile management, password change, and token revocation |
+| **Brute-Force Defense** | SEC-004 | ✅ Complete | 5 failed login attempts trigger an automatic 15-minute lockout (HTTP 429) |
+| **Account Soft Deactivation** | SEC-005, FR-RBAC-004 | ✅ Complete | Inactive users blocked (HTTP 403); active tokens immediately purged upon deactivation |
+| **Role-Based Access Control** | SEC-001, §3.3 | ✅ Complete | `CheckRole` middleware and `VisibleToRole` portfolio-scoping trait across 4 defined roles |
+| **Centralized Audit Logging** | Wave 5 Schema | ✅ Complete | `AuditLogger` service recording user actions, IP, user-agent, and state changes into `audit_logs` |
+| **User Management API** | FR-RBAC-004 | ✅ Complete | User CRUD, portfolio statistics, status toggle, protection against self-deactivation & orphan admin |
+| **Automated Security Tests** | PHPUnit 12 | ✅ Complete | Feature test suite covering health, auth, brute-force lockout, RBAC restrictions, and user guards |
+
+---
+
 ## Technology Stack
 
-- **Backend**: Laravel 11 (PHP 8.3-FPM) with Sanctum token authentication & Eloquent ORM
-- **Frontend**: React 19 + TypeScript + Vite + Tailwind CSS v4 (`@tailwindcss/vite`)
-- **Database**: PostgreSQL 16 (29 Relational tables with strict foreign keys & soft-deletes)
-- **Cache & Queues**: Redis 7-alpine (ticket reminders, rate limiting, and async jobs)
-- **Web Server**: Nginx (reverse proxy routing to PHP-FPM and frontend)
+- **Backend**: Laravel 11 (PHP 8.3-FPM) running strictly headless with Sanctum token authentication & Eloquent ORM
+- **Frontend**: React 19 + TypeScript + Vite + Tailwind CSS v4 (`@tailwindcss/vite`) on port `5174`
+- **Database**: PostgreSQL 16 (29 Relational tables with strict foreign keys, indexes & soft-deletes)
+- **Cache, Sessions & Queues**: Redis 7-alpine (rate limiting, ticket reminders, and asynchronous jobs)
+- **Web Server / Reverse Proxy**: Nginx (serving backend API on port `8000`)
 - **Email Testing**: Mailpit (local SMTP capture on port `1025`, web dashboard on port `8025`)
 - **Orchestration**: Docker Compose (multi-container development & production parity)
 
@@ -34,7 +54,7 @@ Built in strict compliance with **SRS v1.0** and **CRM Database Design v2.0**.
 
 ---
 
-## Quick Start (For New Developers)
+## Quick Start (For Developers)
 
 ### 1. Prerequisites
 - **Git** installed
@@ -92,9 +112,37 @@ The database seeder pre-configures accounts for each of the 4 defined CRM roles 
 
 ---
 
-## Database Schema (29 Tables Breakdown)
+## Implemented API Endpoints (`/api/v1`)
 
-The database schema strictly implements [CRM_Database_Design_v2.0.pdf](Document/CRM_Database_Design_v2.0.pdf), organized across **5 dependency waves**:
+### 1. Health & Diagnostics
+- `GET /api/v1/health` — Multi-service health check reporting connection states for PostgreSQL, Redis, and Mailpit.
+
+### 2. Authentication & Profile
+- `POST /api/v1/auth/login` — Authenticate using email and password. Enforces SEC-004 (5 failed attempts / 15-minute lockout) and SEC-005 (rejects inactive users with 403). Returns Sanctum bearer token and user role.
+- `POST /api/v1/auth/logout` *(Auth)* — Revoke the current active token and record logout audit log.
+- `GET /api/v1/auth/me` *(Auth)* — Returns current user profile, role info, and computed boolean permissions (`is_admin`, `is_crm_manager`, `is_bdo`, `is_support_agent`).
+- `PUT /api/v1/auth/profile` *(Auth)* — Update current user's name and phone number.
+- `PUT /api/v1/auth/change-password` *(Auth)* — Change password with current password verification.
+
+### 3. Roles Reference
+- `GET /api/v1/roles` *(Auth)* — List all system roles ordered by tier hierarchy.
+
+### 4. User Management (FR-RBAC-004)
+- `GET /api/v1/users` *(Auth, Admin/Manager)* — List users with search (`name`, `email`), `role_id` and `status` filters, and pagination.
+- `GET /api/v1/users/{id}` *(Auth, Admin/Manager)* — Show user details along with portfolio statistics (`leads_count`, `accounts_count`, `opportunities_count`, `assigned_tickets_count`).
+- `POST /api/v1/users` *(Auth, Admin)* — Create a new user with role assignment and hashed password.
+- `PUT /api/v1/users/{id}` *(Auth, Admin)* — Update user details or reassign role.
+- `PATCH /api/v1/users/{id}/status` *(Auth, Admin)* — Soft activate or deactivate a user. When deactivating:
+  - Sets `status = 'inactive'` and `deactivated_at = now()`.
+  - Immediately revokes all active API tokens for that user.
+  - Safeguard: Prevents admin from deactivating their own account.
+  - Safeguard: Prevents deactivating the last active System Administrator.
+
+---
+
+## All 29 Eloquent Models & Database Schema
+
+The database strictly implements the 29 domain tables from [CRM_Database_Design_v2.0.pdf](Document/CRM_Database_Design_v2.0.pdf). Every model is mapped with explicit primary keys (`*_id`), datetime casts, and Eloquent relationships:
 
 ```mermaid
 graph TD
@@ -104,80 +152,123 @@ graph TD
     W4 --> W5[Wave 5: Audits, Notifications & PMS Exports]
 ```
 
-### 1. Wave 1: Security, Taxonomy & Calendars
-- `roles` — The 4 system roles and seniority tiers (`role_tier`).
-- `users` — System users with soft-deactivation (`status`, `deactivated_at`).
-- `lead_sources` — Configurable acquisition channels (Referral, Website, Event, etc.).
-- `reference_categories` — Multi-group categories for organizations and leads.
-- `opportunity_types` — Investment, partnership, service, program enrollment.
-- `pipeline_stages` — Configurable deal stages (`display_order`, `is_closed_won`, `is_closed_lost`).
-- `ticket_categories` — Technical, service request, general inquiry.
-- `business_hours_calendars` — Configurable calendar (Ethiopian IT Park working hours).
-- `business_hours` — Daily shifts (Monday–Friday 08:30–17:30).
-- `business_holidays` — Exceptions and official holidays.
+### 1. Security, Taxonomy & Calendars (Wave 1)
+| Model | Table | Primary Key | Description |
+|---|---|---|---|
+| `Role` | `roles` | `role_id` | System roles and tier levels (`role_tier` 1-4) |
+| `User` | `users` | `user_id` | System users with Sanctum tokens, soft-deactivation, and role relation |
+| `LeadSource` | `lead_sources` | `source_id` | Configurable acquisition sources (Referral, Website, Event, etc.) |
+| `ReferenceCategory` | `reference_categories` | `category_id` | Organization types, industries, lead segments |
+| `OpportunityType` | `opportunity_types` | `type_id` | Investment, partnership, commercial tenancy, incubation |
+| `PipelineStage` | `pipeline_stages` | `stage_id` | Pipeline stages (`display_order`, `is_closed_won`, `is_closed_lost`) |
+| `TicketCategory` | `ticket_categories` | `category_id` | Support ticket categorization |
+| `BusinessHoursCalendar` | `business_hours_calendars` | `calendar_id` | Working hours calendar for IT Park |
+| `BusinessHour` | `business_hours` | `id` | Daily shift definitions (Mon–Fri 08:30–17:30) |
+| `BusinessHoliday` | `business_holidays` | `holiday_id` | Official holidays and calendar exceptions |
 
-### 2. Wave 2: Core Business Entities
-- `accounts` — Organizations (startup, investor, company, government, partner) with ownership.
-- `contacts` — Individuals linked to an account (`is_primary` flag per FR-ACCOUNT-005).
-- `leads` — Unqualified prospects with duplicate warnings, notes, and conversion timestamps.
+### 2. Core Business Entities (Wave 2)
+| Model | Table | Primary Key | Description |
+|---|---|---|---|
+| `Account` | `accounts` | `account_id` | Organizations with portfolio ownership (`owner_user_id`) & soft-deletes |
+| `Contact` | `contacts` | `contact_id` | Individual people linked to accounts with `is_primary` flag |
+| `Lead` | `leads` | `lead_id` | Prospects with duplicate detection, status, and conversion timestamps |
 
-### 3. Wave 3: Pipeline Deals & Support Ticketing
-- `opportunities` — Qualified commercial engagements with value, probability, and closing date.
-- `opportunity_stage_history` — Comprehensive audit trail of stage transitions.
-- `escalation_policies` — Configurable reminder and escalation thresholds per priority tier (BR-001).
-- `escalation_recipients` — Recipients designated for ticket escalation alerts.
-- `tickets` — Support requests with `last_activity_at`, inactivity calculation, and independent `escalated` flag.
-- `ticket_escalation_history` — Preserves historical escalations even after flags clear (BR-005).
-- `ticket_comments` — Notes and updates that reset ticket activity clocks (BR-004).
+### 3. Pipeline Deals & Support Tickets (Wave 3)
+| Model | Table | Primary Key | Description |
+|---|---|---|---|
+| `Opportunity` | `opportunities` | `opportunity_id` | Qualified commercial deals with stage, probability, and deal value |
+| `OpportunityStageHistory` | `opportunity_stage_history` | `history_id` | Full stage transition audit trail with duration tracking |
+| `EscalationPolicy` | `escalation_policies` | `policy_id` | SLA thresholds per priority tier (BR-001) |
+| `EscalationRecipient` | `escalation_recipients` | `recipient_id` | Designated alert recipients for SLA escalations |
+| `Ticket` | `tickets` | `ticket_id` | Support tickets with `last_activity_at`, inactivity tracking, and `is_escalated` flag |
+| `TicketEscalationHistory` | `ticket_escalation_history` | `history_id` | Preserved escalation records even after flags clear (BR-005) |
+| `TicketComment` | `ticket_comments` | `comment_id` | Public/internal comments that reset ticket inactivity clocks (BR-004) |
 
-### 4. Wave 4: Activities, Programs & Events
-- `activities` — Scheduled calls, meetings, tasks linked to leads, accounts, contacts, or deals.
-- `communications` — Unified interaction history (emails, messages, call logs, notes).
-- `programs` — Incubation, training, and workshop tracks.
-- `program_applications` — Stakeholder participation lifecycle (Applied → Accepted/Enrolled → Completed/Withdrawn).
-- `events` & `event_registrations` — Capacity tracking and attendee registrations.
+### 4. Interactions, Programs & Events (Wave 4)
+| Model | Table | Primary Key | Description |
+|---|---|---|---|
+| `Activity` | `activities` | `activity_id` | Calls, meetings, and tasks assigned to users |
+| `Communication` | `communications` | `communication_id` | Unified interaction history (emails, SMS, call notes) |
+| `Program` | `programs` | `program_id` | Incubation tracks, startup accelerators, training cohorts |
+| `ProgramApplication` | `program_applications` | `application_id` | Application lifecycle (Applied → Accepted → Enrolled → Completed) |
+| `Event` | `events` | `event_id` | Seminars, workshops, and ecosystem events with capacity limits |
+| `EventRegistration` | `event_registrations` | `registration_id` | Attendee registration and attendance verification |
 
-### 5. Wave 5: Audits, Notifications & PMS Handoff
-- `notifications` — Inactivity alerts, reminders, and system notifications.
-- `audit_logs` — Field-level tracking (`entity_type`, `entity_id`, `field_name`, `old_value`, `new_value`, IP address).
-- `export_records` — Permanent audit trace for manual PMS handoffs (CSV, Excel, JSON) upon Closed Won.
+### 5. Audits, Notifications & PMS Exports (Wave 5)
+| Model | Table | Primary Key | Description |
+|---|---|---|---|
+| `Notification` | `notifications` | `notification_id` | Inactivity alerts, reminders, and system notifications |
+| `AuditLog` | `audit_logs` | `audit_log_id` | Entity-level audit trail (`entity_type`, `action`, IP address, user agent) |
+| `ExportRecord` | `export_records` | `export_record_id` | Permanent audit record of manual PMS handoffs (CSV, Excel, JSON) |
 
 ---
 
-## Core Business Rules & Logic
+## Core Business Rules & Security Architecture
 
 1. **Role-Based Record Visibility (§3.3 & SEC-001)**:
-   - **CRM Manager**: Global visibility across all business records.
-   - **BDO**: Ownership-based visibility (`owner_user_id == auth()->id()`).
-   - **Support Agent**: Access to assigned tickets + shared unassigned queue, plus read-only account/contact details.
-   - **Ownership Transfer Guard (BR-002)**: Only current owner, CRM Manager, or Administrator can reassign record ownership.
+   - **CRM Manager**: Full global visibility across all portfolios, leads, deals, tickets, and reports.
+   - **BDO**: Portfolio-scoped visibility. Automatically filtered to records they own (`owner_user_id == auth()->id()`) via the `VisibleToRole` trait.
+   - **Support Agent**: Access to assigned tickets + shared unassigned queue, plus read-only account/contact details for customer verification.
+   - **System Administrator**: Full access to user administration, audit logs, and master configuration.
 
-2. **Lead-to-Account/Opportunity Conversion (WF-001 & BR-006)**:
-   - Converting a qualified lead atomically creates or links an `Account` and a `Contact` (marked `is_primary = true`).
-   - Creating an `Opportunity` is required only when the engagement has a commercial dimension.
+2. **Ownership Transfer Guard (BR-002)**:
+   - Only the current record owner, CRM Manager, or System Administrator can transfer ownership (`owner_user_id`) of an Account, Lead, or Opportunity.
 
-3. **Inactivity Escalation Engine (WF-005, BR-001, BR-004)**:
+3. **Brute Force & Rate Limiting (SEC-004)**:
+   - 5 failed login attempts per email/IP triggers an immediate 15-minute lockout (HTTP 429).
+   - Successful authentication resets the lockout counter.
+
+4. **Account Soft Deactivation (SEC-005 & FR-RBAC-004)**:
+   - Inactive users are rejected with HTTP 403 Forbidden.
+   - Deactivating a user immediately purges all active Sanctum bearer tokens.
+
+5. **Inactivity Escalation Engine (WF-005, BR-001, BR-004)**:
    - Urgent / High priority measured in continuous 24/7 calendar minutes.
    - Medium / Low priority measured against active hours from `business_hours` excluding holidays.
-   - Reminder threshold must be strictly less than escalation threshold.
+   - Customer replies and internal comments reset the inactivity clock.
    - Escalation notifications are sanitized (FR-TICKET-025: no PII/body, login-gated link only).
 
-4. **PMS Closed Won Handoff (§10.1 & EXT-006)**:
-   - Once an Opportunity reaches `Closed Won`, authorized users can manually export Account, Primary Contact, and Opportunity data into CSV, Excel, or JSON.
+6. **PMS Closed Won Handoff (§10.1 & EXT-006)**:
+   - Once an Opportunity reaches `Closed Won`, authorized users can manually export Account, Primary Contact, and Opportunity data into CSV, Excel, or JSON. Every export creates an immutable `export_records` entry.
+
+---
+
+## Automated QA & Security Verification
+
+All security mechanisms, authentication flows, rate limiters, and RBAC rules are tested via automated PHPUnit tests inside the Docker container:
+
+```powershell
+# Run the complete Auth and RBAC test suite
+docker exec crm_backend ./vendor/bin/phpunit tests/Feature/AuthAndRbacTest.php
+
+# Run individual test verification (e.g. Rate Limiter Lockout)
+docker exec crm_backend ./vendor/bin/phpunit --filter=test_rate_limiter_locks_out_after_five_failed_attempts tests/Feature/AuthAndRbacTest.php
+```
+
+**Test Coverage Summary:**
+- `test_health_check_endpoint`: Verifies PostgreSQL, Redis, and Mailpit connection statuses.
+- `test_user_can_login_with_valid_credentials`: Verifies Sanctum token issuance and audit trail creation.
+- `test_login_fails_with_invalid_credentials`: Verifies HTTP 422 on bad credentials.
+- `test_rate_limiter_locks_out_after_five_failed_attempts`: Verifies SEC-004 5-attempt/15-minute lockout returning HTTP 429.
+- `test_inactive_user_cannot_login`: Verifies SEC-005 inactive account rejection returning HTTP 403.
+- `test_authenticated_user_can_access_me_endpoint`: Verifies profile and computed permissions payload.
+- `test_rbac_prevents_unauthorized_role_access`: Verifies Support Agent blocked from administrative endpoints.
+- `test_admin_can_access_user_management`: Verifies Admin access to user listing.
+- `test_admin_cannot_deactivate_self`: Verifies safety guard preventing admin self-lockout.
 
 ---
 
 ## Useful Development Commands
 
 ```powershell
-# Check database tables and sizes
+# Check database tables and record counts
 docker exec -it crm_backend php artisan db:show
 
-# Run or refresh migrations
+# Run or refresh migrations with seeders
 docker exec -it crm_backend php artisan migrate:fresh --seed
 
-# View registered routes
-docker exec -it crm_backend php artisan route:list
+# View registered API routes
+docker exec -it crm_backend php artisan route:list --path=api/v1
 
 # View container logs
 docker compose logs -f backend
