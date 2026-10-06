@@ -22,7 +22,7 @@ Built in strict compliance with **SRS v1.0** and **CRM Database Design v2.0**.
 
 | Service | Container Name | Port (Host:Container) | Functionality |
 |---|---|---|---|
-| **Frontend UI** | `crm_frontend` | `5173:5173` | React 19 + Tailwind v4 Dev Server with hot-reload |
+| **Frontend UI** | `crm_frontend` | `5174:5174` | React 19 + Tailwind v4 Dev Server with hot-reload |
 | **Backend API** | `crm_nginx` | `8000:80` | Reverse proxy serving Laravel REST API |
 | **PostgreSQL 16** | `crm_postgres` | `5432:5432` | Relational database (`crm_db`) |
 | **Redis 7** | `crm_redis` | `6379:6379` | Cache, queues & rate limiting |
@@ -72,7 +72,7 @@ docker exec -it crm_backend php artisan migrate:fresh --seed
 ```
 
 ### 6. Access Applications
-- 🌐 **Frontend App**: [http://localhost:5173](http://localhost:5173)
+- 🌐 **Frontend App**: [http://localhost:5174](http://localhost:5174)
 - ⚙️ **Backend API Status**: [http://localhost:8000](http://localhost:8000)
 - 🩺 **Health Diagnostic API**: [http://localhost:8000/api/v1/health](http://localhost:8000/api/v1/health)
 - ✉️ **Mailbox (Mailpit)**: [http://localhost:8025](http://localhost:8025)

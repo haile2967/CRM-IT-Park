@@ -11,6 +11,6 @@ Route::get('/', function () {
             'api_health' => '/api/v1/health',
             'api_user' => '/api/v1/user',
         ],
-        'frontend' => env('FRONTEND_URL', 'http://localhost:5173'),
+        'frontend' => env('FRONTEND_URL', 'http://localhost:5174'),
     ]);
 });
