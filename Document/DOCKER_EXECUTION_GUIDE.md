@@ -163,3 +163,29 @@ docker compose down -v
 ```bash
 docker exec -it crm_backend php artisan key:generate
 ```
+
+---
+
+## 🐘 Connecting to Database via pgAdmin 4
+
+To inspect tables and data visually using **pgAdmin 4**:
+
+1. Open **pgAdmin 4** on your host computer.
+2. In the left browser tree, right-click **Servers** > **Register** > **Server...**
+3. Under the **General** tab:
+   - **Name**: `CRM PostgreSQL Local` (or any label you prefer)
+4. Under the **Connection** tab, map fields directly to your root `.env` configuration:
+
+| pgAdmin Field | Value to Enter | Value Source in `.env` |
+|---|---|---|
+| **Host name/address** | `localhost` or `127.0.0.1` | Local Docker host |
+| **Port** | `5433` (or port configured in `.env`) | Value of `DB_PORT` |
+| **Maintenance database** | Name of your database | Value of `DB_DATABASE` |
+| **Username** | Database username | Value of `DB_USERNAME` |
+| **Password** | Database password | Value of `DB_PASSWORD` |
+
+> [!TIP]
+> Make sure to check the **Port** against `DB_PORT` in your root `.env` (e.g. `5433`). If port `5432` is already in use by a host service on your machine, Docker binds Postgres to the port configured in `.env`.
+
+5. Check **Save password?** and click **Save**.
+6. Expand **Databases** > your database > **Schemas** > **public** > **Tables** to view and edit rows.
