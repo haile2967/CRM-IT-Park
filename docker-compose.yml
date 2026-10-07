@@ -7,7 +7,7 @@ services:
     ports:
       - "${NGINX_PORT:-8000}:80"
     volumes:
-      - ./backend:/var/www/backend
+      - ./CRM_backend:/var/www/CRM_backend
       - ./docker/nginx/conf.d:/etc/nginx/conf.d
     depends_on:
       - backend
@@ -21,9 +21,9 @@ services:
       dockerfile: docker/php/Dockerfile
     container_name: crm_backend
     restart: unless-stopped
-    working_dir: /var/www/backend
+    working_dir: /var/www/CRM_backend
     volumes:
-      - ./backend:/var/www/backend
+      - ./CRM_backend:/var/www/CRM_backend
       - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
     environment:
       - DB_CONNECTION=pgsql
@@ -96,10 +96,10 @@ services:
       dockerfile: docker/php/Dockerfile
     container_name: crm_queue
     restart: unless-stopped
-    working_dir: /var/www/backend
+    working_dir: /var/www/CRM_backend
     command: php artisan queue:work --tries=3 --timeout=90
     volumes:
-      - ./backend:/var/www/backend
+      - ./CRM_backend:/var/www/CRM_backend
     environment:
       - DB_CONNECTION=pgsql
       - DB_HOST=postgres
@@ -126,10 +126,10 @@ services:
       dockerfile: docker/php/Dockerfile
     container_name: crm_scheduler
     restart: unless-stopped
-    working_dir: /var/www/backend
+    working_dir: /var/www/CRM_backend
     command: sh -c "while true; do php artisan schedule:run --verbose --no-interaction & sleep 60; done"
     volumes:
-      - ./backend:/var/www/backend
+      - ./CRM_backend:/var/www/CRM_backend
     environment:
       - DB_CONNECTION=pgsql
       - DB_HOST=postgres

@@ -36,7 +36,7 @@ RUN pecl install redis \
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Set working directory
-WORKDIR /var/www/backend
+WORKDIR /var/www/CRM_backend
 
 # Add non-root user
 RUN addgroup -g 1000 -S www && \

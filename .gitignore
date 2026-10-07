@@ -1,22 +1,22 @@
 # Environment variables
 .env
-backend/.env
+CRM_backend/.env
 frontend/.env.local
 frontend/.env.*.local
 
 # Backend dependencies & caches
-backend/vendor/
-backend/bootstrap/cache/
-backend/storage/framework/cache/*
-backend/storage/framework/sessions/*
-backend/storage/framework/views/*
-backend/storage/logs/*
-!backend/storage/framework/cache/.gitignore
-!backend/storage/framework/sessions/.gitignore
-!backend/storage/framework/views/.gitignore
-!backend/storage/logs/.gitignore
-backend/database/*.sqlite
-backend/database/*.sqlite-journal
+CRM_backend/vendor/
+CRM_backend/bootstrap/cache/
+CRM_backend/storage/framework/cache/*
+CRM_backend/storage/framework/sessions/*
+CRM_backend/storage/framework/views/*
+CRM_backend/storage/logs/*
+!CRM_backend/storage/framework/cache/.gitignore
+!CRM_backend/storage/framework/sessions/.gitignore
+!CRM_backend/storage/framework/views/.gitignore
+!CRM_backend/storage/logs/.gitignore
+CRM_backend/database/*.sqlite
+CRM_backend/database/*.sqlite-journal
 
 # Frontend dependencies & builds
 frontend/node_modules/
@@ -42,3 +42,7 @@ Thumbs.db
 # Docker / volume data
 pgdata/
 redisdata/
+
+# Local personal notes
+Document/daily_docker_commands.txt
+Document/*.txt

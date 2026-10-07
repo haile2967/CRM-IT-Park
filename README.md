@@ -44,7 +44,7 @@ Built based on **SRS v1.0** and **CRM Database Design v2.0**.
 2. **Setup environment files:**
    ```bash
    cp .env.example .env
-   cp backend/.env.example backend/.env
+   cp CRM_backend/.env.example CRM_backend/.env
    ```
 
 3. **Start all services with Docker Compose:**
