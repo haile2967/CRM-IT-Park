@@ -72,6 +72,7 @@ docker exec -it crm_backend php artisan migrate --seed
 |---|---|---|---|
 | **Frontend Web App** | `crm_frontend` | [http://localhost:5173](http://localhost:5173) | React 19 + Vite UI |
 | **Backend API** | `crm_nginx` / `crm_backend` | [http://localhost:8000](http://localhost:8000) | Laravel API Endpoints |
+| **API Documentation (Swagger UI)** | `crm_backend` | [http://localhost:8000/docs/api](http://localhost:8000/docs/api) | Interactive API Docs (Scramble) |
 | **Mailpit Dashboard** | `crm_mailpit` | [http://localhost:8025](http://localhost:8025) | Local Email Testing Web Interface |
 | **PostgreSQL Database** | `crm_postgres` | `localhost:5432` | DB: `crm_db`, User: `crm_user` |
 
