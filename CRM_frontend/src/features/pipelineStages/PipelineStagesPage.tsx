@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Layers,
   Plus,
@@ -11,6 +12,7 @@ import {
   AlertTriangle,
   ArrowUpDown,
   ShieldAlert,
+  Clock,
 } from 'lucide-react';
 import AppShell from '../../components/layout/AppShell';
 import Button from '../../components/ui/Button';
@@ -317,6 +319,15 @@ export const PipelineStagesPage: React.FC = () => {
             >
               Refresh
             </Button>
+
+            <Link
+              to="/escalations"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-700 bg-white hover:bg-slate-50 border border-slate-200/90 rounded-lg shadow-2xs transition-colors"
+              title="View and configure Ticket Escalation Policies and SLA Reminder Thresholds"
+            >
+              <Clock className="w-3.5 h-3.5 text-amber-600" />
+              <span>Escalation Policies</span>
+            </Link>
 
             {isAdmin && (
               <Button

@@ -8,6 +8,7 @@ import LeadsPage from './features/leads/LeadsPage';
 import UsersPage from './features/users/UsersPage';
 import RolesPage from './features/roles/RolesPage';
 import PipelineStagesPage from './features/pipelineStages/PipelineStagesPage';
+import EscalationPoliciesPage from './features/escalationPolicies/EscalationPoliciesPage';
 
 export default function App() {
   return (
@@ -26,6 +27,7 @@ export default function App() {
             <Route path="/users" element={<UsersPage />} />
             <Route path="/roles" element={<RolesPage />} />
             <Route path="/pipeline-stages" element={<PipelineStagesPage />} />
+            <Route path="/escalations" element={<EscalationPoliciesPage />} />
             <Route path="/accounts" element={<Navigate to="/dashboard" replace />} />
             <Route path="/contacts" element={<Navigate to="/dashboard" replace />} />
             <Route path="/opportunities" element={<Navigate to="/dashboard" replace />} />
