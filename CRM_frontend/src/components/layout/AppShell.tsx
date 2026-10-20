@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutGrid,
   Users2,
@@ -110,6 +110,7 @@ export const AppShell: React.FC<AppShellProps> = ({
 }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(() => {
@@ -127,6 +128,19 @@ export const AppShell: React.FC<AppShellProps> = ({
     reports: false,
     admin: true,
   });
+
+  // Ensure active route section is automatically open
+  useEffect(() => {
+    const activeSection = navSections.find((sec) =>
+      sec.items.some((item) => item.to === location.pathname)
+    );
+    if (activeSection) {
+      setOpenSections((prev) => ({
+        ...prev,
+        [activeSection.id]: true,
+      }));
+    }
+  }, [location.pathname]);
 
   const userMenuRef = useRef<HTMLDivElement>(null);
 
@@ -294,10 +308,11 @@ export const AppShell: React.FC<AppShellProps> = ({
                         >
                           <SubIcon className="w-4 h-4" />
                           <span
-                            className={`w-1.5 h-1.5 rounded-full bg-emerald-400 absolute right-1 top-1/2 -translate-y-1/2 transition-opacity ${window.location.pathname === subItem.to
+                            className={`w-1.5 h-1.5 rounded-full bg-emerald-400 absolute right-1 top-1/2 -translate-y-1/2 transition-opacity ${
+                              location.pathname === subItem.to
                                 ? 'opacity-100'
                                 : 'opacity-0'
-                              }`}
+                            }`}
                           />
                         </NavLink>
                       );
