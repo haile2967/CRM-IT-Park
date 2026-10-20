@@ -98,7 +98,7 @@ const navSections: NavSection[] = [
     icon: ShieldCheck,
     items: [
       { label: 'User Management', to: '/users', icon: UserCog },
-      { label: 'Roles & Permissions', to: '/roles', icon: Key },
+      { label: 'Role Management', to: '/roles', icon: Key },
     ],
   },
 ];

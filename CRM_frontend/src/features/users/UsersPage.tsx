@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   Users as UsersIcon,
   UserPlus,
@@ -23,13 +24,21 @@ import type { User, Role } from '../../types/user';
 
 export const UsersPage: React.FC = () => {
   const { user: currentUser } = useAuth();
+  const [searchParams] = useSearchParams();
 
   const [users, setUsers] = useState<User[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedRole, setSelectedRole] = useState<string>('all');
+  const [selectedRole, setSelectedRole] = useState<string>(() => searchParams.get('role') || 'all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
+
+  useEffect(() => {
+    const roleParam = searchParams.get('role');
+    if (roleParam) {
+      setSelectedRole(roleParam);
+    }
+  }, [searchParams]);
 
   // Modals state
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
