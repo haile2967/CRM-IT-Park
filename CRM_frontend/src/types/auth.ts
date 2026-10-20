@@ -11,6 +11,7 @@ export interface User {
   last_name: string;
   full_name: string;
   email: string;
+  avatar?: string | null;
   phone: string | null;
   status: 'active' | 'deactivated' | 'suspended';
   last_login_at: string | null;
@@ -38,3 +39,15 @@ export interface ApiError {
   message: string;
   errors?: Record<string, string[]>;
 }
+
+export interface ChangePasswordPayload {
+  current_password: string;
+  new_password: string;
+  new_password_confirmation: string;
+}
+
+export interface ChangePasswordResponse {
+  success: boolean;
+  message: string;
+}
+

@@ -147,4 +147,84 @@ class AuthAndRbacTest extends TestCase
         $response->assertStatus(422)
             ->assertJsonPath('message', 'You cannot deactivate your own account.');
     }
+
+    public function test_change_password_requires_correct_current_password(): void
+    {
+        $admin = User::where('email', 'e9710092@gmail.com')->first();
+
+        $response = $this->actingAs($admin, 'sanctum')->putJson('/api/v1/auth/change-password', [
+            'current_password' => 'IncorrectCurrent123!',
+            'new_password' => 'ValidNewPass123!',
+            'new_password_confirmation' => 'ValidNewPass123!',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['current_password']);
+    }
+
+    public function test_change_password_enforces_complexity(): void
+    {
+        $admin = User::where('email', 'e9710092@gmail.com')->first();
+
+        // Missing special character and uppercase
+        $response = $this->actingAs($admin, 'sanctum')->putJson('/api/v1/auth/change-password', [
+            'current_password' => '12345678',
+            'new_password' => 'simplepass123',
+            'new_password_confirmation' => 'simplepass123',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['new_password']);
+    }
+
+    public function test_change_password_prevents_password_reuse(): void
+    {
+        $admin = User::where('email', 'e9710092@gmail.com')->first();
+
+        $response = $this->actingAs($admin, 'sanctum')->putJson('/api/v1/auth/change-password', [
+            'current_password' => '12345678',
+            'new_password' => '12345678',
+            'new_password_confirmation' => '12345678',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['new_password']);
+    }
+
+    public function test_change_password_requires_matching_confirmation(): void
+    {
+        $admin = User::where('email', 'e9710092@gmail.com')->first();
+
+        $response = $this->actingAs($admin, 'sanctum')->putJson('/api/v1/auth/change-password', [
+            'current_password' => '12345678',
+            'new_password' => 'ValidNewPass123!',
+            'new_password_confirmation' => 'DifferentPass123!',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['new_password']);
+    }
+
+    public function test_user_can_successfully_change_password(): void
+    {
+        $admin = User::where('email', 'e9710092@gmail.com')->first();
+
+        $response = $this->actingAs($admin, 'sanctum')->putJson('/api/v1/auth/change-password', [
+            'current_password' => '12345678',
+            'new_password' => 'SecurePass2026!',
+            'new_password_confirmation' => 'SecurePass2026!',
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJsonPath('success', true);
+
+        // Verify password in DB was changed and tokens revoked
+        $freshAdmin = $admin->fresh();
+        $this->assertTrue(Hash::check('SecurePass2026!', $freshAdmin->password));
+        $this->assertCount(0, $freshAdmin->tokens);
+
+        // Reset password back to 12345678 so other local tests / seeder users stay predictable
+        $freshAdmin->forceFill(['password' => Hash::make('12345678')])->saveQuietly();
+    }
 }
+
