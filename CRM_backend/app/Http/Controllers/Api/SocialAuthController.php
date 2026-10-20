@@ -36,6 +36,10 @@ class SocialAuthController extends Controller
             /** @var \Laravel\Socialite\Two\AbstractProvider $driver */
             $driver = Socialite::driver($provider)->stateless();
 
+            if ($provider === 'github') {
+                $driver->scopes(['user:email', 'read:user']);
+            }
+
             // If the frontend requests JSON (SPA), return the target URL directly
             if ($request->wantsJson() || $request->query('mode') === 'json') {
                 return response()->json([
@@ -82,7 +86,11 @@ class SocialAuthController extends Controller
 
             $email = $socialUser->getEmail();
             if (empty($email)) {
-                return redirect()->to("{$frontendUrl}/auth/callback?error=" . urlencode("Unable to retrieve email from {$provider}.") . "&status=error");
+                if ($provider === 'github' && !empty($socialUser->getNickname())) {
+                    $email = $socialUser->getNickname() . '@users.noreply.github.com';
+                } else {
+                    return redirect()->to("{$frontendUrl}/auth/callback?error=" . urlencode("Unable to retrieve email from {$provider}.") . "&status=error");
+                }
             }
 
             // 1. Check if user already exists with this provider and ID

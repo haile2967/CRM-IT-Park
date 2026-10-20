@@ -143,4 +143,51 @@ class SocialAuthTest extends TestCase
         $this->assertStringContainsString('status=error', $targetUrl);
         $this->assertStringContainsString('deactivated', urldecode($targetUrl));
     }
+
+    public function test_github_redirect_mode_json_returns_oauth_target_url(): void
+    {
+        $provider = Mockery::mock(AbstractProvider::class);
+        $provider->shouldReceive('stateless')->andReturnSelf();
+        $provider->shouldReceive('scopes')->with(['user:email', 'read:user'])->andReturnSelf();
+        $provider->shouldReceive('redirect->getTargetUrl')->andReturn('https://github.com/login/oauth/authorize?client_id=test');
+
+        Socialite::shouldReceive('driver')->with('github')->andReturn($provider);
+
+        $response = $this->getJson('/api/v1/auth/github/redirect?mode=json');
+
+        $response->assertStatus(200)
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('url', 'https://github.com/login/oauth/authorize?client_id=test');
+    }
+
+    public function test_github_callback_creates_user_with_private_email_fallback(): void
+    {
+        $socialiteUser = Mockery::mock(SocialiteUser::class);
+        $socialiteUser->shouldReceive('getId')->andReturn('github-999');
+        $socialiteUser->shouldReceive('getEmail')->andReturn(null); // Private email
+        $socialiteUser->shouldReceive('getNickname')->andReturn('octocat');
+        $socialiteUser->shouldReceive('getName')->andReturn('Mona Lisa Octocat');
+        $socialiteUser->shouldReceive('getAvatar')->andReturn('https://avatars.githubusercontent.com/u/999');
+
+        $provider = Mockery::mock(AbstractProvider::class);
+        $provider->shouldReceive('stateless')->andReturnSelf();
+        $provider->shouldReceive('user')->andReturn($socialiteUser);
+
+        Socialite::shouldReceive('driver')->with('github')->andReturn($provider);
+
+        $response = $this->get('/api/v1/auth/github/callback');
+
+        $response->assertStatus(302);
+        $targetUrl = $response->headers->get('Location');
+        $this->assertStringContainsString('/auth/callback?token=', $targetUrl);
+        $this->assertStringContainsString('status=success', $targetUrl);
+
+        // Verify fallback email generated
+        $this->assertDatabaseHas('users', [
+            'email' => 'octocat@users.noreply.github.com',
+            'provider' => 'github',
+            'provider_id' => 'github-999',
+            'first_name' => 'Mona',
+        ]);
+    }
 }
