@@ -167,6 +167,32 @@ services:
     networks:
       - crm-network
 
+  # Keycloak IAM Service
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.1
+    container_name: crm_keycloak
+    restart: unless-stopped
+    command: start-dev --import-realm
+    environment:
+      KC_DB: postgres
+      KC_DB_URL_HOST: postgres
+      KC_DB_URL_PORT: 5432
+      KC_DB_URL_DATABASE: keycloak_db
+      KC_DB_USERNAME: ${DB_USERNAME:-crm_user}
+      KC_DB_PASSWORD: ${DB_PASSWORD:-crm_secret}
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin123
+      KC_HEALTH_ENABLED: "true"
+    volumes:
+      - ./docker/keycloak:/opt/keycloak/data/import:ro
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - crm-network
+
 networks:
   crm-network:
     driver: bridge
