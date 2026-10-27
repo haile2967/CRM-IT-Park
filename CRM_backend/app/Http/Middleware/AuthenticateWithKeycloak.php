@@ -59,7 +59,7 @@ class AuthenticateWithKeycloak
 
             // 4. Resolve matching role in CRM database
             $matchedRole = Role::whereIn('role_name', $roles)->first()
-                ?? Role::where('role_name', 'Support Agent')->first();
+                ?? Role::first();
 
             // 5. Just-In-Time (JIT) Provisioning
             // Look up by keycloak_id first, then by email
