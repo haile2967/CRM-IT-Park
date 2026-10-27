@@ -9,6 +9,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (credentials: LoginCredentials) => Promise<void>;
   logout: () => Promise<void>;
+  setAuthSession: (token: string, user: User) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -88,6 +89,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
+  const setAuthSession = useCallback((newToken: string, newUser: User) => {
+    setToken(newToken);
+    setUser(newUser);
+    localStorage.setItem('crm_token', newToken);
+    localStorage.setItem('crm_user', JSON.stringify(newUser));
+  }, []);
+
   const value = {
     user,
     token,
@@ -95,6 +103,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     isAuthenticated: Boolean(token && user),
     login,
     logout,
+    setAuthSession,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

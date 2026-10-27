@@ -471,7 +471,7 @@ export const AppShell: React.FC<AppShellProps> = ({
                       type="button"
                       onClick={() => {
                         setIsUserMenuOpen(false);
-                        alert('Password changes are managed by your administrator or profile settings.');
+                        navigate('/change-password');
                       }}
                       className="w-full flex items-center gap-2.5 px-3.5 py-2 text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer text-left"
                     >

@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\LeadController;
 use App\Http\Controllers\Api\PipelineStageController;
 use App\Http\Controllers\Api\ReferenceDataController;
 use App\Http\Controllers\Api\RoleController;
+use App\Http\Controllers\Api\SocialAuthController;
 use App\Http\Controllers\Api\TicketCategoryController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\DB;
@@ -70,9 +71,16 @@ $registerRoutes = function () {
     Route::prefix('auth')->group(function () {
         Route::post('/login', [AuthController::class, 'login']);
 
+        // Social OAuth Authentication (Google, GitHub)
+        Route::get('/{provider}/redirect', [SocialAuthController::class, 'redirect'])
+            ->whereIn('provider', ['google', 'github']);
+        Route::get('/{provider}/callback', [SocialAuthController::class, 'callback'])
+            ->whereIn('provider', ['google', 'github']);
+
         Route::middleware(['auth:sanctum', 'active'])->group(function () {
             Route::get('/me', [AuthController::class, 'me']);
             Route::post('/logout', [AuthController::class, 'logout']);
+            Route::put('/change-password', [AuthController::class, 'changePassword']);
         });
     });
 

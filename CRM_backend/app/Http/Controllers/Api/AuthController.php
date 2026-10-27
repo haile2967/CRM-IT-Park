@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\ChangePasswordRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Resources\UserResource;
+use App\Models\AuditLog;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -84,6 +86,45 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Logged out successfully',
+        ]);
+    }
+
+    /**
+     * Change password for the currently authenticated user (Option B: revokes all tokens).
+     */
+    public function changePassword(ChangePasswordRequest $request): JsonResponse
+    {
+        /** @var User $user */
+        $user = $request->user();
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            throw ValidationException::withMessages([
+                'current_password' => ['The current password provided is incorrect.'],
+            ]);
+        }
+
+        $user->forceFill([
+            'password' => Hash::make($request->new_password),
+        ])->saveQuietly();
+
+        AuditLog::create([
+            'user_id' => $user->id,
+            'entity_type' => 'User',
+            'entity_id' => $user->id,
+            'action' => 'password_changed',
+            'field_name' => 'password',
+            'old_value' => null,
+            'new_value' => '******',
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
+
+        // Option B: Revoke all tokens to enforce immediate re-login
+        $user->tokens()->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Password successfully updated. Please sign in with your new password.',
         ]);
     }
 }
