@@ -86,4 +86,90 @@ class AuthController extends Controller
             'message' => 'Logged out successfully',
         ]);
     }
+
+    /**
+     * Change password for the currently authenticated user and sync to Keycloak.
+     */
+    public function changePassword(\App\Http\Requests\Auth\ChangePasswordRequest $request): JsonResponse
+    {
+        /** @var User $user */
+        $user = $request->user();
+
+        // 1. Verify current password if user has a hashed password
+        if ($user->password && !Hash::check($request->current_password, $user->password)) {
+            throw ValidationException::withMessages([
+                'current_password' => ['The current password provided is incorrect.'],
+            ]);
+        }
+
+        // 2. Sync password to Keycloak IAM if user has keycloak_id
+        if ($user->keycloak_id) {
+            try {
+                $this->updateKeycloakPassword($user->keycloak_id, $request->new_password);
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error("Keycloak password sync failed: " . $e->getMessage());
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unable to update password in Keycloak IAM: ' . $e->getMessage(),
+                ], 500);
+            }
+        }
+
+        // 3. Update local PostgreSQL password hash
+        $user->forceFill([
+            'password' => Hash::make($request->new_password),
+        ])->saveQuietly();
+
+        \App\Models\AuditLog::create([
+            'user_id' => $user->id,
+            'entity_type' => 'User',
+            'entity_id' => $user->id,
+            'action' => 'password_changed',
+            'field_name' => 'password',
+            'old_value' => null,
+            'new_value' => '******',
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Password successfully updated. Please sign in with your new password.',
+        ]);
+    }
+
+    /**
+     * Reset password in Keycloak via Admin REST API.
+     */
+    protected function updateKeycloakPassword(string $keycloakId, string $newPassword): void
+    {
+        $realm = 'itpark-crm';
+        $keycloakBase = rtrim(config('services.keycloak.base_url', 'http://keycloak:8080'), '/');
+
+        // Request master admin token
+        $tokenRes = \Illuminate\Support\Facades\Http::asForm()->post("{$keycloakBase}/realms/master/protocol/openid-connect/token", [
+            'client_id' => 'admin-cli',
+            'username' => env('KEYCLOAK_ADMIN', 'admin'),
+            'password' => env('KEYCLOAK_ADMIN_PASSWORD', 'admin123'),
+            'grant_type' => 'password',
+        ]);
+
+        if (! $tokenRes->successful()) {
+            throw new \RuntimeException('Keycloak Admin authentication failed: ' . $tokenRes->body());
+        }
+
+        $adminToken = $tokenRes->json('access_token');
+
+        // Update password for user in Keycloak
+        $resetRes = \Illuminate\Support\Facades\Http::withToken($adminToken)
+            ->put("{$keycloakBase}/admin/realms/{$realm}/users/{$keycloakId}/reset-password", [
+                'type' => 'password',
+                'value' => $newPassword,
+                'temporary' => false,
+            ]);
+
+        if (! $resetRes->successful()) {
+            throw new \RuntimeException('Failed to reset Keycloak password: ' . $resetRes->body());
+        }
+    }
 }

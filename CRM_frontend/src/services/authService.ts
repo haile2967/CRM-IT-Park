@@ -1,5 +1,5 @@
 import apiClient from './api';
-import type { AuthResponse, LoginCredentials, User } from '../types/auth';
+import type { AuthResponse, ChangePasswordPayload, ChangePasswordResponse, LoginCredentials, User } from '../types/auth';
 
 export const authService = {
   /**
@@ -31,6 +31,14 @@ export const authService = {
       localStorage.removeItem('crm_token');
       localStorage.removeItem('crm_user');
     }
+  },
+
+  /**
+   * Change password with current password verification and Keycloak sync.
+   */
+  async changePassword(payload: ChangePasswordPayload): Promise<ChangePasswordResponse> {
+    const response = await apiClient.put<ChangePasswordResponse>('/auth/change-password', payload);
+    return response.data;
   },
 };
 
