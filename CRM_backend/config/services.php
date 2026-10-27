@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'keycloak' => [
+        'realm_url' => env('KEYCLOAK_REALM_URL', 'http://keycloak:8080/realms/itpark-crm'),
+        'client_id' => env('KEYCLOAK_CLIENT_ID', 'crm-frontend'),
+    ],
+
 ];

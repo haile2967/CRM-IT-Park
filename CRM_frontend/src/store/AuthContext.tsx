@@ -1,13 +1,14 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import type { LoginCredentials, User } from '../types/auth';
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
+import keycloak from '../services/keycloak';
 import { authService } from '../services/authService';
+import type { LoginCredentials, User } from '../types/auth';
 
 interface AuthContextType {
   user: User | null;
   token: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  login: (credentials: LoginCredentials) => Promise<void>;
+  login: (credentials?: LoginCredentials) => void;
   logout: () => Promise<void>;
 }
 
@@ -24,75 +25,91 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   });
 
-  const [isLoading, setIsLoading] = useState<boolean>(() => {
-    const storedToken = localStorage.getItem('crm_token');
-    const savedUser = localStorage.getItem('crm_user');
-    // If token and user are already in localStorage, render immediately without blocking screen
-    if (storedToken && savedUser) {
-      return false;
-    }
-    // If no token exists, no need to wait, immediately unauthenticated
-    if (!storedToken) {
-      return false;
-    }
-    return true;
-  });
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const isInitCalled = useRef(false);
 
-  // Synchronize authentication on initial boot
+  const logout = useCallback(async () => {
+    localStorage.removeItem('crm_token');
+    localStorage.removeItem('crm_user');
+    setToken(null);
+    setUser(null);
+
+    if (keycloak.authenticated) {
+      await keycloak.logout({ redirectUri: window.location.origin + '/login' });
+    } else {
+      window.location.href = '/login';
+    }
+  }, []);
+
   useEffect(() => {
-    const initAuth = async () => {
-      const storedToken = localStorage.getItem('crm_token');
-      if (storedToken) {
-        try {
-          const profile = await authService.getMe();
-          setUser(profile);
-          localStorage.setItem('crm_user', JSON.stringify(profile));
-        } catch {
-          // Stored token is invalid or expired
+    if (isInitCalled.current) return;
+    isInitCalled.current = true;
+
+    keycloak
+      .init({
+        onLoad: 'check-sso',
+        pkceMethod: 'S256',
+        checkLoginIframe: false,
+      })
+      .then(async (authenticated) => {
+        if (authenticated && keycloak.token) {
+          setToken(keycloak.token);
+          localStorage.setItem('crm_token', keycloak.token);
+
+          try {
+            const profile = await authService.getMe();
+            setUser(profile);
+            localStorage.setItem('crm_user', JSON.stringify(profile));
+          } catch (e) {
+            console.error('Failed to load synced user profile from backend', e);
+          }
+        } else {
           setToken(null);
           setUser(null);
           localStorage.removeItem('crm_token');
           localStorage.removeItem('crm_user');
         }
-      }
-      setIsLoading(false);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        console.error('Keycloak initialization error', err);
+        setIsLoading(false);
+      });
+
+    keycloak.onTokenExpired = () => {
+      keycloak
+        .updateToken(30)
+        .then((refreshed) => {
+          if (refreshed && keycloak.token) {
+            setToken(keycloak.token);
+            localStorage.setItem('crm_token', keycloak.token);
+          }
+        })
+        .catch(() => {
+          console.warn('Keycloak token refresh failed, logging out');
+          logout();
+        });
     };
 
-    initAuth();
-
     const handleUnauthorized = () => {
-      setToken(null);
-      setUser(null);
+      logout();
     };
 
     window.addEventListener('crm:unauthorized', handleUnauthorized);
     return () => window.removeEventListener('crm:unauthorized', handleUnauthorized);
-  }, []);
+  }, [logout]);
 
-  const login = useCallback(async (credentials: LoginCredentials) => {
-    const response = await authService.login(credentials);
-    const { token: newToken, user: newUser } = response.data;
-
-    setToken(newToken);
-    setUser(newUser);
-    localStorage.setItem('crm_token', newToken);
-    localStorage.setItem('crm_user', JSON.stringify(newUser));
-  }, []);
-
-  const logout = useCallback(async () => {
-    try {
-      await authService.logout();
-    } finally {
-      setToken(null);
-      setUser(null);
-    }
+  const login = useCallback((_credentials?: LoginCredentials) => {
+    keycloak.login({
+      redirectUri: window.location.origin + '/dashboard',
+    });
   }, []);
 
   const value = {
     user,
     token,
     isLoading,
-    isAuthenticated: Boolean(token && user),
+    isAuthenticated: Boolean((keycloak.authenticated || token) && user),
     login,
     logout,
   };
