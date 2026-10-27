@@ -39,7 +39,6 @@ class DatabaseSeeder extends Seeder
                 'first_name'         => 'System',
                 'last_name'          => 'Admin',
                 'phone'              => '+251911000000',
-                'password'           => '12345678',
                 'status'             => 'active',
                 'email_verified_at'  => now(),
             ]
@@ -53,7 +52,6 @@ class DatabaseSeeder extends Seeder
                     'first_name'         => 'CRM',
                     'last_name'          => 'Manager',
                     'phone'              => '+251911111111',
-                    'password'           => 'password',
                     'status'             => 'active',
                     'email_verified_at'  => now(),
                 ]
@@ -68,7 +66,6 @@ class DatabaseSeeder extends Seeder
                     'first_name'         => 'Habtamu',
                     'last_name'          => 'Kassahun',
                     'phone'              => '+251922222222',
-                    'password'           => 'password',
                     'status'             => 'active',
                     'email_verified_at'  => now(),
                 ]
