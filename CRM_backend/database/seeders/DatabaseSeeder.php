@@ -21,11 +21,14 @@ class DatabaseSeeder extends Seeder
         // 1. Seed Initial System Administrator Role
         $this->call(RoleSeeder::class);
 
+        // 1b. Seed Canonical Permissions for User Management
+        $this->call(PermissionSeeder::class);
+
         // 2. Seed Initial System Administrator User
         $adminRole = \App\Models\Role::where('role_name', 'System Administrator')->first();
 
         if ($adminRole) {
-            User::updateOrCreate(
+            $adminUser = User::updateOrCreate(
                 ['email' => 'e9710092@gmail.com'],
                 [
                     'keycloak_id'        => '86bfbaca-47ba-443f-bc73-7f9259ba44f2',
@@ -37,6 +40,9 @@ class DatabaseSeeder extends Seeder
                     'email_verified_at'  => now(),
                 ]
             );
+
+            // Assign Spatie System Administrator role
+            $adminUser->syncRoles(['System Administrator']);
         }
 
         // 3. Seed the default SRS pipeline stages (New → Closed Lost).
