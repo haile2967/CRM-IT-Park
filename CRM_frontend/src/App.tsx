@@ -3,8 +3,6 @@ import { AuthProvider } from './store/AuthContext';
 import ProtectedRoute from './routes/ProtectedRoute';
 import PublicRoute from './routes/PublicRoute';
 import LoginPage from './features/auth/LoginPage';
-import ChangePasswordPage from './features/auth/ChangePasswordPage';
-import OAuthCallbackPage from './features/auth/OAuthCallbackPage';
 import DashboardPage from './features/dashboard/DashboardPage';
 import LeadsPage from './features/leads/LeadsPage';
 import UsersPage from './features/users/UsersPage';
@@ -19,9 +17,7 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
-          {/* Public Routes */}
-          <Route path="/auth/callback" element={<OAuthCallbackPage />} />
-
+          {/* Public Routes (Accessible only when logged out) */}
           <Route element={<PublicRoute />}>
             <Route path="/login" element={<LoginPage />} />
           </Route>
@@ -32,8 +28,6 @@ export default function App() {
           {/* Protected Routes (Require active authenticated session) */}
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/change-password" element={<ChangePasswordPage />} />
-            <Route path="/settings/security" element={<ChangePasswordPage />} />
             <Route path="/leads" element={<LeadsPage />} />
             <Route path="/users" element={<UsersPage />} />
             <Route path="/roles" element={<RolesPage />} />

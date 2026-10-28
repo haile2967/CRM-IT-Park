@@ -8,17 +8,16 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import Button from '../../components/ui/Button';
+import Input from '../../components/ui/Input';
+import Alert from '../../components/ui/Alert';
 
 export const LoginPage: React.FC = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
-  useEffect(() => {
-    // Auto-forward directly to the unified Ethiopian IT Park login form
-    const timer = setTimeout(() => {
-      login();
-    }, 150);
+  const emailInputRef = useRef<HTMLInputElement>(null);
+  const passwordInputRef = useRef<HTMLInputElement>(null);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -106,9 +105,6 @@ export const LoginPage: React.FC = () => {
       <div className="w-full max-w-md space-y-6">
         {/* Brand Header */}
         <div className="flex flex-col items-center text-center">
-          <div className="w-12 h-12 rounded-xl bg-emerald-700 text-white flex items-center justify-center shadow-md shadow-emerald-700/20 mb-3 animate-pulse">
-            <Shield className="w-6 h-6 text-emerald-100" />
-          </div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">
             Ethiopian IT Park
           </h1>
@@ -174,25 +170,58 @@ export const LoginPage: React.FC = () => {
             />
 
             <div className="space-y-1">
-              <h2 className="text-base font-semibold tracking-tight text-slate-900">
-                Opening Secure Authentication...
-              </h2>
-              <p className="text-xs text-slate-500">
-                Directing to Ethiopian IT Park sign-in form.
-              </p>
+              <Input
+                ref={passwordInputRef}
+                label="Password"
+                type="password"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (hasCredentialError) {
+                    setHasCredentialError(false);
+                    setErrorMessage(null);
+                  }
+                }}
+                placeholder="Enter your password"
+                required
+                showPasswordToggle
+                autoComplete="current-password"
+                leftIcon={<Lock className="w-4 h-4 text-slate-400" />}
+              />
             </div>
-          </div>
 
-          <div className="pt-2">
+            <div className="flex items-center justify-between text-xs pt-1">
+              <label className="flex items-center gap-2 cursor-pointer select-none text-slate-600">
+                <input
+                  type="checkbox"
+                  checked={remember}
+                  onChange={(e) => setRemember(e.target.checked)}
+                  className="rounded-xs border-slate-300 text-emerald-700 focus:ring-emerald-600 h-4 w-4"
+                />
+                <span>Remember me</span>
+              </label>
+
+              <a
+                href="#forgot-password"
+                onClick={(e) => {
+                  e.preventDefault();
+                  alert('Password resets are managed by your system administrator.');
+                }}
+                className="text-emerald-700 hover:text-emerald-800 font-medium hover:underline"
+              >
+                Forgot password?
+              </a>
+            </div>
+
             <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handleManualLogin}
-              rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
-              className="text-xs text-slate-600"
+              type="submit"
+              variant="primary"
+              size="lg"
+              isLoading={isLoading}
+              rightIcon={<ArrowRight className="w-4 h-4" />}
+              className="w-full font-semibold shadow-sm mt-2"
             >
-              Click here if not redirected automatically
+              Sign In
             </Button>
           </form>
 
@@ -259,7 +288,7 @@ export const LoginPage: React.FC = () => {
         <div className="text-center">
           <p className="text-[11px] text-slate-400 inline-flex items-center gap-1.5">
             <Shield className="w-3.5 h-3.5 text-slate-400" />
-            <span>Official Platform • Ethiopian IT Park Corporation © 2026</span>
+            <span>Official Platform • Ethiopian IT Park © 2026</span>
           </p>
         </div>
       </div>
