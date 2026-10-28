@@ -37,10 +37,18 @@ services:
       - MAIL_MAILER=smtp
       - MAIL_HOST=mailpit
       - MAIL_PORT=1025
+      - KEYCLOAK_BASE_URL=http://keycloak:8080
+      - KEYCLOAK_REALM=itpark-crm
+      - KEYCLOAK_REALM_URL=http://keycloak:8080/realms/itpark-crm
+      - KEYCLOAK_CLIENT_ID=crm-frontend
+      - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN:-admin}
+      - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD:-admin123}
     depends_on:
       postgres:
         condition: service_healthy
       redis:
+        condition: service_started
+      keycloak:
         condition: service_started
     networks:
       - crm-network
@@ -164,6 +172,33 @@ services:
     environment:
       - VITE_BACKEND_URL=http://nginx:80
       - VITE_API_BASE_URL=http://localhost:8000/api
+    networks:
+      - crm-network
+
+  # Keycloak IAM Service
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.1
+    container_name: crm_keycloak
+    restart: unless-stopped
+    command: start-dev --import-realm
+    environment:
+      KC_DB: postgres
+      KC_DB_URL_HOST: postgres
+      KC_DB_URL_PORT: 5432
+      KC_DB_URL_DATABASE: keycloak_db
+      KC_DB_USERNAME: ${DB_USERNAME:-crm_user}
+      KC_DB_PASSWORD: ${DB_PASSWORD:-crm_secret}
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin123
+      KC_HEALTH_ENABLED: "true"
+    volumes:
+      - ./docker/keycloak:/opt/keycloak/data/import:ro
+      - ./docker/keycloak/themes/itpark-crm:/opt/keycloak/themes/itpark-crm:ro
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
     networks:
       - crm-network
 

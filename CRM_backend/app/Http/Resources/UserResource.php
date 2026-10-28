@@ -23,6 +23,7 @@ class UserResource extends JsonResource
             'avatar' => $this->avatar,
             'phone' => $this->phone,
             'status' => $this->status,
+            'avatar' => $this->avatar,
             'last_login_at' => $this->last_login_at?->toIso8601String(),
             'created_at' => $this->created_at?->toIso8601String(),
             'role' => $this->whenLoaded('role', function () {

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import keycloak from './keycloak';
 
 export const API_BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL || '/api';
 
@@ -11,12 +12,26 @@ export const apiClient = axios.create({
   timeout: 60000,
 });
 
-// Request interceptor: attach Sanctum Bearer token
+// Request interceptor: attach Keycloak Bearer token and refresh if near expiry
 apiClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('crm_token');
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
+  async (config) => {
+    if (keycloak.authenticated && keycloak.token) {
+      try {
+        // Refresh token if it expires in less than 30 seconds
+        await keycloak.updateToken(30);
+      } catch (err) {
+        console.warn('Token refresh failed', err);
+      }
+
+      if (config.headers) {
+        config.headers.Authorization = `Bearer ${keycloak.token}`;
+      }
+      localStorage.setItem('crm_token', keycloak.token);
+    } else {
+      const storedToken = localStorage.getItem('crm_token');
+      if (storedToken && config.headers) {
+        config.headers.Authorization = `Bearer ${storedToken}`;
+      }
     }
     return config;
   },

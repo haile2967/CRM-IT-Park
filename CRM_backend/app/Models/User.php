@@ -9,11 +9,12 @@ use Laravel\Sanctum\HasApiTokens;
 
 /**
  * @property int $id
+ * @property string|null $keycloak_id
  * @property int $role_id
  * @property string $first_name
  * @property string $last_name
  * @property string $email
- * @property string $password
+ * @property string|null $password
  * @property string|null $phone
  * @property string $status
  * @property \Illuminate\Support\Carbon|null $last_login_at
@@ -37,6 +38,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereEmailVerifiedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereFirstName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereKeycloakId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereLastLoginAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereLastName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User wherePassword($value)
@@ -51,7 +53,22 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'keycloak_id',
+        'role_id',
+        'first_name',
+        'last_name',
+        'email',
+        'password',
+        'phone',
+        'status',
+        'last_login_at',
+        'deactivated_at',
+        'email_verified_at',
+        'provider',
+        'provider_id',
+        'avatar',
+    ];
 
     protected $hidden = [
         'password',

@@ -87,7 +87,7 @@ $registerRoutes = function () {
     // -------------------------------------------------------------------------
     // Protected Routes (Requires active session)
     // -------------------------------------------------------------------------
-    Route::middleware(['auth:sanctum', 'active'])->group(function () {
+    Route::middleware(['auth.keycloak', 'active'])->group(function () {
 
         // Pipeline Stages — Viewable by all authenticated CRM roles
         Route::get('/pipeline-stages', [PipelineStageController::class, 'index']);

@@ -1,0 +1,375 @@
+/* ==========================================================================
+   Ethiopian IT Park CRM - Keycloak Theme Stylesheet
+   Designed to match the React CRM modern Tailwind aesthetics
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body.itpark-login-page {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: #f8fafc;
+  color: #0f172a;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 1rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Page Container */
+.itpark-container {
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Brand Header */
+.itpark-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.itpark-brand-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #047857;
+  color: #ecfdf5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(4, 120, 87, 0.25);
+  margin-bottom: 0.75rem;
+}
+
+.itpark-brand-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.itpark-brand-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: #0f172a;
+}
+
+.itpark-brand-subtitle {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 0.25rem;
+}
+
+/* Main Card */
+.itpark-card {
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.85);
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 10px 25px -5px rgba(0, 0, 0, 0.03);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.itpark-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.itpark-card-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: #0f172a;
+}
+
+.itpark-card-description {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+/* Alert / Error Banner */
+.itpark-alert {
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.8125rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  background-color: #fef2f2;
+  border: 1px solid #fee2e2;
+  color: #991b1b;
+}
+
+.itpark-alert-title {
+  font-weight: 500;
+}
+
+/* Form Groups */
+.itpark-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.itpark-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  position: relative;
+}
+
+.itpark-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #334155;
+}
+
+/* Inputs with Left Icons */
+.itpark-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.itpark-input-icon {
+  position: absolute;
+  left: 0.75rem;
+  width: 1rem;
+  height: 1rem;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.itpark-input {
+  width: 100%;
+  height: 42px;
+  padding: 0 0.75rem 0 2.25rem;
+  font-size: 0.875rem;
+  font-family: inherit;
+  color: #0f172a;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  outline: none;
+  transition: all 0.15s ease-in-out;
+}
+
+.itpark-input:hover {
+  border-color: #94a3b8;
+}
+
+.itpark-input:focus {
+  border-color: #059669;
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
+}
+
+.itpark-input::placeholder {
+  color: #94a3b8;
+}
+
+/* Password Toggle */
+.itpark-password-toggle {
+  position: absolute;
+  right: 0.625rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  transition: color 0.15s;
+}
+
+.itpark-password-toggle:hover {
+  color: #475569;
+}
+
+.itpark-password-toggle svg {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+/* Options (Remember me & Forgot password) */
+.itpark-form-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  padding-top: 0.25rem;
+}
+
+.itpark-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+  color: #475569;
+}
+
+.itpark-checkbox {
+  width: 1rem;
+  height: 1rem;
+  accent-color: #047857;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+.itpark-forgot-link {
+  color: #047857;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.itpark-forgot-link:hover {
+  color: #065f46;
+  text-decoration: underline;
+}
+
+/* Primary Submit Button */
+.itpark-btn-primary {
+  width: 100%;
+  height: 44px;
+  background: #047857;
+  color: #ffffff;
+  border: none;
+  border-radius: 0.625rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: all 0.15s ease-in-out;
+  margin-top: 0.5rem;
+}
+
+.itpark-btn-primary:hover {
+  background: #065f46;
+  box-shadow: 0 4px 12px rgba(4, 120, 87, 0.25);
+  transform: translateY(-1px);
+}
+
+.itpark-btn-primary:active {
+  transform: translateY(0);
+}
+
+.itpark-btn-primary svg {
+  width: 1rem;
+  height: 1rem;
+  transition: transform 0.15s;
+}
+
+.itpark-btn-primary:hover svg {
+  transform: translateX(2px);
+}
+
+/* Social Login Divider */
+.itpark-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 0.25rem 0;
+  color: #94a3b8;
+  font-size: 0.75rem;
+}
+
+.itpark-divider::before,
+.itpark-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.itpark-divider span {
+  padding: 0 0.75rem;
+  text-transform: lowercase;
+}
+
+/* Social Buttons */
+.itpark-social-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  list-style: none;
+}
+
+.itpark-social-btn {
+  width: 100%;
+  height: 42px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  color: #1e293b;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  font-family: inherit;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+
+.itpark-social-btn:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.itpark-social-btn svg {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+/* Security Footer */
+.itpark-footer {
+  text-align: center;
+}
+
+.itpark-footer p {
+  font-size: 0.6875rem;
+  color: #94a3b8;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.itpark-footer svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  color: #94a3b8;
+}
+
+/* Field validation errors */
+.itpark-error-msg {
+  font-size: 0.75rem;
+  color: #dc2626;
+  margin-top: 0.125rem;
+}
