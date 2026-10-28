@@ -20,6 +20,7 @@ class UserResource extends JsonResource
             'last_name' => $this->last_name,
             'full_name' => trim("{$this->first_name} {$this->last_name}"),
             'email' => $this->email,
+            'avatar' => $this->avatar,
             'phone' => $this->phone,
             'status' => $this->status,
             'avatar' => $this->avatar,

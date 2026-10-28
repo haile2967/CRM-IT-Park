@@ -35,15 +35,6 @@ return [
         ],
     ],
 
-    'keycloak' => [
-        'base_url' => env('KEYCLOAK_BASE_URL', 'http://keycloak:8080'),
-        'realm' => env('KEYCLOAK_REALM', 'itpark-crm'),
-        'realm_url' => env('KEYCLOAK_REALM_URL', 'http://keycloak:8080/realms/itpark-crm'),
-        'client_id' => env('KEYCLOAK_CLIENT_ID', 'crm-frontend'),
-        'admin_user' => env('KEYCLOAK_ADMIN', 'admin'),
-        'admin_password' => env('KEYCLOAK_ADMIN_PASSWORD', 'admin123'),
-    ],
-
     'google' => [
         'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),

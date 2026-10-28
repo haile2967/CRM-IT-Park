@@ -77,7 +77,7 @@ $registerRoutes = function () {
         Route::get('/{provider}/callback', [SocialAuthController::class, 'callback'])
             ->whereIn('provider', ['google', 'github']);
 
-        Route::middleware(['auth.keycloak', 'active'])->group(function () {
+        Route::middleware(['auth:sanctum', 'active'])->group(function () {
             Route::get('/me', [AuthController::class, 'me']);
             Route::post('/logout', [AuthController::class, 'logout']);
             Route::put('/change-password', [AuthController::class, 'changePassword']);

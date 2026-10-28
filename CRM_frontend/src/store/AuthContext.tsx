@@ -113,6 +113,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem('crm_user', JSON.stringify(newUser));
   }, []);
 
+  const logout = useCallback(async () => {
+    try {
+      await authService.logout();
+    } finally {
+      setToken(null);
+      setUser(null);
+    }
+  }, []);
+
+  const setAuthSession = useCallback((newToken: string, newUser: User) => {
+    setToken(newToken);
+    setUser(newUser);
+    localStorage.setItem('crm_token', newToken);
+    localStorage.setItem('crm_user', JSON.stringify(newUser));
+  }, []);
+
   const value = {
     user,
     token,

@@ -34,7 +34,7 @@ export const authService = {
   },
 
   /**
-   * Change password with current password verification and Keycloak sync.
+   * Change password with current password verification.
    */
   async changePassword(payload: ChangePasswordPayload): Promise<ChangePasswordResponse> {
     const response = await apiClient.put<ChangePasswordResponse>('/auth/change-password', payload);

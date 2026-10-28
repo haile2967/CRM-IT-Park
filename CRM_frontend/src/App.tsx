@@ -11,6 +11,8 @@ import UsersPage from './features/users/UsersPage';
 import RolesPage from './features/roles/RolesPage';
 import PipelineStagesPage from './features/pipelineStages/PipelineStagesPage';
 import EscalationPoliciesPage from './features/escalationPolicies/EscalationPoliciesPage';
+import ChangePasswordPage from './features/auth/ChangePasswordPage';
+import OAuthCallbackPage from './features/auth/OAuthCallbackPage';
 
 export default function App() {
   return (
@@ -24,6 +26,9 @@ export default function App() {
             <Route path="/login" element={<LoginPage />} />
           </Route>
 
+          {/* OAuth Callback handler */}
+          <Route path="/auth/callback" element={<OAuthCallbackPage />} />
+
           {/* Protected Routes (Require active authenticated session) */}
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<DashboardPage />} />
@@ -34,6 +39,7 @@ export default function App() {
             <Route path="/roles" element={<RolesPage />} />
             <Route path="/pipeline-stages" element={<PipelineStagesPage />} />
             <Route path="/escalations" element={<EscalationPoliciesPage />} />
+            <Route path="/change-password" element={<ChangePasswordPage />} />
             <Route path="/accounts" element={<Navigate to="/dashboard" replace />} />
             <Route path="/contacts" element={<Navigate to="/dashboard" replace />} />
             <Route path="/opportunities" element={<Navigate to="/dashboard" replace />} />

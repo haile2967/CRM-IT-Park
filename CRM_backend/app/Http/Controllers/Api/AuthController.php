@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\ChangePasswordRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Resources\UserResource;
+use App\Models\AuditLog;
 use App\Models\User;
 use App\Services\KeycloakService;
 use Illuminate\Http\JsonResponse;
@@ -91,39 +93,24 @@ class AuthController extends Controller
     }
 
     /**
-     * Change password for the currently authenticated user and sync to Keycloak.
+     * Change password for the currently authenticated user (Option B: revokes all tokens).
      */
-    public function changePassword(\App\Http\Requests\Auth\ChangePasswordRequest $request): JsonResponse
+    public function changePassword(ChangePasswordRequest $request): JsonResponse
     {
         /** @var User $user */
         $user = $request->user();
 
-        // 1. Verify current password if user has a hashed password
-        if ($user->password && !Hash::check($request->current_password, $user->password)) {
+        if (!Hash::check($request->current_password, $user->password)) {
             throw ValidationException::withMessages([
                 'current_password' => ['The current password provided is incorrect.'],
             ]);
         }
 
-        // 2. Sync password to Keycloak IAM if user has keycloak_id
-        if ($user->keycloak_id) {
-            try {
-                $this->keycloakService->updatePassword($user->keycloak_id, $request->new_password);
-            } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::error("Keycloak password sync failed: " . $e->getMessage());
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Unable to update password in Keycloak IAM: ' . $e->getMessage(),
-                ], 500);
-            }
-        }
-
-        // 3. Update local PostgreSQL password hash
         $user->forceFill([
             'password' => Hash::make($request->new_password),
         ])->saveQuietly();
 
-        \App\Models\AuditLog::create([
+        AuditLog::create([
             'user_id' => $user->id,
             'entity_type' => 'User',
             'entity_id' => $user->id,
@@ -134,6 +121,9 @@ class AuthController extends Controller
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
         ]);
+
+        // Option B: Revoke all tokens to enforce immediate re-login
+        $user->tokens()->delete();
 
         return response()->json([
             'success' => true,
