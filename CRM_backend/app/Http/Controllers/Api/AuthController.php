@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Services\KeycloakService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -14,6 +15,8 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+    public function __construct(private readonly KeycloakService $keycloakService) {}
+
     /**
      * Authenticate a CRM user and issue a Sanctum Bearer token.
      */
@@ -105,7 +108,7 @@ class AuthController extends Controller
         // 2. Sync password to Keycloak IAM if user has keycloak_id
         if ($user->keycloak_id) {
             try {
-                $this->updateKeycloakPassword($user->keycloak_id, $request->new_password);
+                $this->keycloakService->updatePassword($user->keycloak_id, $request->new_password);
             } catch (\Throwable $e) {
                 \Illuminate\Support\Facades\Log::error("Keycloak password sync failed: " . $e->getMessage());
                 return response()->json([
@@ -136,40 +139,5 @@ class AuthController extends Controller
             'success' => true,
             'message' => 'Password successfully updated. Please sign in with your new password.',
         ]);
-    }
-
-    /**
-     * Reset password in Keycloak via Admin REST API.
-     */
-    protected function updateKeycloakPassword(string $keycloakId, string $newPassword): void
-    {
-        $realm = 'itpark-crm';
-        $keycloakBase = rtrim(config('services.keycloak.base_url', 'http://keycloak:8080'), '/');
-
-        // Request master admin token
-        $tokenRes = \Illuminate\Support\Facades\Http::asForm()->post("{$keycloakBase}/realms/master/protocol/openid-connect/token", [
-            'client_id' => 'admin-cli',
-            'username' => env('KEYCLOAK_ADMIN', 'admin'),
-            'password' => env('KEYCLOAK_ADMIN_PASSWORD', 'admin123'),
-            'grant_type' => 'password',
-        ]);
-
-        if (! $tokenRes->successful()) {
-            throw new \RuntimeException('Keycloak Admin authentication failed: ' . $tokenRes->body());
-        }
-
-        $adminToken = $tokenRes->json('access_token');
-
-        // Update password for user in Keycloak
-        $resetRes = \Illuminate\Support\Facades\Http::withToken($adminToken)
-            ->put("{$keycloakBase}/admin/realms/{$realm}/users/{$keycloakId}/reset-password", [
-                'type' => 'password',
-                'value' => $newPassword,
-                'temporary' => false,
-            ]);
-
-        if (! $resetRes->successful()) {
-            throw new \RuntimeException('Failed to reset Keycloak password: ' . $resetRes->body());
-        }
     }
 }

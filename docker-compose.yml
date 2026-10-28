@@ -37,10 +37,18 @@ services:
       - MAIL_MAILER=smtp
       - MAIL_HOST=mailpit
       - MAIL_PORT=1025
+      - KEYCLOAK_BASE_URL=http://keycloak:8080
+      - KEYCLOAK_REALM=itpark-crm
+      - KEYCLOAK_REALM_URL=http://keycloak:8080/realms/itpark-crm
+      - KEYCLOAK_CLIENT_ID=crm-frontend
+      - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN:-admin}
+      - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD:-admin123}
     depends_on:
       postgres:
         condition: service_healthy
       redis:
+        condition: service_started
+      keycloak:
         condition: service_started
     networks:
       - crm-network
