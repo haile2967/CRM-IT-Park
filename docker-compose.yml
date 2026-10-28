@@ -135,7 +135,7 @@ services:
     container_name: crm_scheduler
     restart: unless-stopped
     working_dir: /var/www/CRM_backend
-    command: sh -c "while true; do php artisan schedule:run --verbose --no-interaction & sleep 60; done"
+    command: sh -c "while true; do php artisan schedule:run --verbose --no-interaction; sleep 60; done"
     volumes:
       - ./CRM_backend:/var/www/CRM_backend
     environment:

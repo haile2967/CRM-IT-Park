@@ -9,8 +9,8 @@ export const ProtectedRoute: React.FC = () => {
   // Detect if an authentication session exists or is currently completing code exchange from Keycloak
   const hasAuthHint = Boolean(
     localStorage.getItem('crm_token') ||
-      window.location.hash.includes('code=') ||
-      window.location.search.includes('code=')
+    window.location.hash.includes('code=') ||
+    window.location.search.includes('code=')
   );
 
   // During brief initialization:
@@ -28,5 +28,6 @@ export const ProtectedRoute: React.FC = () => {
 
   return <Outlet />;
 };
+
 
 export default ProtectedRoute;
