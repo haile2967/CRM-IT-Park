@@ -62,23 +62,38 @@ class AuthenticateWithKeycloak
                 ?? Role::first();
 
             // 5. Just-In-Time (JIT) Provisioning
-            // Look up by keycloak_id first, then by email
+            // Look up by keycloak_id first, then by email (eager load role to prevent N+1 query in CheckRole)
             $user = null;
             if ($keycloakId) {
-                $user = User::where('keycloak_id', $keycloakId)->first();
+                $user = User::with('role')->where('keycloak_id', $keycloakId)->first();
             }
             if (! $user && $email) {
-                $user = User::where('email', $email)->first();
+                $user = User::with('role')->where('email', $email)->first();
             }
 
             if ($user) {
-                $user->update([
-                    'keycloak_id' => $keycloakId,
-                    'first_name'  => $firstName ?: $user->first_name,
-                    'last_name'   => $lastName ?: $user->last_name,
-                    'role_id'     => $matchedRole?->id ?? $user->role_id,
-                    'last_login_at' => now(),
-                ]);
+                $updateData = [];
+
+                if ($keycloakId && $user->keycloak_id !== $keycloakId) {
+                    $updateData['keycloak_id'] = $keycloakId;
+                }
+                if ($firstName && $user->first_name !== $firstName) {
+                    $updateData['first_name'] = $firstName;
+                }
+                if ($lastName && $user->last_name !== $lastName) {
+                    $updateData['last_name'] = $lastName;
+                }
+                if ($matchedRole && $user->role_id !== $matchedRole->id) {
+                    $updateData['role_id'] = $matchedRole->id;
+                }
+                // Throttle last_login_at updates to once every 15 minutes to eliminate write locks on read requests
+                if (! $user->last_login_at || $user->last_login_at->diffInMinutes(now()) >= 15) {
+                    $updateData['last_login_at'] = now();
+                }
+
+                if (! empty($updateData)) {
+                    $user->update($updateData);
+                }
             } else {
                 $user = User::create([
                     'keycloak_id' => $keycloakId,
