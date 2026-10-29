@@ -24,7 +24,7 @@ class AuthController extends Controller
     {
         $request->ensureIsNotRateLimited();
 
-        $user = User::with('role')->where('email', $request->email)->first();
+        $user = User::with(['role', 'roles.permissions'])->where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             RateLimiter::hit($request->throttleKey());
@@ -67,7 +67,7 @@ class AuthController extends Controller
      */
     public function me(Request $request): JsonResponse
     {
-        $user = $request->user()->load('role');
+        $user = $request->user()->load(['role', 'roles.permissions']);
 
         return response()->json([
             'success' => true,

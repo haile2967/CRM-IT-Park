@@ -28,7 +28,7 @@ class UserController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
-        $users = User::with('role')->orderBy('first_name')->get();
+        $users = User::with(['role', 'roles.permissions'])->orderBy('first_name')->get();
 
         return UserResource::collection($users);
     }

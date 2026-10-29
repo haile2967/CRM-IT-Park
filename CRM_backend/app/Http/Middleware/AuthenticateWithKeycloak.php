@@ -57,18 +57,19 @@ class AuthenticateWithKeycloak
             $clientRoles = (array) ($decoded->resource_access?->{$clientId}?->roles ?? []);
             $roles = array_unique(array_merge($realmRoles, $clientRoles));
 
-            // 4. Resolve matching role in CRM database
-            $matchedRole = Role::whereIn('role_name', $roles)->first()
-                ?? Role::first();
+            // 4. Resolve matching role in CRM database (matching either Spatie name or legacy role_name)
+            $matchedRole = Role::whereIn('name', $roles)
+                ->orWhereIn('role_name', $roles)
+                ->first();
 
             // 5. Just-In-Time (JIT) Provisioning
-            // Look up by keycloak_id first, then by email (eager load role to prevent N+1 query in CheckRole)
+            // Look up by keycloak_id first, then by email (eager load role & Spatie roles.permissions)
             $user = null;
             if ($keycloakId) {
-                $user = User::with('role')->where('keycloak_id', $keycloakId)->first();
+                $user = User::with(['role', 'roles.permissions'])->where('keycloak_id', $keycloakId)->first();
             }
             if (! $user && $email) {
-                $user = User::with('role')->where('email', $email)->first();
+                $user = User::with(['role', 'roles.permissions'])->where('email', $email)->first();
             }
 
             if ($user) {
@@ -83,7 +84,8 @@ class AuthenticateWithKeycloak
                 if ($lastName && $user->last_name !== $lastName) {
                     $updateData['last_name'] = $lastName;
                 }
-                if ($matchedRole && $user->role_id !== $matchedRole->id) {
+                if ($matchedRole && ! $user->hasRole($matchedRole->name)) {
+                    $user->syncRoles([$matchedRole->name]);
                     $updateData['role_id'] = $matchedRole->id;
                 }
                 // Throttle last_login_at updates to once every 15 minutes to eliminate write locks on read requests
@@ -95,15 +97,21 @@ class AuthenticateWithKeycloak
                     $user->update($updateData);
                 }
             } else {
+                $fallbackRole = $matchedRole ?? Role::first();
+
                 $user = User::create([
                     'keycloak_id' => $keycloakId,
                     'email'       => $email,
                     'first_name'  => $firstName,
                     'last_name'   => $lastName,
-                    'role_id'     => $matchedRole?->id,
+                    'role_id'     => $fallbackRole?->id,
                     'status'      => 'active',
                     'last_login_at' => now(),
                 ]);
+
+                if ($fallbackRole) {
+                    $user->syncRoles([$fallbackRole->name]);
+                }
             }
 
             // 6. Check active status
