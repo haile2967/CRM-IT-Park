@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutGrid,
@@ -30,6 +30,7 @@ import {
   UserCog,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { usePermission } from '../../hooks/usePermission';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -41,6 +42,7 @@ interface NavSubItem {
   label: string;
   to: string;
   icon: React.ComponentType<{ className?: string }>;
+  permission?: string;
 }
 
 interface NavSection {
@@ -97,8 +99,8 @@ const navSections: NavSection[] = [
     title: 'System Administration',
     icon: ShieldCheck,
     items: [
-      { label: 'User Management', to: '/users', icon: UserCog },
-      { label: 'Role Management', to: '/roles', icon: Key },
+      { label: 'User Management', to: '/users', icon: UserCog, permission: 'users.view' },
+      { label: 'Role Management', to: '/roles', icon: Key, permission: 'roles.view' },
     ],
   },
 ];
@@ -109,6 +111,7 @@ export const AppShell: React.FC<AppShellProps> = ({
   subtitle = 'Ethiopian IT Park Relationship Management',
 }) => {
   const { user, logout } = useAuth();
+  const { can } = usePermission();
   const navigate = useNavigate();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -121,6 +124,19 @@ export const AppShell: React.FC<AppShellProps> = ({
     }
   });
 
+  // Filter navigation items by active user capabilities
+  const visibleSections = useMemo(() => {
+    return navSections
+      .map((section) => ({
+        ...section,
+        items: section.items.filter((item) => {
+          if (!item.permission) return true;
+          return can(item.permission);
+        }),
+      }))
+      .filter((section) => section.items.length > 0);
+  }, [can]);
+
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     pipeline: true,
     deals: true,
@@ -131,7 +147,7 @@ export const AppShell: React.FC<AppShellProps> = ({
 
   // Ensure active route section is automatically open
   useEffect(() => {
-    const activeSection = navSections.find((sec) =>
+    const activeSection = visibleSections.find((sec) =>
       sec.items.some((item) => item.to === location.pathname)
     );
     if (activeSection) {
@@ -140,7 +156,7 @@ export const AppShell: React.FC<AppShellProps> = ({
         [activeSection.id]: true,
       }));
     }
-  }, [location.pathname]);
+  }, [location.pathname, visibleSections]);
 
   const userMenuRef = useRef<HTMLDivElement>(null);
 
@@ -222,9 +238,8 @@ export const AppShell: React.FC<AppShellProps> = ({
       >
         {/* Brand Header */}
         <div
-          className={`p-4 border-b border-slate-800/80 flex items-center shrink-0 ${
-            isCollapsed ? 'md:justify-center md:px-2 md:py-3.5' : 'justify-between'
-          }`}
+          className={`p-4 border-b border-slate-800/80 flex items-center shrink-0 ${isCollapsed ? 'md:justify-center md:px-2 md:py-3.5' : 'justify-between'
+            }`}
         >
           <div className="flex items-center gap-3 min-w-0">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-600 to-emerald-800 flex items-center justify-center text-white font-bold text-sm tracking-wider shadow-inner ring-1 ring-white/10 shrink-0">
@@ -280,7 +295,7 @@ export const AppShell: React.FC<AppShellProps> = ({
           )}
 
           {/* Grouped Accordions */}
-          {navSections.map((section) => {
+          {visibleSections.map((section) => {
             const SectionIcon = section.icon;
             const isOpen = openSections[section.id];
 
@@ -308,11 +323,10 @@ export const AppShell: React.FC<AppShellProps> = ({
                         >
                           <SubIcon className="w-4 h-4" />
                           <span
-                            className={`w-1.5 h-1.5 rounded-full bg-emerald-400 absolute right-1 top-1/2 -translate-y-1/2 transition-opacity ${
-                              location.pathname === subItem.to
+                            className={`w-1.5 h-1.5 rounded-full bg-emerald-400 absolute right-1 top-1/2 -translate-y-1/2 transition-opacity ${location.pathname === subItem.to
                                 ? 'opacity-100'
                                 : 'opacity-0'
-                            }`}
+                              }`}
                           />
                         </NavLink>
                       );
@@ -373,9 +387,8 @@ export const AppShell: React.FC<AppShellProps> = ({
 
         {/* Bottom Expand / Collapse Bar */}
         <div
-          className={`p-3 border-t border-slate-800 bg-slate-950/40 shrink-0 ${
-            isCollapsed ? 'flex justify-center' : ''
-          }`}
+          className={`p-3 border-t border-slate-800 bg-slate-950/40 shrink-0 ${isCollapsed ? 'flex justify-center' : ''
+            }`}
         >
           <button
             type="button"

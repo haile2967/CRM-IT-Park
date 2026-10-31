@@ -2,6 +2,7 @@
 
 namespace App\Permissions;
 
+use App\Permissions\Modules\RolePermissions;
 use App\Permissions\Modules\UserPermissions;
 
 class PermissionRegistry
@@ -14,6 +15,7 @@ class PermissionRegistry
      */
     protected static array $modules = [
         UserPermissions::class,
+        RolePermissions::class,
     ];
 
     /**

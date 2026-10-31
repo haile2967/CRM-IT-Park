@@ -35,6 +35,30 @@ class Role extends SpatieRole
         ]);
     }
 
+    public static function create(array $attributes = [])
+    {
+        if (empty($attributes['name']) && ! empty($attributes['role_name'])) {
+            $attributes['name'] = $attributes['role_name'];
+        }
+        if (empty($attributes['role_name']) && ! empty($attributes['name'])) {
+            $attributes['role_name'] = $attributes['name'];
+        }
+
+        return parent::create($attributes);
+    }
+
+    public function setAttribute($key, $value)
+    {
+        if ($key === 'role_name' && empty($this->attributes['name'])) {
+            $this->attributes['name'] = $value;
+        }
+        if ($key === 'name' && empty($this->attributes['role_name'])) {
+            $this->attributes['role_name'] = $value;
+        }
+
+        return parent::setAttribute($key, $value);
+    }
+
     protected static function booted(): void
     {
         parent::booted();

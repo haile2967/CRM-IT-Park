@@ -2,19 +2,20 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Key,
-  Shield,
   ShieldCheck,
   Search,
   Filter,
   RefreshCw,
   Users as UsersIcon,
-  UserPlus,
-  Briefcase,
+  Plus,
   Layers,
 } from 'lucide-react';
 import AppShell from '../../components/layout/AppShell';
 import Button from '../../components/ui/Button';
+import Can from '../../components/auth/Can';
 import RolesTable from './RolesTable';
+import RoleModal from './RoleModal';
+import DeleteRoleModal from './DeleteRoleModal';
 import roleService from '../../services/roleService';
 import userService from '../../services/userService';
 import type { Role } from '../../types/role';
@@ -28,6 +29,11 @@ export const RolesPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTier, setSelectedTier] = useState<string>('all');
+
+  // Modal states
+  const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
+  const [editingRole, setEditingRole] = useState<Role | null>(null);
+  const [deletingRole, setDeletingRole] = useState<Role | null>(null);
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -65,13 +71,13 @@ export const RolesPage: React.FC = () => {
     return roles
       .map((r) => ({
         ...r,
-        userCount: userCountsByRoleId[r.id] || 0,
+        userCount: r.user_count ?? userCountsByRoleId[r.id] ?? 0,
       }))
       .filter((r) => {
         // Search term filter
         if (searchTerm.trim()) {
           const query = searchTerm.toLowerCase();
-          const matchesName = r.role_name?.toLowerCase().includes(query);
+          const matchesName = (r.name || r.role_name || '').toLowerCase().includes(query);
           const matchesDesc = r.description?.toLowerCase().includes(query);
           if (!matchesName && !matchesDesc) return false;
         }
@@ -88,7 +94,9 @@ export const RolesPage: React.FC = () => {
   // Metrics calculation
   const metrics = useMemo(() => {
     const totalRoles = roles.length;
-    const adminRoles = roles.filter((r) => r.role_tier === 1 || r.role_name.toLowerCase().includes('admin')).length;
+    const adminRoles = roles.filter(
+      (r) => r.role_tier === 1 || (r.name || r.role_name || '').toLowerCase().includes('admin')
+    ).length;
     const operationalRoles = totalRoles - adminRoles;
     const totalAssignedStaff = users.filter((u) => Boolean(u.role)).length;
 
@@ -99,6 +107,28 @@ export const RolesPage: React.FC = () => {
       totalAssignedStaff,
     };
   }, [roles, users]);
+
+  const handleOpenCreateModal = () => {
+    setEditingRole(null);
+    setIsRoleModalOpen(true);
+  };
+
+  const handleOpenEditModal = (role: Role) => {
+    setEditingRole(role);
+    setIsRoleModalOpen(true);
+  };
+
+  const handleOpenDeleteModal = (role: Role) => {
+    setDeletingRole(role);
+  };
+
+  const handleRoleSaved = () => {
+    fetchData();
+  };
+
+  const handleRoleDeleted = () => {
+    fetchData();
+  };
 
   return (
     <AppShell
@@ -122,7 +152,7 @@ export const RolesPage: React.FC = () => {
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2.5 flex-wrap">
             <Button
               variant="outline"
               size="sm"
@@ -132,13 +162,25 @@ export const RolesPage: React.FC = () => {
             >
               Refresh
             </Button>
+
+            <Can permission="roles.create">
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleOpenCreateModal}
+                leftIcon={<Plus className="w-3.5 h-3.5" />}
+              >
+                Create New Role
+              </Button>
+            </Can>
+
             <Button
-              variant="primary"
+              variant="outline"
               size="sm"
               onClick={() => navigate('/users')}
-              leftIcon={<UsersIcon className="w-3.5 h-3.5" />}
+              leftIcon={<UsersIcon className="w-3.5 h-3.5 text-slate-500" />}
             >
-              Manage Staff Users
+              Staff Directory
             </Button>
           </div>
         </div>
@@ -253,7 +295,28 @@ export const RolesPage: React.FC = () => {
         </div>
 
         {/* Roles Table */}
-        <RolesTable roles={filteredRoles} isLoading={isLoading} />
+        <RolesTable
+          roles={filteredRoles}
+          isLoading={isLoading}
+          onEditRole={handleOpenEditModal}
+          onDeleteRole={handleOpenDeleteModal}
+        />
+
+        {/* Role Builder & Permission Matrix Modal */}
+        <RoleModal
+          isOpen={isRoleModalOpen}
+          onClose={() => setIsRoleModalOpen(false)}
+          roleToEdit={editingRole}
+          onSaved={handleRoleSaved}
+        />
+
+        {/* Delete Role Modal */}
+        <DeleteRoleModal
+          isOpen={Boolean(deletingRole)}
+          onClose={() => setDeletingRole(null)}
+          role={deletingRole}
+          onDeleted={handleRoleDeleted}
+        />
       </div>
     </AppShell>
   );

@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { UserRoleBadge, UserStatusBadge } from './UserBadges';
 import Button from '../../components/ui/Button';
+import Can from '../../components/auth/Can';
 import type { User } from '../../types/user';
 
 interface UsersTableProps {
@@ -157,43 +158,47 @@ export const UsersTable: React.FC<UsersTableProps> = ({
                   {/* Action Buttons */}
                   <td className="py-3 px-4 text-right">
                     <div className="flex items-center justify-end gap-1">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => onEditUser(user)}
-                        title="Edit profile & role"
-                        leftIcon={<Edit2 className="w-3.5 h-3.5 text-slate-500" />}
-                      >
-                        Edit
-                      </Button>
+                      <Can permission="users.edit">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => onEditUser(user)}
+                          title="Edit profile & role"
+                          leftIcon={<Edit2 className="w-3.5 h-3.5 text-slate-500" />}
+                        >
+                          Edit
+                        </Button>
+                      </Can>
 
-                      <Button
-                        variant={isActive ? 'ghost' : 'outline'}
-                        size="sm"
-                        onClick={() => onToggleStatus(user)}
-                        disabled={isSelf && isActive}
-                        title={
-                          isSelf && isActive
-                            ? 'You cannot deactivate your own account'
-                            : isActive
-                            ? 'Deactivate user account'
-                            : 'Reactivate user account'
-                        }
-                        className={
-                          isActive
-                            ? 'text-rose-600 hover:text-rose-700 hover:bg-rose-50'
-                            : 'text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50'
-                        }
-                        leftIcon={
-                          isActive ? (
-                            <UserX className="w-3.5 h-3.5" />
-                          ) : (
-                            <UserCheck className="w-3.5 h-3.5" />
-                          )
-                        }
-                      >
-                        {isActive ? 'Deactivate' : 'Activate'}
-                      </Button>
+                      <Can permission="users.deactivate">
+                        <Button
+                          variant={isActive ? 'ghost' : 'outline'}
+                          size="sm"
+                          onClick={() => onToggleStatus(user)}
+                          disabled={isSelf && isActive}
+                          title={
+                            isSelf && isActive
+                              ? 'You cannot deactivate your own account'
+                              : isActive
+                                ? 'Deactivate user account'
+                                : 'Reactivate user account'
+                          }
+                          className={
+                            isActive
+                              ? 'text-rose-600 hover:text-rose-700 hover:bg-rose-50'
+                              : 'text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50'
+                          }
+                          leftIcon={
+                            isActive ? (
+                              <UserX className="w-3.5 h-3.5" />
+                            ) : (
+                              <UserCheck className="w-3.5 h-3.5" />
+                            )
+                          }
+                        >
+                          {isActive ? 'Deactivate' : 'Activate'}
+                        </Button>
+                      </Can>
                     </div>
                   </td>
                 </tr>

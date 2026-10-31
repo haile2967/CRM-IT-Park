@@ -152,6 +152,10 @@ class UserService
         $user->update(['role_id' => $roleId]);
         $role = Role::find($roleId);
 
+        if ($role) {
+            $user->syncRoles([$role]);
+        }
+
         $keycloakId = $user->keycloak_id;
         if (! $keycloakId) {
             $existing = $this->keycloakService->findUserByEmail($user->email);

@@ -33,6 +33,14 @@ class UserController extends Controller
         return UserResource::collection($users);
     }
 
+    /**
+     * Display the specified user profile.
+     */
+    public function show(User $user): UserResource
+    {
+        return new UserResource($user->load(['role', 'roles.permissions']));
+    }
+
 
     /**
      * Create a new CRM user and assign a role.
@@ -110,7 +118,20 @@ class UserController extends Controller
      */
     public function assignRole(AssignRoleRequest $request, User $user): JsonResponse
     {
-        $user = $this->userService->assignRole($user, $request->validated('role_id'));
+        $roleId = $request->validated('role_id');
+        $role = \App\Models\Role::find($roleId);
+
+        $currentUser = $request->user();
+        $isCurrentAdmin = $currentUser && ($currentUser->hasRole('System Administrator') || $currentUser->role?->role_name === 'System Administrator');
+
+        if ($role && ($role->name === 'System Administrator' || $role->is_system) && ! $isCurrentAdmin) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Only System Administrators can assign the System Administrator role.',
+            ], 403);
+        }
+
+        $user = $this->userService->assignRole($user, $roleId);
 
         return response()->json([
             'success' => true,

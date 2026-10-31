@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import AppShell from '../../components/layout/AppShell';
 import Button from '../../components/ui/Button';
+import Can from '../../components/auth/Can';
 import UsersTable from './UsersTable';
 import UserModal from './UserModal';
 import UserStatusModal from './UserStatusModal';
@@ -165,14 +166,16 @@ export const UsersPage: React.FC = () => {
             >
               Refresh
             </Button>
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={handleOpenCreateModal}
-              leftIcon={<UserPlus className="w-3.5 h-3.5" />}
-            >
-              Add New User
-            </Button>
+            <Can permission="users.create">
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleOpenCreateModal}
+                leftIcon={<UserPlus className="w-3.5 h-3.5" />}
+              >
+                Add New User
+              </Button>
+            </Can>
           </div>
         </div>
 

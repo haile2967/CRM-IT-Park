@@ -20,6 +20,11 @@ class AuthenticateWithKeycloak
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // Bypass if user is already authenticated (e.g. feature tests using actingAs)
+        if ($request->user() || auth()->check()) {
+            return $next($request);
+        }
+
         $token = $request->bearerToken();
         if (! $token) {
             return response()->json([

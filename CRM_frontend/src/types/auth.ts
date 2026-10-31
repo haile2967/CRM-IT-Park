@@ -17,6 +17,9 @@ export interface User {
   last_login_at: string | null;
   created_at?: string;
   role?: Role;
+  is_admin?: boolean;
+  roles?: string[];
+  permissions?: string[];
 }
 
 export interface LoginCredentials {

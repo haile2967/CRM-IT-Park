@@ -14,16 +14,19 @@ class RoleSeeder extends Seeder
     {
         $roles = [
             [
+                'name' => 'System Administrator',
                 'role_name' => 'System Administrator',
                 'description' => 'Full administrative control and system configuration',
                 'role_tier' => 1,
                 'is_active' => true,
+                'is_system' => true,
+                'guard_name' => 'web',
             ],
         ];
 
         foreach ($roles as $role) {
             Role::firstOrCreate(
-                ['role_name' => $role['role_name']],
+                ['name' => $role['name']],
                 $role
             );
         }
