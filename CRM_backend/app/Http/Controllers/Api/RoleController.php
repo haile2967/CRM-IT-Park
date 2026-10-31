@@ -20,7 +20,6 @@ class RoleController extends Controller
     {
         $roles = Role::with(['permissions'])
             ->withCount('users')
-            ->orderBy('role_tier')
             ->orderBy('name')
             ->get();
 
@@ -48,7 +47,7 @@ class RoleController extends Controller
             'name' => $name,
             'role_name' => $name,
             'description' => $validated['description'] ?? null,
-            'role_tier' => $validated['role_tier'] ?? 3,
+            'role_tier' => $validated['role_tier'] ?? null,
             'is_active' => true,
             'is_system' => false,
             'guard_name' => config('auth.defaults.guard', 'web'),

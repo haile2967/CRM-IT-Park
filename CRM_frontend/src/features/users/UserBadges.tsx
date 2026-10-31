@@ -24,7 +24,7 @@ export const UserStatusBadge: React.FC<UserStatusBadgeProps> = ({ status }) => {
 
 interface UserRoleBadgeProps {
   roleName?: string;
-  roleTier?: number | null;
+
 }
 
 export const UserRoleBadge: React.FC<UserRoleBadgeProps> = ({ roleName }) => {

@@ -17,7 +17,7 @@ class RoleSeeder extends Seeder
                 'name' => 'System Administrator',
                 'role_name' => 'System Administrator',
                 'description' => 'Full administrative control and system configuration',
-                'role_tier' => 1,
+                'role_tier' => null,
                 'is_active' => true,
                 'is_system' => true,
                 'guard_name' => 'web',

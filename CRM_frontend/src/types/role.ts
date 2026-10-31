@@ -3,7 +3,7 @@ export interface Role {
   name?: string;
   role_name: string;
   description: string | null;
-  role_tier: number | null;
+  role_tier?: number | null;
   is_active?: boolean;
   is_system?: boolean;
   user_count?: number;

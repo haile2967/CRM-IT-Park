@@ -285,7 +285,7 @@ export const UserModal: React.FC<UserModalProps> = ({
                     </option>
                     {availableRoles.map((r) => (
                       <option key={r.id} value={r.id}>
-                        {r.role_name} {r.role_tier ? `(Tier ${r.role_tier})` : ''}
+                        {r.role_name}
                       </option>
                     ))}
                   </select>

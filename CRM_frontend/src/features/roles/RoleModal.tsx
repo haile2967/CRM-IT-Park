@@ -38,7 +38,6 @@ export const RoleModal: React.FC<RoleModalProps> = ({
 
   const [roleName, setRoleName] = useState('');
   const [description, setDescription] = useState('');
-  const [roleTier, setRoleTier] = useState<number>(3);
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
 
   const [permissionGroups, setPermissionGroups] = useState<PermissionGroup[]>([]);
@@ -70,13 +69,11 @@ export const RoleModal: React.FC<RoleModalProps> = ({
     if (roleToEdit) {
       setRoleName(roleToEdit.name || roleToEdit.role_name || '');
       setDescription(roleToEdit.description || '');
-      setRoleTier(roleToEdit.role_tier ?? 3);
       setSelectedPermissions(roleToEdit.permissions || []);
       setErrorMessage(null);
     } else {
       setRoleName('');
       setDescription('');
-      setRoleTier(3);
       setSelectedPermissions([]);
       setErrorMessage(null);
     }
@@ -149,7 +146,6 @@ export const RoleModal: React.FC<RoleModalProps> = ({
         const updated = await roleService.updateRole(roleToEdit.id, {
           name: roleName.trim(),
           description: description.trim() || undefined,
-          role_tier: roleTier,
           permissions: selectedPermissions,
         });
         onSaved(updated);
@@ -157,7 +153,6 @@ export const RoleModal: React.FC<RoleModalProps> = ({
         const created = await roleService.createRole({
           name: roleName.trim(),
           description: description.trim() || undefined,
-          role_tier: roleTier,
           permissions: selectedPermissions,
         });
         onSaved(created);
@@ -209,7 +204,7 @@ export const RoleModal: React.FC<RoleModalProps> = ({
               </div>
               <p className="text-[11px] text-slate-500">
                 {isEditing
-                  ? 'Configure role scope, security tier, and fine-grained permissions'
+                  ? 'Configure role title, description, and fine-grained permissions'
                   : 'Define a custom organizational role and configure capabilities'}
               </p>
             </div>
@@ -249,33 +244,15 @@ export const RoleModal: React.FC<RoleModalProps> = ({
 
             {/* Role Metadata Fields */}
             <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div className="md:col-span-2">
-                  <Input
-                    label="Role Title"
-                    value={roleName}
-                    onChange={(e) => setRoleName(e.target.value)}
-                    placeholder="e.g. Facilities Operations Officer"
-                    disabled={isSystemRole}
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">
-                    Security Tier
-                  </label>
-                  <select
-                    value={roleTier}
-                    onChange={(e) => setRoleTier(Number(e.target.value))}
-                    disabled={isSystemRole}
-                    className="w-full h-9.5 px-3 py-1.5 text-xs bg-white border border-slate-300 rounded-lg text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-emerald-600/30 focus:border-emerald-600 disabled:bg-slate-50 disabled:text-slate-400"
-                  >
-                    <option value={1}>Tier 1 — Full Administration</option>
-                    <option value={2}>Tier 2 — Department Management</option>
-                    <option value={3}>Tier 3 — Business Operations</option>
-                    <option value={4}>Tier 4 — Support Operations</option>
-                  </select>
-                </div>
+              <div>
+                <Input
+                  label="Role Title"
+                  value={roleName}
+                  onChange={(e) => setRoleName(e.target.value)}
+                  placeholder="e.g. Facilities Operations Officer"
+                  disabled={isSystemRole}
+                  required
+                />
               </div>
 
               <div>

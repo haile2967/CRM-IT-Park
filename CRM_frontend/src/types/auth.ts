@@ -2,7 +2,7 @@ export interface Role {
   id: number;
   role_name: string;
   description: string | null;
-  role_tier: number | null;
+  role_tier?: number | null;
 }
 
 export interface User {

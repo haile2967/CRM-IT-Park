@@ -81,7 +81,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({
           <thead>
             <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-semibold uppercase text-[10px] tracking-wider">
               <th className="py-3 px-4">User</th>
-              <th className="py-3 px-4">Role & Tier</th>
+              <th className="py-3 px-4">Role</th>
               <th className="py-3 px-4">Contact</th>
               <th className="py-3 px-4">Status</th>
               <th className="py-3 px-4">Last Activity</th>
@@ -126,7 +126,6 @@ export const UsersTable: React.FC<UsersTableProps> = ({
                   <td className="py-3 px-4">
                     <UserRoleBadge
                       roleName={user.role?.role_name}
-                      roleTier={user.role?.role_tier}
                     />
                   </td>
 

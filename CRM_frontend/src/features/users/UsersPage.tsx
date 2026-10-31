@@ -152,7 +152,7 @@ export const UsersPage: React.FC = () => {
               </span>
             </div>
             <p className="text-xs text-slate-500">
-              Manage CRM staff identities, allocate role tiers, and configure portal access policies.
+              Manage CRM staff identities, allocate system roles, and configure portal access policies.
             </p>
           </div>
 
@@ -233,7 +233,7 @@ export const UsersPage: React.FC = () => {
               {metrics.admins}
             </div>
             <span className="text-[11px] text-purple-600 font-medium mt-0.5 block">
-              Tier 1 Superusers
+              Full authority superusers
             </span>
           </div>
         </div>
