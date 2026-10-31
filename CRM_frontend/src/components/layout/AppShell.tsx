@@ -93,9 +93,17 @@ export const AppShell: React.FC<AppShellProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
   const handleLogout = async () => {
-    await logout();
-    navigate('/login', { replace: true });
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
+    setIsUserMenuOpen(false);
+    try {
+      await logout();
+    } catch {
+      window.location.replace('/login');
+    }
   };
 
   return (
@@ -334,14 +342,16 @@ export const AppShell: React.FC<AppShellProps> = ({
                   <div className="border-t border-slate-100 pt-1">
                     <button
                       type="button"
-                      onClick={() => {
-                        setIsUserMenuOpen(false);
+                      disabled={isLoggingOut}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
                         handleLogout();
                       }}
-                      className="w-full flex items-center gap-2.5 px-3.5 py-2 text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer text-left font-medium"
+                      className="w-full flex items-center gap-2.5 px-3.5 py-2 text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer text-left font-medium disabled:opacity-50"
                     >
                       <LogOut className="w-3.5 h-3.5 text-rose-500" />
-                      <span>Sign out</span>
+                      <span>{isLoggingOut ? 'Signing out...' : 'Sign out'}</span>
                     </button>
                   </div>
                 </div>

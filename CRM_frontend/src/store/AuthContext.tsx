@@ -30,16 +30,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const isInitCalled = useRef(false);
 
   const logout = useCallback(async () => {
+    // 1. Immediately purge authentication credentials from local storage & React state
     localStorage.removeItem('crm_token');
     localStorage.removeItem('crm_user');
+    sessionStorage.clear();
     setToken(null);
     setUser(null);
 
-    if (keycloak.authenticated) {
-      await keycloak.logout({ redirectUri: window.location.origin + '/login' });
-    } else {
-      window.location.href = '/login';
+    // 2. Fire-and-forget backend session revocation
+    authService.logout().catch(() => {});
+
+    // 3. Invalidate Keycloak SSO session if authenticated (with safety timeout)
+    try {
+      if (keycloak.authenticated) {
+        await Promise.race([
+          keycloak.logout({ redirectUri: window.location.origin + '/login' }),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Keycloak logout timeout')), 1500)),
+        ]);
+        return;
+      }
+    } catch (e) {
+      console.warn('Keycloak logout error:', e);
     }
+
+    // 4. Instant browser redirection to login page
+    window.location.replace('/login');
   }, []);
 
   useEffect(() => {
