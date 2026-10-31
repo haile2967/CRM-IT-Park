@@ -34,7 +34,6 @@ class UserService
         // 2. Persist in CRM database with linked keycloak_id
         $user = User::create([
             'keycloak_id' => $keycloakId,
-            'role_id'     => $data['role_id'],
             'first_name'  => $data['first_name'],
             'last_name'   => $data['last_name'],
             'email'       => $data['email'],
@@ -43,7 +42,11 @@ class UserService
             'status'      => 'active',
         ]);
 
-        return $user->load('role');
+        if ($role) {
+            $user->syncRoles([$role]);
+        }
+
+        return $user->load('roles.permissions');
     }
 
     /**
@@ -51,7 +54,7 @@ class UserService
      */
     public function updateUser(User $user, array $data): User
     {
-        $fillable = ['role_id', 'first_name', 'last_name', 'email', 'phone', 'status'];
+        $fillable = ['first_name', 'last_name', 'email', 'phone', 'status'];
 
         if (isset($data['password'])) {
             $fillable[] = 'password';
@@ -98,7 +101,7 @@ class UserService
             }
         }
 
-        return $user->load('role');
+        return $user->load('roles.permissions');
     }
 
     /**
@@ -141,7 +144,7 @@ class UserService
             }
         }
 
-        return $user->load('role');
+        return $user->load('roles.permissions');
     }
 
     /**
@@ -149,8 +152,11 @@ class UserService
      */
     public function assignRole(User $user, int $roleId): User
     {
-        $user->update(['role_id' => $roleId]);
         $role = Role::find($roleId);
+
+        if ($role) {
+            $user->syncRoles([$role]);
+        }
 
         $keycloakId = $user->keycloak_id;
         if (! $keycloakId) {
@@ -169,6 +175,6 @@ class UserService
             }
         }
 
-        return $user->load('role');
+        return $user->load('roles.permissions');
     }
 }

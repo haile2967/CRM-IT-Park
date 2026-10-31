@@ -170,7 +170,7 @@ class Lead extends Model
      */
     public function scopeVisibleTo(Builder $query, User $user): Builder
     {
-        if ($user->isAdmin() || $user->isCrmManager()) {
+        if ($user->hasRole(['System Administrator', 'CRM Manager'])) {
             return $query;
         }
 

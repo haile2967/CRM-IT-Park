@@ -20,14 +20,14 @@ trait VisibleToRole
         }
 
         // System Administrator and CRM Manager have global visibility across all records (§3.3)
-        if ($user->isAdmin() || $user->isCrmManager()) {
+        if ($user->hasRole(['System Administrator', 'CRM Manager'])) {
             return $query;
         }
 
         $tableName = $this->getTable();
 
         // Support Agent Visibility (§3.3)
-        if ($user->isSupportAgent()) {
+        if ($user->hasRole('Support Agent')) {
             if ($tableName === 'tickets') {
                 return $query->where(function (Builder $q) use ($user) {
                     $q->where('assignee_user_id', $user->id)
@@ -45,7 +45,7 @@ trait VisibleToRole
         }
 
         // BDO (Business Development Officer) Visibility: portfolio-scoped (§3.3)
-        if ($user->isBdo()) {
+        if ($user->hasRole('Business Development Officer')) {
             if ($tableName === 'tickets') {
                 return $query->whereHas('account', function (Builder $q) use ($user) {
                     $q->where('owner_user_id', $user->id);

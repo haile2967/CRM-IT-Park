@@ -14,12 +14,25 @@ class RoleResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $roleName = $this->name ?? $this->role_name;
+
+        // Calculate assigned staff count via Spatie model_has_roles pivot
+        $usersCount = isset($this->users_count)
+            ? (int) $this->users_count
+            : (int) $this->users()->count();
+
         return [
             'id'          => $this->id,
-            'role_name'   => $this->role_name,
+            'name'        => $roleName,
+            'role_name'   => $roleName,
             'description' => $this->description,
             'role_tier'   => $this->role_tier,
-            'is_active'   => $this->is_active,
+            'is_active'   => (bool) ($this->is_active ?? true),
+            'is_system'   => (bool) ($this->is_system || $roleName === 'System Administrator'),
+            'user_count'  => $usersCount,
+            'permissions' => $this->permissions ? $this->permissions->pluck('name')->values()->all() : [],
+            'created_at'  => $this->created_at?->toIso8601String(),
+            'updated_at'  => $this->updated_at?->toIso8601String(),
         ];
     }
 }

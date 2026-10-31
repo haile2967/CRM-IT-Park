@@ -29,7 +29,7 @@ class TicketCategoryController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
         $user = $request->user();
-        $isAdmin = $user && $user->role && strtolower(trim($user->role->role_name)) === 'system administrator';
+        $isAdmin = $user && $user->hasRole('System Administrator');
 
         $categories = $this->service->getAllCategories($request->query(), $isAdmin);
 
@@ -62,7 +62,7 @@ class TicketCategoryController extends Controller
     public function show(Request $request, TicketCategory $ticket_category): JsonResponse
     {
         $user = $request->user();
-        $isAdmin = $user && $user->role && strtolower(trim($user->role->role_name)) === 'system administrator';
+        $isAdmin = $user && $user->hasRole('System Administrator');
 
         if ($isAdmin) {
             $ticket_category->loadCount('tickets');

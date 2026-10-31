@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { X, UserPlus, UserCheck, Shield, Mail, Lock, Phone, User as UserIcon } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { X, UserPlus, UserCheck, Lock, Mail, Phone, User as UserIcon } from 'lucide-react';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Alert from '../../components/ui/Alert';
 import userService from '../../services/userService';
 import roleService from '../../services/roleService';
+import { usePermission } from '../../hooks/usePermission';
 import type { User, Role, CreateUserPayload, UpdateUserPayload, UserStatus } from '../../types/user';
 
 interface UserModalProps {
@@ -20,6 +21,7 @@ export const UserModal: React.FC<UserModalProps> = ({
   userToEdit,
   onSaved,
 }) => {
+  const { isSuperAdmin, can } = usePermission();
   const isEditing = Boolean(userToEdit);
 
   const [firstName, setFirstName] = useState('');
@@ -36,6 +38,19 @@ export const UserModal: React.FC<UserModalProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // Filter roles: only System Administrators can see or assign the System Administrator role
+  const availableRoles = useMemo(() => {
+    return roles.filter((r) => {
+      if (r.role_name === 'System Administrator' || r.is_system) {
+        return isSuperAdmin;
+      }
+      return true;
+    });
+  }, [roles, isSuperAdmin]);
+
+  // Determine if the current user has permission to change/assign role
+  const canAssignRole = isEditing ? can('users.assign_role') : true;
+
   // Load available roles when modal opens
   useEffect(() => {
     if (isOpen) {
@@ -45,8 +60,10 @@ export const UserModal: React.FC<UserModalProps> = ({
         .then((data) => {
           setRoles(data);
           if (!userToEdit && data.length > 0 && roleId === '') {
-            // Default to first role if not editing
-            setRoleId(data[0].id);
+            const firstAssignable = data.find((r) => isSuperAdmin || (!r.is_system && r.role_name !== 'System Administrator'));
+            if (firstAssignable) {
+              setRoleId(firstAssignable.id);
+            }
           }
         })
         .catch(() => {
@@ -56,7 +73,7 @@ export const UserModal: React.FC<UserModalProps> = ({
           setIsLoadingRoles(false);
         });
     }
-  }, [isOpen, userToEdit]);
+  }, [isOpen, userToEdit, isSuperAdmin]);
 
   // Populate form if editing
   useEffect(() => {
@@ -114,9 +131,13 @@ export const UserModal: React.FC<UserModalProps> = ({
           last_name: lastName.trim(),
           email: email.trim(),
           phone: phone.trim() || undefined,
-          role_id: Number(roleId),
           status,
         };
+
+        // Only include role_id if the user has permission to assign roles
+        if (canAssignRole) {
+          payload.role_id = Number(roleId);
+        }
 
         const updated = await userService.updateUser(userToEdit.id, payload);
         onSaved(updated);
@@ -241,27 +262,39 @@ export const UserModal: React.FC<UserModalProps> = ({
             {/* Role & Status */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1">
-                <label className="block text-xs font-medium text-slate-700">
-                  Assigned Role <span className="text-rose-500">*</span>
-                </label>
+                <div className="flex items-center justify-between">
+                  <label className="block text-xs font-medium text-slate-700">
+                    Assigned Role <span className="text-rose-500">*</span>
+                  </label>
+                  {!canAssignRole && (
+                    <span className="text-[10px] text-slate-400 flex items-center gap-1 font-mono">
+                      <Lock className="w-3 h-3" /> Locked
+                    </span>
+                  )}
+                </div>
                 <div className="relative">
                   <select
                     value={roleId}
                     onChange={(e) => setRoleId(Number(e.target.value))}
                     required
-                    disabled={isLoadingRoles}
-                    className="w-full h-9.5 px-3 py-2 text-xs bg-white border border-slate-300 rounded-lg text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-emerald-600/30 focus:border-emerald-600 disabled:bg-slate-50 transition-colors"
+                    disabled={!canAssignRole || isLoadingRoles}
+                    className="w-full h-9.5 px-3 py-2 text-xs bg-white border border-slate-300 rounded-lg text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-emerald-600/30 focus:border-emerald-600 disabled:bg-slate-50 disabled:text-slate-400 transition-colors"
                   >
                     <option value="" disabled>
                       {isLoadingRoles ? 'Loading available roles...' : 'Select a role'}
                     </option>
-                    {roles.map((r) => (
+                    {availableRoles.map((r) => (
                       <option key={r.id} value={r.id}>
-                        {r.role_name} {r.role_tier ? `(Tier ${r.role_tier})` : ''}
+                        {r.role_name}
                       </option>
                     ))}
                   </select>
                 </div>
+                {!canAssignRole && (
+                  <p className="text-[10px] text-slate-400">
+                    Modifying user roles requires the <code>users.assign_role</code> permission.
+                  </p>
+                )}
               </div>
 
               {isEditing && (

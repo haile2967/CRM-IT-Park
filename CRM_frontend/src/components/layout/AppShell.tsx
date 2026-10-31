@@ -1,35 +1,24 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutGrid,
   Users2,
-  Building2,
-  Contact2,
-  Briefcase,
-  TicketCheck,
   LogOut,
   ChevronRight,
   ChevronDown,
-  ChevronUp,
   Search,
   Menu,
   X,
   Bell,
   User,
   Key,
-  FolderKanban,
   Layers,
-  Calendar,
-  Box,
   Clock,
-  ShieldCheck,
-  BarChart3,
-  FileText,
-  BookOpen,
   PanelLeftClose,
   UserCog,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { usePermission } from '../../hooks/usePermission';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -37,70 +26,20 @@ interface AppShellProps {
   subtitle?: string;
 }
 
-interface NavSubItem {
+interface NavItem {
   label: string;
   to: string;
   icon: React.ComponentType<{ className?: string }>;
+  permission?: string;
 }
 
-interface NavSection {
-  id: string;
-  title: string;
-  icon: React.ComponentType<{ className?: string }>;
-  items: NavSubItem[];
-}
-
-const navSections: NavSection[] = [
-  {
-    id: 'pipeline',
-    title: 'Relationship & Pipeline',
-    icon: FolderKanban,
-    items: [
-      { label: 'Leads Pipeline', to: '/leads', icon: Users2 },
-      { label: 'Corporate Accounts', to: '/accounts', icon: Building2 },
-      { label: 'Contacts Directory', to: '/contacts', icon: Contact2 },
-      { label: 'Lead Categories', to: '/categories', icon: Layers },
-    ],
-  },
-  {
-    id: 'deals',
-    title: 'Deals & Agreements',
-    icon: Briefcase,
-    items: [
-      { label: 'Deals & Opportunities', to: '/opportunities', icon: Briefcase },
-      { label: 'Pipeline Stages', to: '/pipeline-stages', icon: Layers },
-      { label: 'Incubation Cohorts', to: '/cohorts', icon: Calendar },
-      { label: 'Facility Allocation', to: '/facilities', icon: Box },
-    ],
-  },
-  {
-    id: 'support',
-    title: 'Support & Operations',
-    icon: TicketCheck,
-    items: [
-      { label: 'Support Tickets', to: '/tickets', icon: TicketCheck },
-      { label: 'Escalation Policies', to: '/escalations', icon: Clock },
-      { label: 'SLA Monitoring', to: '/sla', icon: ShieldCheck },
-    ],
-  },
-  {
-    id: 'reports',
-    title: 'Reports & Statements',
-    icon: BarChart3,
-    items: [
-      { label: 'Executive Summary', to: '/reports', icon: FileText },
-      { label: 'Audit Trail', to: '/audit-trail', icon: BookOpen },
-    ],
-  },
-  {
-    id: 'admin',
-    title: 'System Administration',
-    icon: ShieldCheck,
-    items: [
-      { label: 'User Management', to: '/users', icon: UserCog },
-      { label: 'Role Management', to: '/roles', icon: Key },
-    ],
-  },
+const navItems: NavItem[] = [
+  { label: 'Dashboard', to: '/dashboard', icon: LayoutGrid },
+  { label: 'Leads Pipeline', to: '/leads', icon: Users2 },
+  { label: 'Pipeline Stages', to: '/pipeline-stages', icon: Layers },
+  { label: 'Escalation Policies', to: '/escalations', icon: Clock },
+  { label: 'User Management', to: '/users', icon: UserCog, permission: 'users.view' },
+  { label: 'Role Management', to: '/roles', icon: Key, permission: 'roles.view' },
 ];
 
 export const AppShell: React.FC<AppShellProps> = ({
@@ -109,6 +48,7 @@ export const AppShell: React.FC<AppShellProps> = ({
   subtitle = 'Ethiopian IT Park Relationship Management',
 }) => {
   const { user, logout } = useAuth();
+  const { can } = usePermission();
   const navigate = useNavigate();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -121,26 +61,13 @@ export const AppShell: React.FC<AppShellProps> = ({
     }
   });
 
-  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-    pipeline: true,
-    deals: true,
-    support: true,
-    reports: false,
-    admin: true,
-  });
-
-  // Ensure active route section is automatically open
-  useEffect(() => {
-    const activeSection = navSections.find((sec) =>
-      sec.items.some((item) => item.to === location.pathname)
-    );
-    if (activeSection) {
-      setOpenSections((prev) => ({
-        ...prev,
-        [activeSection.id]: true,
-      }));
-    }
-  }, [location.pathname]);
+  // Filter navigation items by active user capabilities
+  const visibleItems = useMemo(() => {
+    return navItems.filter((item) => {
+      if (!item.permission) return true;
+      return can(item.permission);
+    });
+  }, [can]);
 
   const userMenuRef = useRef<HTMLDivElement>(null);
 
@@ -156,13 +83,6 @@ export const AppShell: React.FC<AppShellProps> = ({
     });
   };
 
-  const toggleSection = (sectionId: string) => {
-    setOpenSections((prev) => ({
-      ...prev,
-      [sectionId]: !prev[sectionId],
-    }));
-  };
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
@@ -173,9 +93,17 @@ export const AppShell: React.FC<AppShellProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
   const handleLogout = async () => {
-    await logout();
-    navigate('/login', { replace: true });
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
+    setIsUserMenuOpen(false);
+    try {
+      await logout();
+    } catch {
+      window.location.replace('/login');
+    }
   };
 
   return (
@@ -243,139 +171,70 @@ export const AppShell: React.FC<AppShellProps> = ({
 
         {/* Scrollable Navigation Body */}
         <div
-          className={`flex-1 overflow-y-auto overflow-x-hidden ${isCollapsed ? 'px-2 py-3' : 'px-3 py-3'
-            } space-y-1`}
+          className={`flex-1 overflow-y-auto overflow-x-hidden ${
+            isCollapsed ? 'px-2 py-3 space-y-1.5' : 'px-3 py-3 space-y-1'
+          }`}
         >
-          {/* Top Standalone Dashboard Link */}
-          {!isCollapsed ? (
-            <NavLink
-              to="/dashboard"
-              onClick={() => setIsSidebarOpen(false)}
-              className={({ isActive }) => `
-                flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-colors
-                ${isActive
-                  ? 'bg-emerald-800/80 text-white font-semibold shadow-xs'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800/70'
-                }
-              `}
-            >
-              <LayoutGrid className="w-4 h-4 text-slate-400 group-hover:text-white" />
-              <span>Dashboard</span>
-            </NavLink>
-          ) : (
-            <NavLink
-              to="/dashboard"
-              title="Dashboard"
-              onClick={() => setIsSidebarOpen(false)}
-              className={({ isActive }) => `
-                group relative flex items-center justify-center w-10 h-10 mx-auto rounded-xl transition-all
-                ${isActive
-                  ? 'bg-emerald-800 text-white shadow-xs font-semibold ring-1 ring-emerald-500/30'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800'
-                }
-              `}
-            >
-              <LayoutGrid className="w-4.5 h-4.5" />
-            </NavLink>
-          )}
-
-          {/* Grouped Accordions */}
-          {navSections.map((section) => {
-            const SectionIcon = section.icon;
-            const isOpen = openSections[section.id];
+          {visibleItems.map((item) => {
+            const Icon = item.icon;
 
             if (isCollapsed) {
               return (
-                <React.Fragment key={section.id}>
-                  {/* Subtle divider between groups */}
-                  <div className="w-8 h-px bg-slate-800 mx-auto my-2.5" />
-                  <div className="space-y-1.5">
-                    {section.items.map((subItem) => {
-                      const SubIcon = subItem.icon;
-                      return (
-                        <NavLink
-                          key={subItem.to}
-                          to={subItem.to}
-                          title={subItem.label}
-                          onClick={() => setIsSidebarOpen(false)}
-                          className={({ isActive }) => `
-                            group relative flex items-center justify-center w-10 h-10 mx-auto rounded-xl transition-all
-                            ${isActive
-                              ? 'bg-emerald-800 text-white shadow-xs font-semibold ring-1 ring-emerald-500/30'
-                              : 'text-slate-400 hover:text-white hover:bg-slate-800'
-                            }
-                          `}
-                        >
-                          <SubIcon className="w-4 h-4" />
-                          <span
-                            className={`w-1.5 h-1.5 rounded-full bg-emerald-400 absolute right-1 top-1/2 -translate-y-1/2 transition-opacity ${
-                              location.pathname === subItem.to
-                                ? 'opacity-100'
-                                : 'opacity-0'
-                            }`}
-                          />
-                        </NavLink>
-                      );
-                    })}
-                  </div>
-                </React.Fragment>
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  title={item.label}
+                  onClick={() => setIsSidebarOpen(false)}
+                  className={({ isActive }) => `
+                    group relative flex items-center justify-center w-10 h-10 mx-auto rounded-xl transition-all
+                    ${isActive
+                      ? 'bg-emerald-800 text-white shadow-xs font-semibold ring-1 ring-emerald-500/30'
+                      : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                    }
+                  `}
+                >
+                  <Icon className="w-4.5 h-4.5" />
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full bg-emerald-400 absolute right-1 top-1/2 -translate-y-1/2 transition-opacity ${
+                      location.pathname === item.to ? 'opacity-100' : 'opacity-0'
+                    }`}
+                  />
+                </NavLink>
               );
             }
 
             return (
-              <div key={section.id} className="pt-2">
-                {/* Accordion Header Toggle */}
-                <button
-                  type="button"
-                  onClick={() => toggleSection(section.id)}
-                  className="w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800/60 transition-colors cursor-pointer"
-                >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <SectionIcon className="w-4 h-4 text-emerald-400 shrink-0" />
-                    <span className="truncate">{section.title}</span>
-                  </div>
-                  {isOpen ? (
-                    <ChevronUp className="w-3.5 h-3.5 text-slate-400" />
-                  ) : (
-                    <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
-                  )}
-                </button>
-
-                {/* Sub-items with vertical hierarchy tree line */}
-                {isOpen && (
-                  <div className="ml-4 pl-3 border-l border-slate-800 space-y-0.5 mt-1">
-                    {section.items.map((subItem) => {
-                      const SubIcon = subItem.icon;
-                      return (
-                        <NavLink
-                          key={subItem.to}
-                          to={subItem.to}
-                          onClick={() => setIsSidebarOpen(false)}
-                          className={({ isActive }) => `
-                            flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs transition-colors
-                            ${isActive
-                              ? 'bg-emerald-800/80 text-white font-semibold shadow-xs'
-                              : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
-                            }
-                          `}
-                        >
-                          <SubIcon className="w-4 h-4 shrink-0 text-slate-400" />
-                          <span className="truncate">{subItem.label}</span>
-                        </NavLink>
-                      );
-                    })}
-                  </div>
+              <NavLink
+                key={item.to}
+                to={item.to}
+                onClick={() => setIsSidebarOpen(false)}
+                className={({ isActive }) => `
+                  group flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-colors
+                  ${isActive
+                    ? 'bg-emerald-800/80 text-white font-semibold shadow-xs'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-800/70'
+                  }
+                `}
+              >
+                {({ isActive }) => (
+                  <>
+                    <Icon
+                      className={`w-4 h-4 shrink-0 transition-colors ${
+                        isActive ? 'text-white' : 'text-slate-400 group-hover:text-white'
+                      }`}
+                    />
+                    <span className="truncate">{item.label}</span>
+                  </>
                 )}
-              </div>
+              </NavLink>
             );
           })}
         </div>
 
         {/* Bottom Expand / Collapse Bar */}
         <div
-          className={`p-3 border-t border-slate-800 bg-slate-950/40 shrink-0 ${
-            isCollapsed ? 'flex justify-center' : ''
-          }`}
+          className={`p-3 border-t border-slate-800 bg-slate-950/40 shrink-0 ${isCollapsed ? 'flex justify-center' : ''
+            }`}
         >
           <button
             type="button"
@@ -483,14 +342,16 @@ export const AppShell: React.FC<AppShellProps> = ({
                   <div className="border-t border-slate-100 pt-1">
                     <button
                       type="button"
-                      onClick={() => {
-                        setIsUserMenuOpen(false);
+                      disabled={isLoggingOut}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
                         handleLogout();
                       }}
-                      className="w-full flex items-center gap-2.5 px-3.5 py-2 text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer text-left font-medium"
+                      className="w-full flex items-center gap-2.5 px-3.5 py-2 text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer text-left font-medium disabled:opacity-50"
                     >
                       <LogOut className="w-3.5 h-3.5 text-rose-500" />
-                      <span>Sign out</span>
+                      <span>{isLoggingOut ? 'Signing out...' : 'Sign out'}</span>
                     </button>
                   </div>
                 </div>

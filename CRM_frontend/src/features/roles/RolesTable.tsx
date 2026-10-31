@@ -1,17 +1,17 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Shield,
-  Briefcase,
-  Users as UsersIcon,
-  Headphones,
   Key,
-  ArrowRight,
   ShieldCheck,
-  CheckCircle2,
+  Edit3,
+  Trash2,
+  Lock,
+  ArrowRight,
+  Users as UsersIcon,
 } from 'lucide-react';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
+import Can from '../../components/auth/Can';
 import type { Role } from '../../types/role';
 
 interface RoleWithUserCount extends Role {
@@ -21,9 +21,16 @@ interface RoleWithUserCount extends Role {
 interface RolesTableProps {
   roles: RoleWithUserCount[];
   isLoading: boolean;
+  onEditRole?: (role: Role) => void;
+  onDeleteRole?: (role: Role) => void;
 }
 
-export const RolesTable: React.FC<RolesTableProps> = ({ roles, isLoading }) => {
+export const RolesTable: React.FC<RolesTableProps> = ({
+  roles,
+  isLoading,
+  onEditRole,
+  onDeleteRole,
+}) => {
   const navigate = useNavigate();
 
   if (isLoading) {
@@ -50,55 +57,24 @@ export const RolesTable: React.FC<RolesTableProps> = ({ roles, isLoading }) => {
   }
 
   const getRoleVisuals = (role: Role) => {
-    const name = role.role_name.toLowerCase();
-    const tier = role.role_tier;
+    const isSystemRole = Boolean(
+      role.is_system || (role.name || role.role_name || '').toLowerCase() === 'system administrator'
+    );
 
-    if (tier === 1 || name.includes('admin')) {
+    if (isSystemRole) {
       return {
         icon: ShieldCheck,
         badgeVariant: 'purple' as const,
         iconBg: 'bg-purple-50 text-purple-700 border-purple-200',
-        tierLabel: 'Tier 1 — Full Administration',
-        scope: 'System-wide configuration, access control & mutations',
-      };
-    }
-
-    if (tier === 2 || name.includes('manager')) {
-      return {
-        icon: Briefcase,
-        badgeVariant: 'blue' as const,
-        iconBg: 'bg-sky-50 text-sky-700 border-sky-200',
-        tierLabel: 'Tier 2 — Department Management',
-        scope: 'Team oversight, pipeline management, approvals & reporting',
-      };
-    }
-
-    if (tier === 3 || name.includes('development') || name.includes('bdo')) {
-      return {
-        icon: UsersIcon,
-        badgeVariant: 'emerald' as const,
-        iconBg: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-        tierLabel: 'Tier 3 — Business Operations',
-        scope: 'Lead management, tenant relations & commercial opportunities',
-      };
-    }
-
-    if (tier === 4 || name.includes('support')) {
-      return {
-        icon: Headphones,
-        badgeVariant: 'amber' as const,
-        iconBg: 'bg-amber-50 text-amber-700 border-amber-200',
-        tierLabel: 'Tier 4 — Support Operations',
-        scope: 'Support tickets, facility SLAs & tenant inquiries',
+        typeLabel: 'System Role',
       };
     }
 
     return {
-      icon: Shield,
-      badgeVariant: 'slate' as const,
-      iconBg: 'bg-slate-100 text-slate-700 border-slate-200',
-      tierLabel: `Tier ${tier ?? '—'} — Standard Access`,
-      scope: 'Standard CRM staff permissions',
+      icon: Key,
+      badgeVariant: 'blue' as const,
+      iconBg: 'bg-sky-50 text-sky-700 border-sky-200',
+      typeLabel: 'Custom Role',
     };
   };
 
@@ -108,11 +84,11 @@ export const RolesTable: React.FC<RolesTableProps> = ({ roles, isLoading }) => {
         <table className="w-full text-left border-collapse text-xs">
           <thead>
             <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-semibold uppercase text-[10px] tracking-wider">
-              <th className="py-3 px-4">Role & Identity</th>
-              <th className="py-3 px-4">Security Tier</th>
-              <th className="py-3 px-4">Description & Scope</th>
+              <th className="py-3 px-4">Role Title</th>
+              <th className="py-3 px-4">Type</th>
+              <th className="py-3 px-4">Description</th>
               <th className="py-3 px-4">Assigned Staff</th>
-              <th className="py-3 px-4">Status</th>
+              <th className="py-3 px-4">Permissions</th>
               <th className="py-3 px-4 text-right">Actions</th>
             </tr>
           </thead>
@@ -120,7 +96,11 @@ export const RolesTable: React.FC<RolesTableProps> = ({ roles, isLoading }) => {
             {roles.map((role) => {
               const visuals = getRoleVisuals(role);
               const Icon = visuals.icon;
-              const count = role.userCount ?? 0;
+              const count = role.user_count ?? role.userCount ?? 0;
+              const isSystemRole = Boolean(
+                role.is_system || role.role_name === 'System Administrator'
+              );
+              const permissionsCount = role.permissions?.length ?? 0;
 
               return (
                 <tr
@@ -136,35 +116,38 @@ export const RolesTable: React.FC<RolesTableProps> = ({ roles, isLoading }) => {
                         <Icon className="w-4 h-4" />
                       </div>
                       <div className="min-w-0">
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-1.5 flex-wrap">
                           <span className="font-semibold text-slate-900 truncate">
                             {role.role_name}
                           </span>
                           <span className="text-[10px] text-slate-400 font-mono">
                             #{role.id}
                           </span>
+                          {isSystemRole && (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-sm text-[10px] font-semibold bg-purple-50 text-purple-700 border border-purple-200">
+                              <Lock className="w-2.5 h-2.5" />
+                              System Protected
+                            </span>
+                          )}
                         </div>
                         <span className="text-slate-400 text-[11px] block">
-                          Tier {role.role_tier ?? 'N/A'}
+                          {isSystemRole ? 'Built-in administrator' : 'User-defined role'}
                         </span>
                       </div>
                     </div>
                   </td>
 
-                  {/* Security Tier Badge */}
+                  {/* Role Type Badge */}
                   <td className="py-3.5 px-4 whitespace-nowrap">
                     <Badge variant={visuals.badgeVariant} size="sm">
-                      {visuals.tierLabel}
+                      {visuals.typeLabel}
                     </Badge>
                   </td>
 
-                  {/* Description & Scope */}
+                  {/* Description */}
                   <td className="py-3.5 px-4 max-w-xs md:max-w-md">
                     <p className="text-slate-700 leading-relaxed font-medium">
                       {role.description || 'No description specified'}
-                    </p>
-                    <p className="text-[11px] text-slate-400 mt-0.5 leading-snug">
-                      {visuals.scope}
                     </p>
                   </td>
 
@@ -181,23 +164,88 @@ export const RolesTable: React.FC<RolesTableProps> = ({ roles, isLoading }) => {
                     </button>
                   </td>
 
-                  {/* Status */}
+                  {/* Permissions Granted */}
                   <td className="py-3.5 px-4 whitespace-nowrap">
-                    <Badge variant="emerald" size="sm" dot>
-                      Active
-                    </Badge>
+                    {isSystemRole ? (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-purple-50 text-purple-700 border border-purple-200 font-mono">
+                        <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />
+                        All Capabilities
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 font-mono">
+                        {permissionsCount} granted
+                      </span>
+                    )}
                   </td>
 
                   {/* Actions */}
                   <td className="py-3.5 px-4 text-right whitespace-nowrap">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => navigate(`/users?role=${role.id}`)}
-                      rightIcon={<ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-0.5 transition-transform" />}
-                    >
-                      View Staff
-                    </Button>
+                    <div className="flex items-center justify-end gap-1.5">
+                      {/* View / Edit Permissions Button */}
+                      <Can
+                        permission="roles.edit"
+                        fallback={
+                          <button
+                            type="button"
+                            onClick={() => onEditRole?.(role)}
+                            className="p-1.5 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+                            title="Inspect role permissions"
+                          >
+                            <Edit3 className="w-3.5 h-3.5" />
+                          </button>
+                        }
+                      >
+                        <button
+                          type="button"
+                          onClick={() => onEditRole?.(role)}
+                          className="p-1.5 rounded-lg text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 transition-colors cursor-pointer"
+                          title={isSystemRole ? 'Inspect System Role' : 'Edit Role & Permissions'}
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                        </button>
+                      </Can>
+
+                      {/* Delete Role Button */}
+                      {isSystemRole ? (
+                        <span
+                          className="p-1.5 rounded-lg text-slate-300 cursor-not-allowed"
+                          title="System Administrator is a protected system role and cannot be deleted."
+                        >
+                          <Lock className="w-3.5 h-3.5" />
+                        </span>
+                      ) : (
+                        <Can permission="roles.delete">
+                          <button
+                            type="button"
+                            onClick={() => onDeleteRole?.(role)}
+                            className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                              count > 0
+                                ? 'text-amber-500 hover:text-amber-700 hover:bg-amber-50'
+                                : 'text-slate-500 hover:text-rose-600 hover:bg-rose-50'
+                            }`}
+                            title={
+                              count > 0
+                                ? `Cannot delete: ${count} staff member(s) assigned`
+                                : 'Delete custom role'
+                            }
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </Can>
+                      )}
+
+                      {/* View Staff in Directory */}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => navigate(`/users?role=${role.id}`)}
+                        rightIcon={
+                          <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+                        }
+                      >
+                        Staff
+                      </Button>
+                    </div>
                   </td>
                 </tr>
               );

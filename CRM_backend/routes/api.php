@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\EscalationPolicyController;
 use App\Http\Controllers\Api\LeadController;
+use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\PipelineStageController;
 use App\Http\Controllers\Api\ReferenceDataController;
 use App\Http\Controllers\Api\RoleController;
@@ -92,8 +93,17 @@ $registerRoutes = function () {
         // Pipeline Stages — Viewable by all authenticated CRM roles
         Route::get('/pipeline-stages', [PipelineStageController::class, 'index']);
 
-        // Roles Reference — For assignment and filter dropdowns
+        // System Permissions Catalog
+        Route::get('/permissions', [PermissionController::class, 'index']);
+
+        // Roles & Permission Matrix Management
         Route::get('/roles', [RoleController::class, 'index']);
+        Route::get('/roles/{role}', [RoleController::class, 'show']);
+        Route::prefix('roles')->group(function () {
+            Route::post('/', [RoleController::class, 'store'])->middleware('permission:roles.create');
+            Route::put('/{role}', [RoleController::class, 'update'])->middleware('permission:roles.edit');
+            Route::delete('/{role}', [RoleController::class, 'destroy'])->middleware('permission:roles.delete');
+        });
 
         // Reference Data Dropdowns
         Route::get('/lead-sources', [ReferenceDataController::class, 'leadSources']);
@@ -116,21 +126,21 @@ $registerRoutes = function () {
         Route::get('/ticket-categories',                   [TicketCategoryController::class, 'index']);
         Route::get('/ticket-categories/{ticket_category}', [TicketCategoryController::class, 'show']);
 
-        // User Management (Admin & Manager can view)
-        Route::middleware('role:System Administrator,CRM Manager')->group(function () {
+        // User Directory & Mutations (Protected by Granular Permissions)
+        Route::middleware('permission:users.view')->group(function () {
             Route::get('/users', [UserController::class, 'index']);
             Route::get('/users/{user}', [UserController::class, 'show']);
         });
 
+        Route::prefix('users')->group(function () {
+            Route::post('/', [UserController::class, 'store'])->middleware('permission:users.create');
+            Route::put('/{user}', [UserController::class, 'update'])->middleware('permission:users.edit');
+            Route::patch('/{user}/status', [UserController::class, 'updateStatus'])->middleware('permission:users.deactivate');
+            Route::put('/{user}/role', [UserController::class, 'assignRole'])->middleware('permission:users.assign_role');
+        });
+
         // Administration Routes (System Administrator only)
         Route::middleware('role:System Administrator')->group(function () {
-            // User Management Mutations
-            Route::prefix('users')->group(function () {
-                Route::post('/', [UserController::class, 'store']);
-                Route::put('/{user}', [UserController::class, 'update']);
-                Route::patch('/{user}/status', [UserController::class, 'updateStatus']);
-                Route::put('/{user}/role', [UserController::class, 'assignRole']);
-            });
 
             // Pipeline Stage Management
             Route::prefix('pipeline-stages')->group(function () {

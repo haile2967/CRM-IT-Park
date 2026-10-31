@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import AppShell from '../../components/layout/AppShell';
 import Button from '../../components/ui/Button';
+import Can from '../../components/auth/Can';
 import UsersTable from './UsersTable';
 import UserModal from './UserModal';
 import UserStatusModal from './UserStatusModal';
@@ -151,7 +152,7 @@ export const UsersPage: React.FC = () => {
               </span>
             </div>
             <p className="text-xs text-slate-500">
-              Manage CRM staff identities, allocate role tiers, and configure portal access policies.
+              Manage CRM staff identities, allocate system roles, and configure portal access policies.
             </p>
           </div>
 
@@ -165,14 +166,16 @@ export const UsersPage: React.FC = () => {
             >
               Refresh
             </Button>
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={handleOpenCreateModal}
-              leftIcon={<UserPlus className="w-3.5 h-3.5" />}
-            >
-              Add New User
-            </Button>
+            <Can permission="users.create">
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleOpenCreateModal}
+                leftIcon={<UserPlus className="w-3.5 h-3.5" />}
+              >
+                Add New User
+              </Button>
+            </Can>
           </div>
         </div>
 
@@ -230,7 +233,7 @@ export const UsersPage: React.FC = () => {
               {metrics.admins}
             </div>
             <span className="text-[11px] text-purple-600 font-medium mt-0.5 block">
-              Tier 1 Superusers
+              Full authority superusers
             </span>
           </div>
         </div>
