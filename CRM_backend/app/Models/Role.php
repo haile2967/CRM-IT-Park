@@ -98,12 +98,4 @@ class Role extends SpatieRole
     {
         return (bool) ($this->is_system || $this->name === 'System Administrator');
     }
-
-    /**
-     * Legacy users relationship through direct role_id foreign key.
-     */
-    public function legacyUsers()
-    {
-        return $this->hasMany(User::class, 'role_id');
-    }
 }

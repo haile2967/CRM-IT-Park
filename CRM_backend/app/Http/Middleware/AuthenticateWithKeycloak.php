@@ -71,10 +71,10 @@ class AuthenticateWithKeycloak
             // Look up by keycloak_id first, then by email (eager load role & Spatie roles.permissions)
             $user = null;
             if ($keycloakId) {
-                $user = User::with(['role', 'roles.permissions'])->where('keycloak_id', $keycloakId)->first();
+                $user = User::with(['roles.permissions'])->where('keycloak_id', $keycloakId)->first();
             }
             if (! $user && $email) {
-                $user = User::with(['role', 'roles.permissions'])->where('email', $email)->first();
+                $user = User::with(['roles.permissions'])->where('email', $email)->first();
             }
 
             if ($user) {
@@ -91,7 +91,6 @@ class AuthenticateWithKeycloak
                 }
                 if ($matchedRole && ! $user->hasRole($matchedRole->name)) {
                     $user->syncRoles([$matchedRole->name]);
-                    $updateData['role_id'] = $matchedRole->id;
                 }
                 // Throttle last_login_at updates to once every 15 minutes to eliminate write locks on read requests
                 if (! $user->last_login_at || $user->last_login_at->diffInMinutes(now()) >= 15) {
@@ -109,7 +108,6 @@ class AuthenticateWithKeycloak
                     'email'       => $email,
                     'first_name'  => $firstName,
                     'last_name'   => $lastName,
-                    'role_id'     => $fallbackRole?->id,
                     'status'      => 'active',
                     'last_login_at' => now(),
                 ]);

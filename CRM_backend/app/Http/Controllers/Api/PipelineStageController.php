@@ -34,7 +34,7 @@ class PipelineStageController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
         $user = $request->user();
-        $isAdmin = $user && $user->role && strtolower(trim($user->role->role_name)) === 'system administrator';
+        $isAdmin = $user && $user->hasRole('System Administrator');
 
         if (! $isAdmin || $request->boolean('active_only') || $request->query('status') === 'active') {
             $stages = PipelineStage::active()->ordered()->get();

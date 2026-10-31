@@ -10,7 +10,7 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Artisan::command('keycloak:sync-user {email} {password}', function (string $email, string $password, KeycloakService $keycloakService) {
-    $user = User::with('role')->where('email', $email)->first();
+    $user = User::with('roles')->where('email', $email)->first();
 
     if (! $user) {
         $this->error("User with email {$email} not found in CRM database.");
@@ -43,7 +43,7 @@ Artisan::command('keycloak:sync-user {email} {password}', function (string $emai
 })->purpose('Provision or update a CRM user in Keycloak with their password and role');
 
 Artisan::command('keycloak:sync-all {defaultPassword=Password123!}', function (string $defaultPassword, KeycloakService $keycloakService) {
-    $users = User::with('role')->get();
+    $users = User::with('roles')->get();
 
     $this->info("Found {$users->count()} users in CRM database. Synchronizing to Keycloak (Default password: {$defaultPassword})...");
 

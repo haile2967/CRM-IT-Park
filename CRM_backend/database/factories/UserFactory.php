@@ -26,16 +26,6 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'role_id' => Role::firstOrCreate(
-                ['name' => 'System Administrator'],
-                [
-                    'role_name' => 'System Administrator',
-                    'description' => 'System Administrator',
-                    'role_tier' => 1,
-                    'is_active' => true,
-                    'guard_name' => 'web',
-                ]
-            )->id,
             'first_name' => fake()->firstName(),
             'last_name' => fake()->lastName(),
             'email' => fake()->unique()->safeEmail(),
@@ -45,6 +35,25 @@ class UserFactory extends Factory
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
         ];
+    }
+
+    public function configure(): static
+    {
+        return $this->afterCreating(function (User $user) {
+            if ($user->roles->isEmpty()) {
+                $role = Role::firstOrCreate(
+                    ['name' => 'System Administrator'],
+                    [
+                        'role_name' => 'System Administrator',
+                        'description' => 'System Administrator',
+                        'role_tier' => 1,
+                        'is_active' => true,
+                        'guard_name' => 'web',
+                    ]
+                );
+                $user->assignRole($role);
+            }
+        });
     }
 
     /**

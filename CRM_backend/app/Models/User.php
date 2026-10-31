@@ -54,9 +54,13 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
+    /**
+     * Pending role ID to sync after saving a new model instance.
+     */
+    public ?int $pendingRoleId = null;
+
     protected $fillable = [
         'keycloak_id',
-        'role_id',
         'first_name',
         'last_name',
         'email',
@@ -86,34 +90,57 @@ class User extends Authenticatable
         ];
     }
 
-    public function role()
+    protected static function booted(): void
     {
-        return $this->belongsTo(Role::class);
+        parent::booted();
+
+        static::saved(function (self $user) {
+            if (! empty($user->pendingRoleId)) {
+                $role = Role::find($user->pendingRoleId);
+                if ($role) {
+                    $user->syncRoles([$role]);
+                }
+                $user->pendingRoleId = null;
+            }
+        });
+    }
+
+    /**
+     * Backward-compatible accessor for the user's primary role via Spatie roles relation.
+     */
+    public function getRoleAttribute(): ?Role
+    {
+        return $this->roles->first();
+    }
+
+    /**
+     * Backward-compatible accessor for role_id.
+     */
+    public function getRoleIdAttribute(): ?int
+    {
+        return $this->roles->first()?->id;
+    }
+
+    /**
+     * Backward-compatible mutator for role_id.
+     */
+    public function setRoleIdAttribute($value): void
+    {
+        if ($value) {
+            if ($this->exists) {
+                $role = Role::find($value);
+                if ($role) {
+                    $this->syncRoles([$role]);
+                }
+            } else {
+                $this->pendingRoleId = (int) $value;
+            }
+        }
     }
 
     public function getNameAttribute(): string
     {
         return "{$this->first_name} {$this->last_name}";
-    }
-
-    public function isAdmin(): bool
-    {
-        return $this->role?->role_name === 'System Administrator';
-    }
-
-    public function isCrmManager(): bool
-    {
-        return $this->role?->role_name === 'CRM Manager';
-    }
-
-    public function isBdo(): bool
-    {
-        return $this->role?->role_name === 'Business Development Officer';
-    }
-
-    public function isSupportAgent(): bool
-    {
-        return $this->role?->role_name === 'Support Agent';
     }
 
     public function isActive(): bool

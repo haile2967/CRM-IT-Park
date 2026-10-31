@@ -16,10 +16,10 @@ class RoleResource extends JsonResource
     {
         $roleName = $this->name ?? $this->role_name;
 
-        // Calculate assigned staff count across both Spatie pivot and legacy role_id
+        // Calculate assigned staff count via Spatie model_has_roles pivot
         $usersCount = isset($this->users_count)
             ? (int) $this->users_count
-            : (int) ($this->users()->count() + $this->legacyUsers()->count());
+            : (int) $this->users()->count();
 
         return [
             'id'          => $this->id,

@@ -28,7 +28,7 @@ class UserController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
-        $users = User::with(['role', 'roles.permissions'])->orderBy('first_name')->get();
+        $users = User::with(['roles.permissions'])->orderBy('first_name')->get();
 
         return UserResource::collection($users);
     }
@@ -38,7 +38,7 @@ class UserController extends Controller
      */
     public function show(User $user): UserResource
     {
-        return new UserResource($user->load(['role', 'roles.permissions']));
+        return new UserResource($user->load(['roles.permissions']));
     }
 
 
@@ -122,7 +122,7 @@ class UserController extends Controller
         $role = \App\Models\Role::find($roleId);
 
         $currentUser = $request->user();
-        $isCurrentAdmin = $currentUser && ($currentUser->hasRole('System Administrator') || $currentUser->role?->role_name === 'System Administrator');
+        $isCurrentAdmin = $currentUser && $currentUser->hasRole('System Administrator');
 
         if ($role && ($role->name === 'System Administrator' || $role->is_system) && ! $isCurrentAdmin) {
             return response()->json([

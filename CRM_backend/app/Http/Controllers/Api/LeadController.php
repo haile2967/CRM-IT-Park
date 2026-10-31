@@ -153,7 +153,7 @@ class LeadController extends Controller
     public function show(Lead $lead, Request $request): JsonResponse
     {
         $user = $request->user();
-        if (!$user->isAdmin() && !$user->isCrmManager() && $lead->owner_user_id !== null && $lead->owner_user_id !== $user->id) {
+        if (!$user->hasRole(['System Administrator', 'CRM Manager']) && $lead->owner_user_id !== null && $lead->owner_user_id !== $user->id) {
             return response()->json(['message' => 'Unauthorized access to lead.'], 403);
         }
 
@@ -276,7 +276,7 @@ class LeadController extends Controller
     public function destroy(Lead $lead, Request $request): JsonResponse
     {
         $user = $request->user();
-        if (!$user->isAdmin() && !$user->isCrmManager() && $lead->owner_user_id !== $user->id) {
+        if (!$user->hasRole(['System Administrator', 'CRM Manager']) && $lead->owner_user_id !== $user->id) {
             return response()->json(['message' => 'Unauthorized to delete this lead.'], 403);
         }
 

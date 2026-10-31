@@ -58,7 +58,7 @@ class RolePolicy
         }
 
         // Prevent deletion if any users are currently assigned to this role
-        if ($role->users()->exists() || $role->legacyUsers()->exists()) {
+        if ($role->users()->exists()) {
             return false;
         }
 

@@ -19,7 +19,7 @@ class RoleController extends Controller
     public function index(): AnonymousResourceCollection
     {
         $roles = Role::with(['permissions'])
-            ->withCount(['users', 'legacyUsers'])
+            ->withCount('users')
             ->orderBy('role_tier')
             ->orderBy('name')
             ->get();
@@ -135,7 +135,7 @@ class RoleController extends Controller
             ], 403);
         }
 
-        $userCount = $role->users()->count() + $role->legacyUsers()->count();
+        $userCount = $role->users()->count();
         if ($userCount > 0) {
             return response()->json([
                 'success' => false,

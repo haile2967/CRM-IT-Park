@@ -7,11 +7,13 @@ use App\Models\User;
 use App\Permissions\Modules\UserPermissions;
 use App\Permissions\PermissionRegistry;
 use App\Policies\RolePolicy;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Gate;
 use Tests\TestCase;
 
 class RbacPhase2Test extends TestCase
 {
+    use RefreshDatabase;
     public function test_super_admin_bypasses_all_gates_via_gate_before(): void
     {
         $adminRole = Role::firstOrCreate(['name' => 'System Administrator', 'guard_name' => 'web']);

@@ -127,13 +127,16 @@ class SocialAuthController extends Controller
                     'first_name' => $firstName,
                     'last_name' => $lastName,
                     'email' => $email,
-                    'role_id' => $defaultRole?->id,
                     'provider' => $provider,
                     'provider_id' => $socialUser->getId(),
                     'avatar' => $socialUser->getAvatar(),
                     'status' => 'active',
                     'email_verified_at' => now(),
                 ]);
+
+                if ($defaultRole) {
+                    $user->syncRoles([$defaultRole]);
+                }
             }
 
             // 4. Check if account is active
@@ -164,7 +167,7 @@ class SocialAuthController extends Controller
             $token = $user->createToken('crm-session')->plainTextToken;
 
             // 8. Encode user profile for instant frontend session sync
-            $userResource = (new UserResource($user->load('role')))->toArray($request);
+            $userResource = (new UserResource($user->load('roles.permissions')))->toArray($request);
             $encodedUser = urlencode(base64_encode(json_encode($userResource)));
 
             // 9. Redirect back to frontend OAuth callback route
