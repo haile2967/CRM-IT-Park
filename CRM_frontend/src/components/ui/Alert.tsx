@@ -18,20 +18,20 @@ export const Alert: React.FC<AlertProps> = ({
 }) => {
   const configs = {
     error: {
-      container: 'bg-rose-50 border-rose-200 text-rose-900',
-      icon: <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />,
+      container: 'bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-900/60 text-rose-900 dark:text-rose-200',
+      icon: <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />,
     },
     success: {
-      container: 'bg-emerald-50 border-emerald-200 text-emerald-900',
-      icon: <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />,
+      container: 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-900/60 text-emerald-900 dark:text-emerald-200',
+      icon: <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />,
     },
     warning: {
-      container: 'bg-amber-50 border-amber-200 text-amber-900',
-      icon: <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />,
+      container: 'bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-900/60 text-amber-900 dark:text-amber-200',
+      icon: <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />,
     },
     info: {
-      container: 'bg-slate-50 border-slate-200 text-slate-800',
-      icon: <Info className="w-4 h-4 text-slate-600 shrink-0" />,
+      container: 'bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200',
+      icon: <Info className="w-4 h-4 text-cyan-600 dark:text-cyan-400 shrink-0" />,
     },
   };
 
@@ -50,7 +50,7 @@ export const Alert: React.FC<AlertProps> = ({
       {onClose && (
         <button
           onClick={onClose}
-          className="text-slate-400 hover:text-slate-700 transition-colors p-0.5 rounded-sm"
+          className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors p-0.5 rounded-sm cursor-pointer"
           aria-label="Dismiss alert"
         >
           <X className="w-3.5 h-3.5" />
