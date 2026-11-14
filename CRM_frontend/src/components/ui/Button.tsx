@@ -23,11 +23,11 @@ export const Button: React.FC<ButtonProps> = ({
   const baseStyles = 'inline-flex items-center justify-center font-medium transition-all duration-150 rounded-lg focus:outline-hidden cursor-pointer select-none active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100';
 
   const variantStyles = {
-    primary: 'bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white shadow-xs focus:ring-2 focus:ring-emerald-600/30 focus:ring-offset-1 border border-emerald-800/40',
-    secondary: 'bg-slate-900 hover:bg-slate-800 text-white shadow-xs focus:ring-2 focus:ring-slate-700/30 border border-slate-950',
-    outline: 'bg-white hover:bg-slate-50/80 text-slate-700 border border-slate-300 shadow-2xs focus:ring-2 focus:ring-slate-300/40',
-    ghost: 'bg-transparent hover:bg-slate-100 text-slate-600 hover:text-slate-900',
-    danger: 'bg-rose-600 hover:bg-rose-700 text-white shadow-xs focus:ring-2 focus:ring-rose-500/30 border border-rose-700',
+    primary: 'bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-700 text-white shadow-xs focus:ring-2 focus:ring-cyan-500/30 focus:ring-offset-1 border border-cyan-600/50 dark:bg-cyan-500 dark:hover:bg-cyan-400 dark:active:bg-cyan-600 dark:text-slate-950 dark:font-semibold dark:border-cyan-400/50 dark:shadow-[0_0_15px_rgba(6,182,212,0.25)]',
+    secondary: 'bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white shadow-xs focus:ring-2 focus:ring-slate-700/30 border border-slate-950 dark:border-slate-700',
+    outline: 'bg-white dark:bg-slate-800/80 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 shadow-2xs focus:ring-2 focus:ring-cyan-500/20',
+    ghost: 'bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white',
+    danger: 'bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white shadow-xs focus:ring-2 focus:ring-rose-500/30 border border-rose-700 dark:border-rose-600',
   };
 
   const sizeStyles = {
