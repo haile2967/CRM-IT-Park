@@ -4,44 +4,91 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-
-    /**
- * @property int $id
- * @property int|null $owner_user_id
- * @property string $organization_name
- * @property int $account_type_id
- * @property string|null $industry
- * @property string|null $location
- * @property string|null $contact_information
- * @property string|null $engagement_history
- * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Account newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Account newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Account onlyTrashed()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Account query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereAccountTypeId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereContactInformation($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereDeletedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereEngagementHistory($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereIndustry($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereLocation($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereOrganizationName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereOwnerUserId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Account withTrashed(bool $withTrashed = true)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Account withoutTrashed()
- * @mixin \Eloquent
- */
 class Account extends Model
 {
-    use HasFactory;
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
+
     protected $guarded = ['id'];
 
+    protected $casts = [
+        'contact_information' => 'array',
+    ];
+
+    /**
+     * Account owner (BDO or Manager).
+     */
+    public function owner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'owner_user_id');
+    }
+
+    /**
+     * Account classification taxonomy.
+     */
+    public function accountType(): BelongsTo
+    {
+        return $this->belongsTo(ReferenceCategory::class, 'account_type_id');
+    }
+
+    /**
+     * Contacts associated with this account.
+     */
+    public function contacts(): HasMany
+    {
+        return $this->hasMany(Contact::class, 'account_id');
+    }
+
+    /**
+     * The designated primary point of contact.
+     */
+    public function primaryContact(): HasOne
+    {
+        return $this->hasOne(Contact::class, 'account_id')->where('is_primary', true);
+    }
+
+    /**
+     * Commercial deals / opportunities.
+     */
+    public function opportunities(): HasMany
+    {
+        return $this->hasMany(Opportunity::class, 'account_id');
+    }
+
+    /**
+     * Support tickets logged for this tenant account.
+     */
+    public function tickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class, 'account_id');
+    }
+
+    /**
+     * Logged activities (meetings, calls, tasks).
+     */
+    public function activities(): HasMany
+    {
+        return $this->hasMany(Activity::class, 'account_id');
+    }
+
+    /**
+     * Scope query to records visible to the authenticated user's role.
+     * System Admin & CRM Manager see all; BDO sees assigned accounts.
+     */
+    public function scopeVisibleTo($query, ?User $user)
+    {
+        if (!$user) {
+            return $query;
+        }
+
+        if ($user->hasRole(['System Administrator', 'CRM Manager'])) {
+            return $query;
+        }
+
+        return $query->where('owner_user_id', $user->id);
+    }
 }

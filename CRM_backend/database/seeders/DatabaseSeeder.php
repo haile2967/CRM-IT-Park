@@ -50,5 +50,8 @@ class DatabaseSeeder extends Seeder
 
         // 4. Seed Lead Sources, Categories, and initial Park Leads (assigned to admin)
         $this->call(LeadReferenceSeeder::class);
+
+        // 5. Seed Account Types, Demo Corporate Accounts and Primary Contacts
+        $this->call(AccountReferenceSeeder::class);
     }
 }

@@ -42,4 +42,20 @@ class ReferenceDataController extends Controller
             'data' => $categories,
         ]);
     }
+
+    /**
+     * Active Account Types (Startup Incubatee, Commercial Park Tenant, Strategic Partner, etc.)
+     */
+    public function accountTypes(): JsonResponse
+    {
+        $types = ReferenceCategory::where('is_active', true)
+            ->where('category_group', 'account_type')
+            ->orderBy('display_order')
+            ->get(['id', 'category_group', 'category_name', 'description']);
+
+        return response()->json([
+            'success' => true,
+            'data' => $types,
+        ]);
+    }
 }

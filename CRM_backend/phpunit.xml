@@ -28,7 +28,7 @@
         <env name="DB_PORT" value="5432"/>
         <env name="DB_DATABASE" value="crm_db"/>
         <env name="DB_USERNAME" value="crm_user"/>
-        <env name="DB_PASSWORD" value="crm_secret"/>
+        <env name="DB_PASSWORD" value="crm_secret12"/>
         <env name="REDIS_HOST" value="redis"/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
