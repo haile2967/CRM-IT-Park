@@ -56,5 +56,8 @@ class DatabaseSeeder extends Seeder
 
         // 6. Seed Opportunity Types, Demo Commercial Deals and Stage Histories
         $this->call(OpportunityReferenceSeeder::class);
+
+        // 7. Seed Ticket Categories, Escalation Policies, and Demo Support Tickets
+        $this->call(TicketReferenceSeeder::class);
     }
 }

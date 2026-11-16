@@ -10,6 +10,7 @@ import LeadsPage from './features/leads/LeadsPage';
 import AccountsPage from './features/accounts/AccountsPage';
 import ContactsPage from './features/contacts/ContactsPage';
 import { OpportunitiesPage } from './features/opportunities/OpportunitiesPage';
+import { TicketsPage } from './features/tickets/TicketsPage';
 import UsersPage from './features/users/UsersPage';
 import RolesPage from './features/roles/RolesPage';
 import PipelineStagesPage from './features/pipelineStages/PipelineStagesPage';
@@ -40,7 +41,7 @@ export default function App() {
             <Route path="/users" element={<UsersPage />} />
             <Route path="/roles" element={<RolesPage />} />
             <Route path="/opportunities" element={<OpportunitiesPage />} />
-            <Route path="/tickets" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/tickets" element={<TicketsPage />} />
           </Route>
 
           {/* Root & Catch-all Redirects */}

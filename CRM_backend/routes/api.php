@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\ReferenceDataController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\SocialAuthController;
 use App\Http\Controllers\Api\TicketCategoryController;
+use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
@@ -162,6 +163,22 @@ $registerRoutes = function () {
             Route::post('/{lead}/convert', [LeadController::class, 'convert']);
             Route::delete('/{lead}', [LeadController::class, 'destroy']);
         });
+
+        // Customer Service & Support Ticketing Hub
+        Route::prefix('tickets')->group(function () {
+            Route::get('/metrics', [TicketController::class, 'metrics']);
+            Route::get('/', [TicketController::class, 'index']);
+            Route::post('/', [TicketController::class, 'store']);
+            Route::get('/{ticket}', [TicketController::class, 'show']);
+            Route::put('/{ticket}', [TicketController::class, 'update']);
+            Route::post('/{ticket}/claim', [TicketController::class, 'claim']);
+            Route::patch('/{ticket}/assign', [TicketController::class, 'assign']);
+            Route::post('/{ticket}/comments', [TicketController::class, 'addComment']);
+            Route::patch('/{ticket}/status', [TicketController::class, 'updateStatus']);
+            Route::post('/{ticket}/escalate', [TicketController::class, 'escalate']);
+            Route::delete('/{ticket}', [TicketController::class, 'destroy']);
+        });
+
         // Ticket Categories — Listing & Details (Viewable by authenticated users)
         Route::get('/ticket-categories',                   [TicketCategoryController::class, 'index']);
         Route::get('/ticket-categories/{ticket_category}', [TicketCategoryController::class, 'show']);
