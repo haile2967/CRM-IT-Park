@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ContactController;
+use App\Http\Controllers\Api\OpportunityController;
 use App\Http\Controllers\Api\EscalationPolicyController;
 use App\Http\Controllers\Api\LeadController;
 use App\Http\Controllers\Api\PermissionController;
@@ -111,6 +112,21 @@ $registerRoutes = function () {
         Route::get('/lead-sources', [ReferenceDataController::class, 'leadSources']);
         Route::get('/lead-categories', [ReferenceDataController::class, 'leadCategories']);
         Route::get('/account-types', [ReferenceDataController::class, 'accountTypes']);
+        Route::get('/opportunity-types', [OpportunityController::class, 'types']);
+
+        // Commercial Opportunities & Deals Pipeline
+        Route::prefix('opportunities')->group(function () {
+            Route::get('/metrics', [OpportunityController::class, 'metrics']);
+            Route::get('/kanban', [OpportunityController::class, 'kanban']);
+            Route::get('/', [OpportunityController::class, 'index']);
+            Route::post('/', [OpportunityController::class, 'store']);
+            Route::get('/{opportunity}', [OpportunityController::class, 'show']);
+            Route::put('/{opportunity}', [OpportunityController::class, 'update']);
+            Route::patch('/{opportunity}/stage', [OpportunityController::class, 'transitionStage']);
+            Route::patch('/{opportunity}/transfer-ownership', [OpportunityController::class, 'transferOwnership']);
+            Route::delete('/{opportunity}', [OpportunityController::class, 'destroy']);
+            Route::get('/{opportunity}/pms-export', [OpportunityController::class, 'exportPms']);
+        });
 
         // Accounts Management
         Route::prefix('accounts')->group(function () {
