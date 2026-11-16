@@ -145,17 +145,17 @@ export const RolesPage: React.FC = () => {
     >
       <div className="space-y-6">
         {/* Header Banner */}
-        <div className="p-6 rounded-xl bg-white border border-slate-200/90 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="p-6 rounded-2xl bg-white dark:bg-[#0f172a]/95 border border-slate-200/90 dark:border-slate-800/80 shadow-xs dark:shadow-[0_4px_25px_rgba(0,0,0,0.4)] flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold tracking-tight text-slate-900">
+              <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                 System Role Directory
               </h1>
-              <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 font-mono">
+              <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-cyan-50 dark:bg-cyan-950/40 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800/50 font-mono">
                 {roles.length} Active Roles
               </span>
             </div>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               Overview of system roles, permissions, and staff member allocations.
             </p>
           </div>
@@ -166,7 +166,7 @@ export const RolesPage: React.FC = () => {
               size="sm"
               onClick={fetchData}
               isLoading={isLoading}
-              leftIcon={<RefreshCw className="w-3.5 h-3.5 text-slate-500" />}
+              leftIcon={<RefreshCw className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />}
             >
               Refresh
             </Button>
@@ -186,7 +186,7 @@ export const RolesPage: React.FC = () => {
               variant="outline"
               size="sm"
               onClick={() => navigate('/users')}
-              leftIcon={<UsersIcon className="w-3.5 h-3.5 text-slate-500" />}
+              leftIcon={<UsersIcon className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />}
             >
               Staff Directory
             </Button>
@@ -195,90 +195,90 @@ export const RolesPage: React.FC = () => {
 
         {/* 4 KPI Metric Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="p-4 rounded-xl bg-white border border-slate-200/90 shadow-2xs">
+          <div className="p-4 rounded-2xl bg-white dark:bg-[#0f172a]/95 border border-slate-200/90 dark:border-slate-800/80 shadow-xs dark:shadow-[0_4px_25px_rgba(0,0,0,0.4)] transition-colors">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-slate-500">Total Roles</span>
-              <div className="p-1.5 rounded-lg bg-slate-50 text-slate-600 border border-slate-100">
+              <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Total Roles</span>
+              <div className="p-1.5 rounded-lg bg-slate-50 dark:bg-slate-800/70 text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-700/60">
                 <Key className="w-4 h-4" />
               </div>
             </div>
-            <div className="mt-2 text-2xl font-bold text-slate-900 font-mono">
+            <div className="mt-2 text-2xl font-bold text-slate-900 dark:text-white font-mono">
               {metrics.totalRoles}
             </div>
-            <span className="text-[11px] text-slate-400 mt-0.5 block">Configured roles</span>
+            <span className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 block">Configured roles</span>
           </div>
 
-          <div className="p-4 rounded-xl bg-white border border-slate-200/90 shadow-2xs">
+          <div className="p-4 rounded-2xl bg-white dark:bg-[#0f172a]/95 border border-slate-200/90 dark:border-slate-800/80 shadow-xs dark:shadow-[0_4px_25px_rgba(0,0,0,0.4)] transition-colors">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-slate-500">Staff Assigned</span>
-              <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-100">
+              <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Staff Assigned</span>
+              <div className="p-1.5 rounded-lg bg-cyan-50 dark:bg-cyan-950/40 text-cyan-600 dark:text-cyan-400 border border-cyan-100 dark:border-cyan-800/50">
                 <UsersIcon className="w-4 h-4" />
               </div>
             </div>
-            <div className="mt-2 text-2xl font-bold text-emerald-700 font-mono">
+            <div className="mt-2 text-2xl font-bold text-cyan-600 dark:text-cyan-400 font-mono">
               {metrics.totalAssignedStaff}
             </div>
-            <span className="text-[11px] text-emerald-600 font-medium mt-0.5 block">
+            <span className="text-[11px] text-cyan-600 dark:text-cyan-400 font-medium mt-0.5 block">
               Active CRM accounts
             </span>
           </div>
 
-          <div className="p-4 rounded-xl bg-white border border-slate-200/90 shadow-2xs">
+          <div className="p-4 rounded-2xl bg-white dark:bg-[#0f172a]/95 border border-slate-200/90 dark:border-slate-800/80 shadow-xs dark:shadow-[0_4px_25px_rgba(0,0,0,0.4)] transition-colors">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-slate-500">System Roles</span>
-              <div className="p-1.5 rounded-lg bg-purple-50 text-purple-600 border border-purple-100">
+              <span className="text-xs font-medium text-slate-500 dark:text-slate-400">System Roles</span>
+              <div className="p-1.5 rounded-lg bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-800/40">
                 <ShieldCheck className="w-4 h-4" />
               </div>
             </div>
-            <div className="mt-2 text-2xl font-bold text-purple-900 font-mono">
+            <div className="mt-2 text-2xl font-bold text-purple-900 dark:text-purple-300 font-mono">
               {metrics.systemRoles}
             </div>
-            <span className="text-[11px] text-purple-600 font-medium mt-0.5 block">
+            <span className="text-[11px] text-purple-600 dark:text-purple-400 font-medium mt-0.5 block">
               Protected administrator
             </span>
           </div>
 
-          <div className="p-4 rounded-xl bg-white border border-slate-200/90 shadow-2xs">
+          <div className="p-4 rounded-2xl bg-white dark:bg-[#0f172a]/95 border border-slate-200/90 dark:border-slate-800/80 shadow-xs dark:shadow-[0_4px_25px_rgba(0,0,0,0.4)] transition-colors">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-slate-500">Custom Roles</span>
-              <div className="p-1.5 rounded-lg bg-sky-50 text-sky-600 border border-sky-100">
+              <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Custom Roles</span>
+              <div className="p-1.5 rounded-lg bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 border border-sky-100 dark:border-sky-800/40">
                 <Layers className="w-4 h-4" />
               </div>
             </div>
-            <div className="mt-2 text-2xl font-bold text-sky-800 font-mono">
+            <div className="mt-2 text-2xl font-bold text-sky-800 dark:text-sky-300 font-mono">
               {metrics.customRoles}
             </div>
-            <span className="text-[11px] text-slate-400 mt-0.5 block">
+            <span className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 block">
               User-defined roles
             </span>
           </div>
         </div>
 
         {/* Search & Filter Bar */}
-        <div className="p-4 rounded-xl bg-white border border-slate-200/90 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div className="p-4 rounded-2xl bg-white dark:bg-[#0f172a]/95 border border-slate-200/90 dark:border-slate-800/80 shadow-xs dark:shadow-[0_4px_25px_rgba(0,0,0,0.4)] flex flex-col md:flex-row md:items-center justify-between gap-3 transition-colors">
           {/* Search Input */}
           <div className="relative flex-1 max-w-md">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search roles by title or description..."
-              className="w-full pl-9 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-600/30 focus:border-emerald-600 transition-colors"
+              className="w-full pl-9 pr-3 py-2 text-xs bg-slate-50 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-colors"
             />
           </div>
 
           {/* Type Filter */}
           <div className="flex items-center gap-2.5 flex-wrap">
             <div className="flex items-center gap-1.5">
-              <Filter className="w-3.5 h-3.5 text-slate-400" />
-              <span className="text-xs text-slate-500">Filter:</span>
+              <Filter className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
+              <span className="text-xs text-slate-500 dark:text-slate-400">Filter:</span>
             </div>
 
             <select
               value={selectedType}
               onChange={(e) => setSelectedType(e.target.value)}
-              className="h-8.5 px-2.5 py-1 text-xs bg-white border border-slate-300 rounded-lg text-slate-700 focus:outline-hidden focus:ring-2 focus:ring-emerald-600/30 focus:border-emerald-600"
+              className="h-8.5 px-2.5 py-1 text-xs bg-white dark:bg-slate-900/90 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-200 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
             >
               <option value="all">All Roles</option>
               <option value="system">System Protected</option>
@@ -292,7 +292,7 @@ export const RolesPage: React.FC = () => {
                   setSearchTerm('');
                   setSelectedType('all');
                 }}
-                className="text-xs text-emerald-700 hover:text-emerald-800 font-medium px-2 py-1 hover:underline cursor-pointer"
+                className="text-xs text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 font-medium px-2 py-1 hover:underline cursor-pointer"
               >
                 Reset
               </button>

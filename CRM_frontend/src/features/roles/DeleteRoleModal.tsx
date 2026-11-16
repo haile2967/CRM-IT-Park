@@ -53,16 +53,16 @@ export const DeleteRoleModal: React.FC<DeleteRoleModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-in fade-in duration-150">
-      <div className="bg-white rounded-2xl shadow-xl border border-slate-200 max-w-md w-full overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs animate-in fade-in duration-150">
+      <div className="bg-white dark:bg-[#0f172a] rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 max-w-md w-full overflow-hidden transition-colors">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div
-              className={`w-9 h-9 rounded-lg flex items-center justify-center border shadow-2xs ${
+              className={`w-9 h-9 rounded-xl flex items-center justify-center border shadow-2xs ${
                 cannotDelete
-                  ? 'bg-amber-50 text-amber-700 border-amber-200'
-                  : 'bg-rose-50 text-rose-700 border-rose-200'
+                  ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-900/50'
+                  : 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-900/50'
               }`}
             >
               {isSystemRole ? (
@@ -72,17 +72,17 @@ export const DeleteRoleModal: React.FC<DeleteRoleModalProps> = ({
               )}
             </div>
             <div>
-              <h3 className="font-semibold text-slate-900 text-sm">
+              <h3 className="font-semibold text-slate-900 dark:text-white text-sm">
                 {cannotDelete ? 'Role Protected' : 'Delete Custom Role'}
               </h3>
-              <p className="text-[11px] text-slate-500">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
                 Confirm role removal from CRM security schema
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-600 p-1.5 rounded-md hover:bg-slate-50 transition-colors cursor-pointer"
+            className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 p-1.5 rounded-md hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -101,32 +101,32 @@ export const DeleteRoleModal: React.FC<DeleteRoleModalProps> = ({
           )}
 
           {isSystemRole ? (
-            <div className="p-4 rounded-xl bg-purple-50 border border-purple-200 text-xs text-purple-900 space-y-1">
+            <div className="p-4 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-900/50 text-xs text-purple-900 dark:text-purple-200 space-y-1">
               <p className="font-semibold">System Administrator is Protected</p>
-              <p className="text-purple-700 text-[11px] leading-relaxed">
+              <p className="text-purple-700 dark:text-purple-300 text-[11px] leading-relaxed">
                 The System Administrator role is an immutable system root and cannot be removed or mutated under any circumstance.
               </p>
             </div>
           ) : hasAssignedUsers ? (
-            <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 space-y-2">
-              <div className="flex items-center gap-1.5 font-semibold text-amber-900">
-                <Users className="w-4 h-4 text-amber-700" />
+            <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 text-xs text-amber-900 dark:text-amber-200 space-y-2">
+              <div className="flex items-center gap-1.5 font-semibold text-amber-900 dark:text-amber-100">
+                <Users className="w-4 h-4 text-amber-700 dark:text-amber-400" />
                 <span>Active Staff Currently Assigned ({assignedUsersCount})</span>
               </div>
-              <p className="text-amber-800 text-[11px] leading-relaxed">
+              <p className="text-amber-800 dark:text-amber-300 text-[11px] leading-relaxed">
                 This role cannot be deleted because <strong>{assignedUsersCount} staff member(s)</strong> are currently assigned to it. Please reassign those users to another role before deleting.
               </p>
             </div>
           ) : (
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
               Are you sure you want to delete the role{' '}
-              <strong className="text-slate-900">"{role.role_name}"</strong>? This will permanently remove this role and its permission bindings from the system.
+              <strong className="text-slate-900 dark:text-white">"{role.role_name}"</strong>? This will permanently remove this role and its permission bindings from the system.
             </p>
           )}
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-2.5">
+        <div className="px-6 py-3.5 bg-slate-50 dark:bg-slate-900/90 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-end gap-2.5">
           <Button
             variant="outline"
             size="sm"

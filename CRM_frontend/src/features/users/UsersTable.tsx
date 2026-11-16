@@ -31,8 +31,8 @@ export const UsersTable: React.FC<UsersTableProps> = ({
 }) => {
   if (isLoading) {
     return (
-      <div className="bg-white rounded-xl border border-slate-200/90 p-12 text-center text-xs text-slate-400 shadow-2xs">
-        <div className="w-6 h-6 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+      <div className="bg-white dark:bg-[#0f172a]/95 rounded-2xl border border-slate-200/90 dark:border-slate-800/80 p-12 text-center text-xs text-slate-400 dark:text-slate-500 shadow-xs dark:shadow-[0_4px_25px_rgba(0,0,0,0.4)]">
+        <div className="w-6 h-6 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
         Loading team members & user directory...
       </div>
     );
@@ -40,12 +40,12 @@ export const UsersTable: React.FC<UsersTableProps> = ({
 
   if (users.length === 0) {
     return (
-      <div className="bg-white rounded-xl border border-slate-200/90 p-12 text-center text-xs text-slate-500 space-y-2 shadow-2xs">
-        <div className="w-10 h-10 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-2">
+      <div className="bg-white dark:bg-[#0f172a]/95 rounded-2xl border border-slate-200/90 dark:border-slate-800/80 p-12 text-center text-xs text-slate-500 dark:text-slate-400 space-y-2 shadow-xs dark:shadow-[0_4px_25px_rgba(0,0,0,0.4)]">
+        <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800/80 text-slate-400 dark:text-slate-500 flex items-center justify-center mx-auto mb-2">
           <UsersIcon className="w-5 h-5" />
         </div>
-        <p className="font-semibold text-slate-800 text-sm">No users found</p>
-        <p className="text-slate-400 max-w-sm mx-auto">
+        <p className="font-semibold text-slate-800 dark:text-white text-sm">No users found</p>
+        <p className="text-slate-400 dark:text-slate-500 max-w-sm mx-auto">
           No team members match your active search or filter criteria. Try clearing filters or create a new user.
         </p>
       </div>
@@ -75,11 +75,11 @@ export const UsersTable: React.FC<UsersTableProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200/90 overflow-hidden shadow-2xs">
+    <div className="bg-white dark:bg-[#0f172a]/95 rounded-2xl border border-slate-200/90 dark:border-slate-800/80 overflow-hidden shadow-xs dark:shadow-[0_4px_25px_rgba(0,0,0,0.4)] transition-colors">
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse text-xs">
           <thead>
-            <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-semibold uppercase text-[10px] tracking-wider">
+            <tr className="bg-slate-50/80 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-semibold uppercase text-[10px] tracking-wider">
               <th className="py-3 px-4">User</th>
               <th className="py-3 px-4">Role</th>
               <th className="py-3 px-4">Contact</th>
@@ -88,7 +88,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({
               <th className="py-3 px-4 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
             {users.map((user) => {
               const isSelf = currentUserId === user.id;
               const isActive = user.status === 'active';
@@ -96,26 +96,26 @@ export const UsersTable: React.FC<UsersTableProps> = ({
               return (
                 <tr
                   key={user.id}
-                  className="hover:bg-slate-50/70 transition-colors group"
+                  className="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors group"
                 >
                   {/* User Avatar & Name */}
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-emerald-700 to-slate-800 text-white flex items-center justify-center font-bold text-xs tracking-wider shrink-0 shadow-2xs">
+                      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-cyan-600 to-blue-700 text-white flex items-center justify-center font-bold text-xs tracking-wider shrink-0 shadow-xs">
                         {getInitials(user)}
                       </div>
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5">
-                          <span className="font-semibold text-slate-900 truncate">
+                          <span className="font-semibold text-slate-900 dark:text-white truncate">
                             {user.full_name}
                           </span>
                           {isSelf && (
-                            <span className="px-1.5 py-0.2 rounded-sm bg-emerald-50 text-emerald-700 text-[10px] font-medium border border-emerald-200">
+                            <span className="px-1.5 py-0.2 rounded-sm bg-cyan-50 dark:bg-cyan-950/40 text-cyan-700 dark:text-cyan-300 text-[10px] font-medium border border-cyan-200 dark:border-cyan-800/50">
                               You
                             </span>
                           )}
                         </div>
-                        <span className="text-slate-500 font-mono text-[11px] block truncate">
+                        <span className="text-slate-500 dark:text-slate-400 font-mono text-[11px] block truncate">
                           {user.email}
                         </span>
                       </div>
@@ -130,14 +130,14 @@ export const UsersTable: React.FC<UsersTableProps> = ({
                   </td>
 
                   {/* Contact */}
-                  <td className="py-3 px-4 text-slate-600">
+                  <td className="py-3 px-4 text-slate-600 dark:text-slate-300">
                     {user.phone ? (
                       <span className="inline-flex items-center gap-1 font-mono text-[11px]">
-                        <Phone className="w-3 h-3 text-slate-400" />
+                        <Phone className="w-3 h-3 text-slate-400 dark:text-slate-500" />
                         {user.phone}
                       </span>
                     ) : (
-                      <span className="text-slate-400 italic text-[11px]">No phone</span>
+                      <span className="text-slate-400 dark:text-slate-500 italic text-[11px]">No phone</span>
                     )}
                   </td>
 
@@ -147,9 +147,9 @@ export const UsersTable: React.FC<UsersTableProps> = ({
                   </td>
 
                   {/* Last Login */}
-                  <td className="py-3 px-4 text-slate-500 font-mono text-[11px]">
+                  <td className="py-3 px-4 text-slate-500 dark:text-slate-400 font-mono text-[11px]">
                     <div className="flex items-center gap-1.5">
-                      <Clock className="w-3 h-3 text-slate-400 shrink-0" />
+                      <Clock className="w-3 h-3 text-slate-400 dark:text-slate-500 shrink-0" />
                       <span>{formatLastLogin(user.last_login_at)}</span>
                     </div>
                   </td>
@@ -163,7 +163,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({
                           size="sm"
                           onClick={() => onEditUser(user)}
                           title="Edit profile & role"
-                          leftIcon={<Edit2 className="w-3.5 h-3.5 text-slate-500" />}
+                          leftIcon={<Edit2 className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />}
                         >
                           Edit
                         </Button>
@@ -184,8 +184,8 @@ export const UsersTable: React.FC<UsersTableProps> = ({
                           }
                           className={
                             isActive
-                              ? 'text-rose-600 hover:text-rose-700 hover:bg-rose-50'
-                              : 'text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50'
+                              ? 'text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-950/30'
+                              : 'text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 hover:bg-cyan-50 dark:hover:bg-cyan-950/30'
                           }
                           leftIcon={
                             isActive ? (

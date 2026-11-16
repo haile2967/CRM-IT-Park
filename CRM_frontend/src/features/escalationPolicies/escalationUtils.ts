@@ -56,11 +56,11 @@ export const PRIORITY_CONFIG: Record<TicketPriority, PriorityMeta> = {
   Urgent: {
     label: 'Urgent',
     colorName: 'rose',
-    badgeClass: 'bg-rose-50 text-rose-800 border-rose-200/90',
+    badgeClass: 'bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border-rose-200/90 dark:border-rose-800/60',
     dotClass: 'bg-rose-500',
-    borderClass: 'border-rose-200',
-    bgLightClass: 'bg-rose-50/50',
-    accentText: 'text-rose-700',
+    borderClass: 'border-rose-200 dark:border-rose-800/60',
+    bgLightClass: 'bg-rose-50/50 dark:bg-rose-950/20',
+    accentText: 'text-rose-700 dark:text-rose-400',
     description: 'Critical business blockers, severe tenant outages & security incidents.',
     defaultReminder: 30, // 30 minutes
     defaultEscalation: 120, // 2 hours
@@ -68,11 +68,11 @@ export const PRIORITY_CONFIG: Record<TicketPriority, PriorityMeta> = {
   High: {
     label: 'High',
     colorName: 'amber',
-    badgeClass: 'bg-amber-50 text-amber-800 border-amber-200/90',
+    badgeClass: 'bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border-amber-200/90 dark:border-amber-800/60',
     dotClass: 'bg-amber-500',
-    borderClass: 'border-amber-200',
-    bgLightClass: 'bg-amber-50/50',
-    accentText: 'text-amber-700',
+    borderClass: 'border-amber-200 dark:border-amber-800/60',
+    bgLightClass: 'bg-amber-50/50 dark:bg-amber-950/20',
+    accentText: 'text-amber-700 dark:text-amber-400',
     description: 'Significant operational impact, service degradation or client escalation.',
     defaultReminder: 120, // 2 hours
     defaultEscalation: 360, // 6 hours
@@ -80,11 +80,11 @@ export const PRIORITY_CONFIG: Record<TicketPriority, PriorityMeta> = {
   Medium: {
     label: 'Medium',
     colorName: 'blue',
-    badgeClass: 'bg-sky-50 text-sky-800 border-sky-200/90',
+    badgeClass: 'bg-sky-50 dark:bg-sky-950/40 text-sky-800 dark:text-sky-300 border-sky-200/90 dark:border-sky-800/60',
     dotClass: 'bg-sky-500',
-    borderClass: 'border-sky-200',
-    bgLightClass: 'bg-sky-50/50',
-    accentText: 'text-sky-700',
+    borderClass: 'border-sky-200 dark:border-sky-800/60',
+    bgLightClass: 'bg-sky-50/50 dark:bg-sky-950/20',
+    accentText: 'text-sky-700 dark:text-sky-400',
     description: 'Standard inquiries, facility requests, general park tenant support.',
     defaultReminder: 720, // 12 hours
     defaultEscalation: 1440, // 24 hours (1 day)
@@ -92,11 +92,11 @@ export const PRIORITY_CONFIG: Record<TicketPriority, PriorityMeta> = {
   Low: {
     label: 'Low',
     colorName: 'emerald',
-    badgeClass: 'bg-emerald-50 text-emerald-800 border-emerald-200/90',
+    badgeClass: 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border-emerald-200/90 dark:border-emerald-800/60',
     dotClass: 'bg-emerald-500',
-    borderClass: 'border-emerald-200',
-    bgLightClass: 'bg-emerald-50/50',
-    accentText: 'text-emerald-700',
+    borderClass: 'border-emerald-200 dark:border-emerald-800/60',
+    bgLightClass: 'bg-emerald-50/50 dark:bg-emerald-950/20',
+    accentText: 'text-emerald-700 dark:text-emerald-400',
     description: 'Minor questions, routine maintenance, scheduled non-critical changes.',
     defaultReminder: 1440, // 24 hours (1 day)
     defaultEscalation: 2880, // 48 hours (2 days)
@@ -112,11 +112,11 @@ export const TIME_BASIS_CONFIG: Record<
   calendar: {
     label: 'Calendar Clock (24/7)',
     description: 'Elapsed absolute time including nights, weekends, and national holidays.',
-    badge: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+    badge: 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800/60',
   },
   business_hours: {
     label: 'Park Business Hours',
     description: 'Counted only during official Ethiopian IT Park operational hours (8:30 - 17:30).',
-    badge: 'bg-cyan-50 text-cyan-700 border-cyan-200',
+    badge: 'bg-cyan-50 dark:bg-cyan-950/40 text-cyan-700 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800/60',
   },
 };

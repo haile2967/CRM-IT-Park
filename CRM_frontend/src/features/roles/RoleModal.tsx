@@ -177,14 +177,14 @@ export const RoleModal: React.FC<RoleModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-in fade-in duration-150 overflow-y-auto">
-      <div className="bg-white rounded-2xl shadow-xl border border-slate-200 max-w-3xl w-full my-8 overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs animate-in fade-in duration-150 overflow-y-auto">
+      <div className="bg-white dark:bg-[#0f172a] rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 max-w-3xl w-full my-8 overflow-hidden flex flex-col max-h-[90vh] transition-colors">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between shrink-0">
+        <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-100 shadow-2xs">
+            <div className="w-9 h-9 rounded-xl bg-cyan-50 dark:bg-cyan-950/40 text-cyan-700 dark:text-cyan-400 flex items-center justify-center border border-cyan-100 dark:border-cyan-800/50 shadow-2xs">
               {isSystemRole ? (
-                <Lock className="w-4 h-4 text-purple-600" />
+                <Lock className="w-4 h-4 text-purple-600 dark:text-purple-400" />
               ) : isEditing ? (
                 <ShieldCheck className="w-4 h-4" />
               ) : (
@@ -193,7 +193,7 @@ export const RoleModal: React.FC<RoleModalProps> = ({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-semibold text-slate-900 text-sm">
+                <h3 className="font-semibold text-slate-900 dark:text-white text-sm">
                   {isEditing ? `Edit Role: ${roleToEdit?.role_name}` : 'Create New System Role'}
                 </h3>
                 {isSystemRole && (
@@ -202,7 +202,7 @@ export const RoleModal: React.FC<RoleModalProps> = ({
                   </Badge>
                 )}
               </div>
-              <p className="text-[11px] text-slate-500">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
                 {isEditing
                   ? 'Configure role title, description, and fine-grained permissions'
                   : 'Define a custom organizational role and configure capabilities'}
@@ -211,7 +211,7 @@ export const RoleModal: React.FC<RoleModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-600 p-1.5 rounded-md hover:bg-slate-50 transition-colors cursor-pointer"
+            className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 p-1.5 rounded-md hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -231,11 +231,11 @@ export const RoleModal: React.FC<RoleModalProps> = ({
             )}
 
             {isSystemRole && (
-              <div className="p-3.5 rounded-xl bg-purple-50/70 border border-purple-200 flex items-start gap-3 text-xs text-purple-900">
-                <ShieldCheck className="w-4 h-4 text-purple-700 shrink-0 mt-0.5" />
+              <div className="p-3.5 rounded-xl bg-purple-50/70 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-900/50 flex items-start gap-3 text-xs text-purple-900 dark:text-purple-200">
+                <ShieldCheck className="w-4 h-4 text-purple-700 dark:text-purple-400 shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-semibold text-purple-900">Immutable System Role</p>
-                  <p className="text-purple-700 text-[11px] mt-0.5 leading-relaxed">
+                  <p className="font-semibold text-purple-900 dark:text-purple-100">Immutable System Role</p>
+                  <p className="text-purple-700 dark:text-purple-300 text-[11px] mt-0.5 leading-relaxed">
                     The System Administrator role is protected by system security rules and automatically possesses all current and future capabilities across the CRM.
                   </p>
                 </div>
@@ -256,7 +256,7 @@ export const RoleModal: React.FC<RoleModalProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-700 mb-1">
+                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                   Description & Scope
                 </label>
                 <textarea
@@ -265,22 +265,22 @@ export const RoleModal: React.FC<RoleModalProps> = ({
                   onChange={(e) => setDescription(e.target.value)}
                   disabled={isSystemRole}
                   placeholder="Summarize the departmental responsibilities and access scope of this role..."
-                  className="w-full px-3 py-2 text-xs bg-white border border-slate-300 rounded-lg text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-600/30 focus:border-emerald-600 disabled:bg-slate-50 disabled:text-slate-400 transition-colors"
+                  className="w-full px-3 py-2 text-xs bg-white dark:bg-slate-900/90 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 disabled:bg-slate-50 dark:disabled:bg-slate-800/50 disabled:text-slate-400 dark:disabled:text-slate-600 transition-colors"
                 />
               </div>
             </div>
 
             {/* Permission Checkbox Matrix */}
-            <div className="border-t border-slate-100 pt-5 space-y-3">
+            <div className="border-t border-slate-100 dark:border-slate-800/80 pt-5 space-y-3">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
-                  <h4 className="text-xs font-semibold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                  <h4 className="text-xs font-semibold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
                     <span>Permission Matrix</span>
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-slate-100 text-slate-600 font-normal">
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700/60 font-normal">
                       {selectedPermissions.length} of {totalPermissions} granted
                     </span>
                   </h4>
-                  <p className="text-[11px] text-slate-500">
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
                     Grant or revoke specific functional capabilities for staff assigned to this role.
                   </p>
                 </div>
@@ -289,7 +289,7 @@ export const RoleModal: React.FC<RoleModalProps> = ({
                   <button
                     type="button"
                     onClick={handleToggleAll}
-                    className="inline-flex items-center gap-1.5 text-xs text-emerald-700 hover:text-emerald-800 font-medium px-2 py-1 rounded-md hover:bg-emerald-50 transition-colors cursor-pointer self-start sm:self-auto"
+                    className="inline-flex items-center gap-1.5 text-xs text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 font-medium px-2 py-1 rounded-md hover:bg-cyan-50 dark:hover:bg-cyan-950/30 transition-colors cursor-pointer self-start sm:self-auto"
                   >
                     {isAllSelected ? (
                       <>
@@ -307,12 +307,12 @@ export const RoleModal: React.FC<RoleModalProps> = ({
               </div>
 
               {isLoadingCatalog ? (
-                <div className="p-8 text-center text-xs text-slate-400 bg-slate-50/50 rounded-xl border border-slate-100">
-                  <div className="w-5 h-5 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                <div className="p-8 text-center text-xs text-slate-400 dark:text-slate-500 bg-slate-50/50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800">
+                  <div className="w-5 h-5 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
                   Loading system permission catalog...
                 </div>
               ) : permissionGroups.length === 0 ? (
-                <div className="p-6 text-center text-xs text-slate-500 bg-slate-50 rounded-xl border border-slate-100">
+                <div className="p-6 text-center text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800">
                   No permission modules found in catalog.
                 </div>
               ) : (
@@ -329,15 +329,15 @@ export const RoleModal: React.FC<RoleModalProps> = ({
                     return (
                       <div
                         key={group.name}
-                        className="rounded-xl border border-slate-200/90 bg-white overflow-hidden shadow-2xs"
+                        className="rounded-xl border border-slate-200/90 dark:border-slate-800/80 bg-white dark:bg-[#0b1120] overflow-hidden shadow-2xs"
                       >
                         {/* Domain Group Header */}
-                        <div className="px-4 py-2.5 bg-slate-50/80 border-b border-slate-100 flex items-center justify-between">
+                        <div className="px-4 py-2.5 bg-slate-50/80 dark:bg-slate-900/80 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <span className="font-semibold text-xs text-slate-800">
+                            <span className="font-semibold text-xs text-slate-800 dark:text-slate-200">
                               {group.name} Domain
                             </span>
-                            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-md bg-white border border-slate-200 text-slate-500">
+                            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-md bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400">
                               {selectedCount}/{group.permissions.length} active
                             </span>
                           </div>
@@ -346,7 +346,7 @@ export const RoleModal: React.FC<RoleModalProps> = ({
                             <button
                               type="button"
                               onClick={() => handleToggleGroup(group)}
-                              className="text-[11px] font-medium text-emerald-700 hover:text-emerald-800 hover:underline cursor-pointer"
+                              className="text-[11px] font-medium text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 hover:underline cursor-pointer"
                             >
                               {isAllInGroup ? 'Clear Domain' : 'Select Domain'}
                             </button>
@@ -354,7 +354,7 @@ export const RoleModal: React.FC<RoleModalProps> = ({
                         </div>
 
                         {/* Domain Permission Items */}
-                        <div className="p-3 divide-y divide-slate-100">
+                        <div className="p-3 divide-y divide-slate-100 dark:divide-slate-800/60">
                           {group.permissions.map((perm) => {
                             const isChecked = selectedPermissions.includes(perm.name);
 
@@ -363,8 +363,8 @@ export const RoleModal: React.FC<RoleModalProps> = ({
                                 key={perm.name}
                                 className={`flex items-start gap-3 py-2 px-2 rounded-lg transition-colors cursor-pointer ${
                                   isChecked
-                                    ? 'bg-emerald-50/40 hover:bg-emerald-50/60'
-                                    : 'hover:bg-slate-50'
+                                    ? 'bg-cyan-50/40 dark:bg-cyan-950/30 hover:bg-cyan-50/60 dark:hover:bg-cyan-950/50'
+                                    : 'hover:bg-slate-50 dark:hover:bg-slate-850/60 dark:hover:bg-slate-800/40'
                                 } ${isSystemRole ? 'cursor-not-allowed opacity-90' : ''}`}
                               >
                                 <input
@@ -372,15 +372,15 @@ export const RoleModal: React.FC<RoleModalProps> = ({
                                   checked={isChecked}
                                   disabled={isSystemRole}
                                   onChange={() => handleTogglePermission(perm.name)}
-                                  className="mt-0.5 h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer disabled:cursor-not-allowed"
+                                  className="mt-0.5 h-4 w-4 rounded border-slate-300 dark:border-slate-700 text-cyan-600 focus:ring-cyan-500 cursor-pointer disabled:cursor-not-allowed"
                                 />
                                 <div className="min-w-0 flex-1">
                                   <div className="flex items-center gap-2">
-                                    <span className="text-xs font-semibold text-slate-900 font-mono">
+                                    <span className="text-xs font-semibold text-slate-900 dark:text-slate-100 font-mono">
                                       {perm.name}
                                     </span>
                                   </div>
-                                  <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">
+                                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">
                                     {perm.description}
                                   </p>
                                 </div>
@@ -397,8 +397,8 @@ export const RoleModal: React.FC<RoleModalProps> = ({
           </div>
 
           {/* Footer Actions */}
-          <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between shrink-0">
-            <span className="text-[11px] text-slate-500">
+          <div className="px-6 py-4 bg-slate-50 dark:bg-slate-900/90 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between shrink-0">
+            <span className="text-[11px] text-slate-500 dark:text-slate-400">
               {isSystemRole
                 ? 'System roles are read-only'
                 : `${selectedPermissions.length} permissions configured`}

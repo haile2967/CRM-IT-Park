@@ -294,17 +294,17 @@ export const PipelineStagesPage: React.FC = () => {
         )}
 
         {/* Top Header Banner & Action Bar */}
-        <div className="p-6 rounded-2xl bg-white border border-slate-200/90 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="p-6 rounded-2xl bg-white dark:bg-[#0f172a]/95 border border-slate-200/90 dark:border-slate-800/80 shadow-[0_4px_25px_rgba(0,0,0,0.4)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold tracking-tight text-slate-900">
+              <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                 Opportunity Pipeline Milestones
               </h1>
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80 font-mono">
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-cyan-50 dark:bg-cyan-950/40 text-cyan-700 dark:text-cyan-400 border border-cyan-200/80 dark:border-cyan-800/60 font-mono">
                 {metrics.active} of {metrics.total} Active
               </span>
             </div>
-            <p className="text-xs text-slate-500 max-w-xl leading-relaxed">
+            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xl leading-relaxed">
               Define the progression funnel for deals, corporate partnerships, and facility leases. Reorder stages to reflect the real-world deal flow.
             </p>
           </div>
@@ -322,10 +322,10 @@ export const PipelineStagesPage: React.FC = () => {
 
             <Link
               to="/escalations"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-700 bg-white hover:bg-slate-50 border border-slate-200/90 rounded-lg shadow-2xs transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900/80 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200/90 dark:border-slate-800 rounded-lg shadow-2xs transition-colors"
               title="View and configure Ticket Escalation Policies and SLA Reminder Thresholds"
             >
-              <Clock className="w-3.5 h-3.5 text-amber-600" />
+              <Clock className="w-3.5 h-3.5 text-amber-500" />
               <span>Escalation Policies</span>
             </Link>
 
@@ -345,65 +345,65 @@ export const PipelineStagesPage: React.FC = () => {
         {/* 4 Metric KPI Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Total Configured Stages */}
-          <div className="p-4 rounded-xl bg-white border border-slate-200/90 shadow-2xs">
+          <div className="p-4 rounded-xl bg-white dark:bg-[#0f172a]/95 border border-slate-200/90 dark:border-slate-800/80 shadow-[0_4px_25px_rgba(0,0,0,0.4)]">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-slate-500">Total Stages</span>
-              <div className="p-1.5 rounded-lg bg-slate-50 text-slate-600 border border-slate-100">
+              <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Total Stages</span>
+              <div className="p-1.5 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-700">
                 <Layers className="w-4 h-4" />
               </div>
             </div>
-            <div className="mt-2 text-2xl font-bold text-slate-900 font-mono">
+            <div className="mt-2 text-2xl font-bold text-slate-900 dark:text-white font-mono">
               {metrics.total}
             </div>
-            <span className="text-[11px] text-slate-400 mt-0.5 block">
+            <span className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 block">
               Workflow milestones
             </span>
           </div>
 
           {/* Active Milestones */}
-          <div className="p-4 rounded-xl bg-white border border-slate-200/90 shadow-2xs">
+          <div className="p-4 rounded-xl bg-white dark:bg-[#0f172a]/95 border border-slate-200/90 dark:border-slate-800/80 shadow-[0_4px_25px_rgba(0,0,0,0.4)]">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-slate-500">Active Stages</span>
-              <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-100">
+              <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Active Stages</span>
+              <div className="p-1.5 rounded-lg bg-cyan-50 dark:bg-cyan-950/40 text-cyan-600 dark:text-cyan-400 border border-cyan-100 dark:border-cyan-800/50">
                 <CheckCircle2 className="w-4 h-4" />
               </div>
             </div>
-            <div className="mt-2 text-2xl font-bold text-emerald-700 font-mono">
+            <div className="mt-2 text-2xl font-bold text-cyan-600 dark:text-cyan-400 font-mono">
               {metrics.active}
             </div>
-            <span className="text-[11px] text-emerald-600 font-medium mt-0.5 block">
+            <span className="text-[11px] text-cyan-600 dark:text-cyan-400 font-medium mt-0.5 block">
               Live in opportunity forms
             </span>
           </div>
 
           {/* Terminal Stages (Won & Lost) */}
-          <div className="p-4 rounded-xl bg-white border border-slate-200/90 shadow-2xs">
+          <div className="p-4 rounded-xl bg-white dark:bg-[#0f172a]/95 border border-slate-200/90 dark:border-slate-800/80 shadow-[0_4px_25px_rgba(0,0,0,0.4)]">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-slate-500">Terminal Outcomes</span>
-              <div className="p-1.5 rounded-lg bg-purple-50 text-purple-600 border border-purple-100">
+              <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Terminal Outcomes</span>
+              <div className="p-1.5 rounded-lg bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-800/50">
                 <Trophy className="w-4 h-4" />
               </div>
             </div>
-            <div className="mt-2 text-2xl font-bold text-purple-900 font-mono">
+            <div className="mt-2 text-2xl font-bold text-purple-900 dark:text-purple-300 font-mono">
               {metrics.wonCount} Won / {metrics.lostCount} Lost
             </div>
-            <span className="text-[11px] text-purple-600 font-medium mt-0.5 block">
+            <span className="text-[11px] text-purple-600 dark:text-purple-400 font-medium mt-0.5 block">
               Contract completion states
             </span>
           </div>
 
           {/* Active Deals in Pipeline */}
-          <div className="p-4 rounded-xl bg-white border border-slate-200/90 shadow-2xs">
+          <div className="p-4 rounded-xl bg-white dark:bg-[#0f172a]/95 border border-slate-200/90 dark:border-slate-800/80 shadow-[0_4px_25px_rgba(0,0,0,0.4)]">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-slate-500">Active Opportunities</span>
-              <div className="p-1.5 rounded-lg bg-sky-50 text-sky-600 border border-sky-100">
+              <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Active Opportunities</span>
+              <div className="p-1.5 rounded-lg bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 border border-sky-100 dark:border-sky-800/50">
                 <Briefcase className="w-4 h-4" />
               </div>
             </div>
-            <div className="mt-2 text-2xl font-bold text-sky-800 font-mono">
+            <div className="mt-2 text-2xl font-bold text-sky-800 dark:text-sky-300 font-mono">
               {metrics.totalOpportunities}
             </div>
-            <span className="text-[11px] text-sky-600 font-medium mt-0.5 block">
+            <span className="text-[11px] text-sky-600 dark:text-sky-400 font-medium mt-0.5 block">
               Across all pipeline stages
             </span>
           </div>
@@ -417,30 +417,30 @@ export const PipelineStagesPage: React.FC = () => {
         />
 
         {/* Filter and Search Bar */}
-        <div className="p-4 rounded-xl bg-white border border-slate-200/90 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div className="p-4 rounded-xl bg-white dark:bg-[#0f172a]/95 border border-slate-200/90 dark:border-slate-800/80 shadow-[0_4px_25px_rgba(0,0,0,0.4)] flex flex-col md:flex-row md:items-center justify-between gap-3">
           {/* Search Input */}
           <div className="relative flex-1 max-w-md">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search stage title..."
-              className="w-full pl-9 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-600/30 focus:border-emerald-600 transition-colors"
+              className="w-full pl-9 pr-3 py-2 text-xs bg-slate-50 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/30 focus:border-cyan-500 transition-colors"
             />
           </div>
 
           {/* Filter Dropdown */}
           <div className="flex items-center gap-2.5 flex-wrap">
             <div className="flex items-center gap-1.5">
-              <Filter className="w-3.5 h-3.5 text-slate-400" />
-              <span className="text-xs text-slate-500">Filter:</span>
+              <Filter className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
+              <span className="text-xs text-slate-500 dark:text-slate-400">Filter:</span>
             </div>
 
             <select
               value={filterType}
               onChange={(e) => setFilterType(e.target.value)}
-              className="h-8.5 px-2.5 py-1 text-xs bg-white border border-slate-300 rounded-lg text-slate-700 focus:outline-hidden focus:ring-2 focus:ring-emerald-600/30 focus:border-emerald-600"
+              className="h-8.5 px-2.5 py-1 text-xs bg-white dark:bg-slate-900/90 border border-slate-300 dark:border-slate-800 rounded-lg text-slate-700 dark:text-slate-200 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/30 focus:border-cyan-500"
             >
               <option value="all">All Stages</option>
               <option value="active">Active Only</option>
@@ -456,7 +456,7 @@ export const PipelineStagesPage: React.FC = () => {
                   setSearchTerm('');
                   setFilterType('all');
                 }}
-                className="text-xs text-emerald-700 hover:text-emerald-800 font-medium px-2 py-1 hover:underline cursor-pointer"
+                className="text-xs text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 font-medium px-2 py-1 hover:underline cursor-pointer"
               >
                 Reset
               </button>
@@ -480,11 +480,11 @@ export const PipelineStagesPage: React.FC = () => {
 
         {/* Non-admin notice */}
         {!isAdmin && (
-          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center gap-3 text-xs text-slate-600">
-            <ShieldAlert className="w-4 h-4 text-slate-400 shrink-0" />
+          <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 flex items-center gap-3 text-xs text-slate-600 dark:text-slate-400">
+            <ShieldAlert className="w-4 h-4 text-slate-400 dark:text-slate-500 shrink-0" />
             <span>
               Stage sequence reordering, creation, and deactivation are restricted to users with the{' '}
-              <strong className="text-slate-800">System Administrator</strong> role.
+              <strong className="text-slate-800 dark:text-slate-200">System Administrator</strong> role.
             </span>
           </div>
         )}

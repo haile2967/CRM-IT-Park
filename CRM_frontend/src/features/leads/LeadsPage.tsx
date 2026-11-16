@@ -183,27 +183,27 @@ export const LeadsPage: React.FC = () => {
     >
       <div className="space-y-6">
         {/* Top Action Header Bar */}
-        <div className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="p-5 rounded-2xl bg-white dark:bg-[#0f172a]/95 border border-slate-200/90 dark:border-slate-800/80 shadow-[0_4px_25px_rgba(0,0,0,0.4)] flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
-            <h1 className="text-lg font-bold tracking-tight text-slate-900 flex items-center gap-2">
-              <Users2 className="w-5 h-5 text-emerald-600" />
+            <h1 className="text-lg font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+              <Users2 className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
               Inbound Leads & Tenant Pipeline
             </h1>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               Manage prospective companies, foreign investors, and startup incubation candidates.
             </p>
           </div>
 
           <div className="flex items-center gap-2.5 flex-wrap">
             {/* View Switcher (Table vs Kanban) */}
-            <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
+            <div className="flex items-center bg-slate-100 dark:bg-slate-900/80 p-1 rounded-xl border border-slate-200 dark:border-slate-800">
               <button
                 type="button"
                 onClick={() => setViewMode('table')}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                   viewMode === 'table'
-                    ? 'bg-white text-slate-900 shadow-2xs'
-                    : 'text-slate-500 hover:text-slate-900'
+                    ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-cyan-400 shadow-2xs dark:shadow-sm'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 <List className="w-3.5 h-3.5" />
@@ -215,8 +215,8 @@ export const LeadsPage: React.FC = () => {
                 onClick={() => setViewMode('kanban')}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                   viewMode === 'kanban'
-                    ? 'bg-white text-slate-900 shadow-2xs'
-                    : 'text-slate-500 hover:text-slate-900'
+                    ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-cyan-400 shadow-2xs dark:shadow-sm'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 <LayoutGrid className="w-3.5 h-3.5" />
@@ -251,18 +251,18 @@ export const LeadsPage: React.FC = () => {
         {metrics && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Metric 1: Total Leads */}
-            <div className="p-4 rounded-xl bg-white border border-slate-200/90 shadow-2xs space-y-2">
-              <div className="flex items-center justify-between text-xs font-semibold text-slate-500">
+            <div className="p-4 rounded-xl bg-white dark:bg-[#0f172a]/95 border border-slate-200/90 dark:border-slate-800/80 shadow-[0_4px_25px_rgba(0,0,0,0.4)] space-y-2">
+              <div className="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-400">
                 <span>Active Pipeline</span>
-                <span className="p-1.5 rounded-lg bg-emerald-50 text-emerald-700">
+                <span className="p-1.5 rounded-lg bg-cyan-50 dark:bg-cyan-950/40 text-cyan-700 dark:text-cyan-400">
                   <TrendingUp className="w-4 h-4" />
                 </span>
               </div>
-              <div className="text-2xl font-bold font-mono text-slate-900 tracking-tight">
+              <div className="text-2xl font-bold font-mono text-slate-900 dark:text-white tracking-tight">
                 {metrics.total}
               </div>
-              <div className="text-[11px] text-slate-500 flex items-center gap-1.5">
-                <span className="font-semibold text-emerald-700 font-mono">
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                <span className="font-semibold text-cyan-600 dark:text-cyan-400 font-mono">
                   {metrics.conversion_rate_pct}%
                 </span>
                 <span>conversion rate</span>
@@ -270,49 +270,49 @@ export const LeadsPage: React.FC = () => {
             </div>
 
             {/* Metric 2: Qualified Prospects */}
-            <div className="p-4 rounded-xl bg-white border border-slate-200/90 shadow-2xs space-y-2">
-              <div className="flex items-center justify-between text-xs font-semibold text-slate-500">
+            <div className="p-4 rounded-xl bg-white dark:bg-[#0f172a]/95 border border-slate-200/90 dark:border-slate-800/80 shadow-[0_4px_25px_rgba(0,0,0,0.4)] space-y-2">
+              <div className="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-400">
                 <span>Park Qualified</span>
-                <span className="p-1.5 rounded-lg bg-blue-50 text-blue-700">
+                <span className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400">
                   <CheckCircle2 className="w-4 h-4" />
                 </span>
               </div>
-              <div className="text-2xl font-bold font-mono text-slate-900 tracking-tight">
+              <div className="text-2xl font-bold font-mono text-slate-900 dark:text-white tracking-tight">
                 {metrics.qualified}
               </div>
-              <div className="text-[11px] text-slate-500">
+              <div className="text-[11px] text-slate-500 dark:text-slate-400">
                 Ready for commercial lease conversion
               </div>
             </div>
 
             {/* Metric 3: SLA Warning */}
-            <div className="p-4 rounded-xl bg-white border border-slate-200/90 shadow-2xs space-y-2">
-              <div className="flex items-center justify-between text-xs font-semibold text-slate-500">
+            <div className="p-4 rounded-xl bg-white dark:bg-[#0f172a]/95 border border-slate-200/90 dark:border-slate-800/80 shadow-[0_4px_25px_rgba(0,0,0,0.4)] space-y-2">
+              <div className="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-400">
                 <span>Uncontacted SLA Alert</span>
-                <span className={`p-1.5 rounded-lg ${metrics.sla_breaches > 0 ? 'bg-rose-100 text-rose-700' : 'bg-slate-100 text-slate-500'}`}>
+                <span className={`p-1.5 rounded-lg ${metrics.sla_breaches > 0 ? 'bg-rose-100 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'}`}>
                   <AlertTriangle className="w-4 h-4" />
                 </span>
               </div>
-              <div className={`text-2xl font-bold font-mono tracking-tight ${metrics.sla_breaches > 0 ? 'text-rose-600' : 'text-slate-900'}`}>
+              <div className={`text-2xl font-bold font-mono tracking-tight ${metrics.sla_breaches > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-slate-900 dark:text-white'}`}>
                 {metrics.sla_breaches}
               </div>
-              <div className="text-[11px] text-slate-500">
+              <div className="text-[11px] text-slate-500 dark:text-slate-400">
                 Inbound leads untouched &gt; 48 hours
               </div>
             </div>
 
             {/* Metric 4: Hot Priority Leads */}
-            <div className="p-4 rounded-xl bg-white border border-slate-200/90 shadow-2xs space-y-2">
-              <div className="flex items-center justify-between text-xs font-semibold text-slate-500">
+            <div className="p-4 rounded-xl bg-white dark:bg-[#0f172a]/95 border border-slate-200/90 dark:border-slate-800/80 shadow-[0_4px_25px_rgba(0,0,0,0.4)] space-y-2">
+              <div className="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-400">
                 <span>Hot Leads 🔥</span>
-                <span className="p-1.5 rounded-lg bg-amber-50 text-amber-700">
+                <span className="p-1.5 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400">
                   <Sparkles className="w-4 h-4" />
                 </span>
               </div>
-              <div className="text-2xl font-bold font-mono text-slate-900 tracking-tight">
+              <div className="text-2xl font-bold font-mono text-slate-900 dark:text-white tracking-tight">
                 {metrics.hot_leads}
               </div>
-              <div className="text-[11px] text-slate-500">
+              <div className="text-[11px] text-slate-500 dark:text-slate-400">
                 Urgent tier or lead score &ge; 80
               </div>
             </div>
@@ -320,7 +320,7 @@ export const LeadsPage: React.FC = () => {
         )}
 
         {/* Filter Controls Bar */}
-        <div className="p-4 rounded-xl bg-white border border-slate-200/90 shadow-2xs space-y-3">
+        <div className="p-4 rounded-xl bg-white dark:bg-[#0f172a]/95 border border-slate-200/90 dark:border-slate-800/80 shadow-[0_4px_25px_rgba(0,0,0,0.4)] space-y-3">
           {/* Status Tab Pills (Table view) */}
           {viewMode === 'table' && (
             <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs font-semibold">
@@ -340,8 +340,8 @@ export const LeadsPage: React.FC = () => {
                   }}
                   className={`px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap ${
                     statusFilter === tab.key
-                      ? 'bg-slate-900 text-white shadow-2xs'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                      ? 'bg-slate-900 dark:bg-cyan-500 text-white dark:text-slate-950 shadow-2xs font-bold'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
                   }`}
                 >
                   {tab.label}
@@ -354,7 +354,7 @@ export const LeadsPage: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-3 text-xs">
             {/* Search Input */}
             <div className="sm:col-span-2 relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+              <Search className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3 top-2.5" />
               <input
                 type="text"
                 value={searchTerm}
@@ -363,7 +363,7 @@ export const LeadsPage: React.FC = () => {
                   setPagination((p) => ({ ...p, current_page: 1 }));
                 }}
                 placeholder="Search leads by name, company, email, or phone..."
-                className="w-full text-xs rounded-lg border border-slate-200 bg-white pl-9 pr-3 py-2 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full text-xs rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 pl-9 pr-3 py-2 text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
               />
             </div>
 
@@ -375,7 +375,7 @@ export const LeadsPage: React.FC = () => {
                   setPriorityFilter(e.target.value);
                   setPagination((p) => ({ ...p, current_page: 1 }));
                 }}
-                className="w-full text-xs rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                className="w-full text-xs rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 px-3 py-2 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-cyan-500"
               >
                 <option value="all">All Priorities</option>
                 <option value="urgent">Urgent 🔥</option>
@@ -393,7 +393,7 @@ export const LeadsPage: React.FC = () => {
                   setOwnerFilter(e.target.value);
                   setPagination((p) => ({ ...p, current_page: 1 }));
                 }}
-                className="w-full text-xs rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                className="w-full text-xs rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 px-3 py-2 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-cyan-500"
               >
                 <option value="all">All Owners</option>
                 <option value="unassigned">Unassigned (Shared Pool)</option>
@@ -422,10 +422,10 @@ export const LeadsPage: React.FC = () => {
 
             {/* Pagination Controls */}
             {pagination.total > 0 && (
-              <div className="p-4 rounded-xl bg-white border border-slate-200/90 shadow-2xs flex items-center justify-between text-xs text-slate-500">
+              <div className="p-4 rounded-xl bg-white dark:bg-[#0f172a]/95 border border-slate-200/90 dark:border-slate-800/80 shadow-[0_4px_25px_rgba(0,0,0,0.4)] flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
                 <span>
-                  Showing <strong className="text-slate-900">{tableLeads.length}</strong> of{' '}
-                  <strong className="text-slate-900">{pagination.total}</strong> leads
+                  Showing <strong className="text-slate-900 dark:text-white">{tableLeads.length}</strong> of{' '}
+                  <strong className="text-slate-900 dark:text-white">{pagination.total}</strong> leads
                 </span>
 
                 <div className="flex items-center gap-2">
@@ -440,7 +440,7 @@ export const LeadsPage: React.FC = () => {
                     Previous
                   </Button>
 
-                  <span className="font-mono text-slate-700 px-2">
+                  <span className="font-mono text-slate-700 dark:text-slate-300 px-2">
                     Page {pagination.current_page} of {pagination.last_page}
                   </span>
 

@@ -9,7 +9,7 @@ interface UserStatusBadgeProps {
 export const UserStatusBadge: React.FC<UserStatusBadgeProps> = ({ status }) => {
   if (status === 'active') {
     return (
-      <Badge variant="emerald" size="sm" dot>
+      <Badge variant="cyan" size="sm" dot>
         Active
       </Badge>
     );

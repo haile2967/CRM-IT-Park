@@ -75,7 +75,6 @@ export const PipelineStageModal: React.FC<PipelineStageModalProps> = ({
     setIsSubmitting(true);
     try {
       if (isEditing && stageToEdit) {
-        // 1. Update mutable stage properties (name, display_order, terminal flags)
         let updated = await pipelineStageService.updateStage(stageToEdit.id, {
           stage_name: trimmedName,
           display_order: displayOrder,
@@ -83,7 +82,6 @@ export const PipelineStageModal: React.FC<PipelineStageModalProps> = ({
           is_closed_lost: isClosedLost,
         });
 
-        // 2. If active status was modified during edit, invoke the toggle status endpoint
         if (stageToEdit.is_active !== isActive) {
           updated = await pipelineStageService.toggleStatus(stageToEdit.id, isActive);
         }
@@ -125,19 +123,19 @@ export const PipelineStageModal: React.FC<PipelineStageModalProps> = ({
     <div className="fixed inset-0 z-50 overflow-y-auto">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity"
+        className="fixed inset-0 bg-slate-950/70 backdrop-blur-xs transition-opacity"
         onClick={onClose}
       />
 
       <div className="flex min-h-full items-center justify-center p-4">
         <div
-          className="relative w-full max-w-lg rounded-2xl bg-white shadow-2xl border border-slate-200/90 overflow-hidden transform transition-all"
+          className="relative w-full max-w-lg rounded-2xl bg-white dark:bg-[#0f172a] shadow-2xl border border-slate-200/90 dark:border-slate-800 overflow-hidden transform transition-all"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Modal Header */}
-          <div className="px-6 py-4 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white flex items-center justify-between">
+          <div className="px-6 py-4 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-b border-slate-800 text-white flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-emerald-600/30 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+              <div className="w-9 h-9 rounded-xl bg-cyan-600/30 border border-cyan-500/40 flex items-center justify-center text-cyan-400">
                 <Layers className="w-5 h-5" />
               </div>
               <div>
@@ -198,13 +196,13 @@ export const PipelineStageModal: React.FC<PipelineStageModalProps> = ({
 
               {/* Operational Status (Active vs Deactivated) */}
               {isEditing && (
-                <div className="space-y-2 p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+                <div className="space-y-2 p-3.5 rounded-xl bg-slate-50 dark:bg-[#0b1120] border border-slate-200 dark:border-slate-800">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                     <div>
-                      <span className="text-xs font-semibold text-slate-800 block">
+                      <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 block">
                         Pipeline Stage Status
                       </span>
-                      <span className="text-[11px] text-slate-500 block">
+                      <span className="text-[11px] text-slate-500 dark:text-slate-400 block">
                         {isActive
                           ? 'Stage is active and visible in deal workflows.'
                           : 'Stage is deactivated and hidden from opportunity forms.'}
@@ -217,11 +215,11 @@ export const PipelineStageModal: React.FC<PipelineStageModalProps> = ({
                         onClick={() => setIsActive(true)}
                         className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 border transition-all cursor-pointer ${
                           isActive
-                            ? 'bg-emerald-600 text-white border-emerald-700 shadow-2xs'
-                            : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-100'
+                            ? 'bg-cyan-600 dark:bg-cyan-500 text-white dark:text-slate-950 border-cyan-700 dark:border-cyan-500 shadow-2xs'
+                            : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800'
                         }`}
                       >
-                        <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-white' : 'bg-emerald-500'}`} />
+                        <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-white dark:bg-slate-950' : 'bg-cyan-500'}`} />
                         Active
                       </button>
 
@@ -230,8 +228,8 @@ export const PipelineStageModal: React.FC<PipelineStageModalProps> = ({
                         onClick={() => setIsActive(false)}
                         className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 border transition-all cursor-pointer ${
                           !isActive
-                            ? 'bg-slate-700 text-white border-slate-800 shadow-2xs'
-                            : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-100'
+                            ? 'bg-slate-700 dark:bg-slate-800 text-white border-slate-800 dark:border-slate-700 shadow-2xs'
+                            : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800'
                         }`}
                       >
                         <span className={`w-1.5 h-1.5 rounded-full ${!isActive ? 'bg-white' : 'bg-slate-400'}`} />
@@ -244,7 +242,7 @@ export const PipelineStageModal: React.FC<PipelineStageModalProps> = ({
 
               {/* Stage Type & Terminal Flags */}
               <div className="space-y-2">
-                <label className="block text-xs font-medium text-slate-700 tracking-tight">
+                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 tracking-tight">
                   Milestone Behavior & Terminal State
                 </label>
 
@@ -253,8 +251,8 @@ export const PipelineStageModal: React.FC<PipelineStageModalProps> = ({
                   <label
                     className={`relative flex flex-col p-3 rounded-xl border cursor-pointer transition-all ${
                       stageType === 'standard'
-                        ? 'border-emerald-600 bg-emerald-50/50 shadow-xs ring-1 ring-emerald-600'
-                        : 'border-slate-200 hover:border-slate-300 bg-white'
+                        ? 'border-cyan-600 dark:border-cyan-500 bg-cyan-50/50 dark:bg-cyan-950/30 shadow-xs ring-1 ring-cyan-600 dark:ring-cyan-500'
+                        : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-[#0b1120]'
                     }`}
                   >
                     <input
@@ -268,12 +266,12 @@ export const PipelineStageModal: React.FC<PipelineStageModalProps> = ({
                     <div className="flex items-center gap-2 mb-1.5">
                       <ArrowRightCircle
                         className={`w-4 h-4 ${
-                          stageType === 'standard' ? 'text-emerald-700' : 'text-slate-400'
+                          stageType === 'standard' ? 'text-cyan-600 dark:text-cyan-400' : 'text-slate-400'
                         }`}
                       />
-                      <span className="font-semibold text-xs text-slate-900">Standard</span>
+                      <span className="font-semibold text-xs text-slate-900 dark:text-white">Standard</span>
                     </div>
-                    <span className="text-[11px] text-slate-500 leading-snug">
+                    <span className="text-[11px] text-slate-500 dark:text-slate-400 leading-snug">
                       Active progression stage in the sales workflow.
                     </span>
                   </label>
@@ -282,8 +280,8 @@ export const PipelineStageModal: React.FC<PipelineStageModalProps> = ({
                   <label
                     className={`relative flex flex-col p-3 rounded-xl border cursor-pointer transition-all ${
                       stageType === 'won'
-                        ? 'border-emerald-600 bg-emerald-50/60 shadow-xs ring-1 ring-emerald-600'
-                        : 'border-slate-200 hover:border-slate-300 bg-white'
+                        ? 'border-emerald-600 dark:border-emerald-500 bg-emerald-50/60 dark:bg-emerald-950/30 shadow-xs ring-1 ring-emerald-600 dark:ring-emerald-500'
+                        : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-[#0b1120]'
                     }`}
                   >
                     <input
@@ -297,12 +295,12 @@ export const PipelineStageModal: React.FC<PipelineStageModalProps> = ({
                     <div className="flex items-center gap-2 mb-1.5">
                       <Trophy
                         className={`w-4 h-4 ${
-                          stageType === 'won' ? 'text-emerald-700' : 'text-slate-400'
+                          stageType === 'won' ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400'
                         }`}
                       />
-                      <span className="font-semibold text-xs text-slate-900">Closed Won</span>
+                      <span className="font-semibold text-xs text-slate-900 dark:text-white">Closed Won</span>
                     </div>
-                    <span className="text-[11px] text-slate-500 leading-snug">
+                    <span className="text-[11px] text-slate-500 dark:text-slate-400 leading-snug">
                       Deal successfully closed and contract awarded.
                     </span>
                   </label>
@@ -311,8 +309,8 @@ export const PipelineStageModal: React.FC<PipelineStageModalProps> = ({
                   <label
                     className={`relative flex flex-col p-3 rounded-xl border cursor-pointer transition-all ${
                       stageType === 'lost'
-                        ? 'border-rose-600 bg-rose-50/60 shadow-xs ring-1 ring-rose-600'
-                        : 'border-slate-200 hover:border-slate-300 bg-white'
+                        ? 'border-rose-600 dark:border-rose-500 bg-rose-50/60 dark:bg-rose-950/30 shadow-xs ring-1 ring-rose-600 dark:ring-rose-500'
+                        : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-[#0b1120]'
                     }`}
                   >
                     <input
@@ -326,12 +324,12 @@ export const PipelineStageModal: React.FC<PipelineStageModalProps> = ({
                     <div className="flex items-center gap-2 mb-1.5">
                       <XCircle
                         className={`w-4 h-4 ${
-                          stageType === 'lost' ? 'text-rose-700' : 'text-slate-400'
+                          stageType === 'lost' ? 'text-rose-600 dark:text-rose-400' : 'text-slate-400'
                         }`}
                       />
-                      <span className="font-semibold text-xs text-slate-900">Closed Lost</span>
+                      <span className="font-semibold text-xs text-slate-900 dark:text-white">Closed Lost</span>
                     </div>
-                    <span className="text-[11px] text-slate-500 leading-snug">
+                    <span className="text-[11px] text-slate-500 dark:text-slate-400 leading-snug">
                       Opportunity terminated or lost to competitors.
                     </span>
                   </label>
@@ -339,16 +337,16 @@ export const PipelineStageModal: React.FC<PipelineStageModalProps> = ({
               </div>
 
               {/* Informative Note */}
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 space-y-1">
-                <p className="font-medium text-slate-700">💡 Pipeline Configuration Rule:</p>
-                <p className="text-[11px] text-slate-500">
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#0b1120] border border-slate-200 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400 space-y-1">
+                <p className="font-medium text-slate-700 dark:text-slate-300">💡 Pipeline Configuration Rule:</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">
                   New stages are created as active by default. Inactive stages are hidden from deal creation dropdowns but preserve all historical opportunity logs.
                 </p>
               </div>
             </div>
 
             {/* Modal Actions */}
-            <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
               <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>
                 Cancel
               </Button>

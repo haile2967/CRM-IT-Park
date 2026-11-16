@@ -41,21 +41,21 @@ export const EscalationPoliciesTable: React.FC<EscalationPoliciesTableProps> = (
 }) => {
   if (isLoading) {
     return (
-      <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-2xs">
+      <div className="rounded-2xl border border-slate-200/90 dark:border-slate-800/80 bg-white dark:bg-[#0f172a]/95 overflow-hidden shadow-2xs dark:shadow-[0_4px_25px_rgba(0,0,0,0.4)]">
         <div className="p-8 space-y-4">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="flex items-center justify-between gap-4 animate-pulse">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-slate-100" />
+                <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800" />
                 <div className="space-y-1.5">
-                  <div className="h-4 w-32 bg-slate-100 rounded-md" />
-                  <div className="h-3 w-48 bg-slate-100 rounded-md" />
+                  <div className="h-4 w-32 bg-slate-100 dark:bg-slate-800 rounded-md" />
+                  <div className="h-3 w-48 bg-slate-100 dark:bg-slate-800 rounded-md" />
                 </div>
               </div>
-              <div className="h-6 w-24 bg-slate-100 rounded-full" />
-              <div className="h-6 w-24 bg-slate-100 rounded-full" />
-              <div className="h-6 w-28 bg-slate-100 rounded-full" />
-              <div className="h-8 w-24 bg-slate-100 rounded-lg" />
+              <div className="h-6 w-24 bg-slate-100 dark:bg-slate-800 rounded-full" />
+              <div className="h-6 w-24 bg-slate-100 dark:bg-slate-800 rounded-full" />
+              <div className="h-6 w-28 bg-slate-100 dark:bg-slate-800 rounded-full" />
+              <div className="h-8 w-24 bg-slate-100 dark:bg-slate-800 rounded-lg" />
             </div>
           ))}
         </div>
@@ -65,14 +65,14 @@ export const EscalationPoliciesTable: React.FC<EscalationPoliciesTableProps> = (
 
   if (policies.length === 0) {
     return (
-      <div className="p-12 text-center rounded-2xl border border-dashed border-slate-300 bg-white shadow-2xs">
-        <div className="w-12 h-12 mx-auto rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mb-3">
+      <div className="p-12 text-center rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0f172a]/95 shadow-2xs dark:shadow-[0_4px_25px_rgba(0,0,0,0.4)]">
+        <div className="w-12 h-12 mx-auto rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-3">
           <Clock className="w-6 h-6" />
         </div>
-        <h3 className="text-sm font-semibold text-slate-900">
+        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
           No Escalation Policies Configured
         </h3>
-        <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1">
+        <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto mt-1">
           Configure SLA thresholds and automated ticket reminder rules for Urgent, High, Medium, and Low priorities.
         </p>
       </div>
@@ -80,11 +80,11 @@ export const EscalationPoliciesTable: React.FC<EscalationPoliciesTableProps> = (
   }
 
   return (
-    <div className="rounded-2xl border border-slate-200/90 bg-white shadow-2xs overflow-hidden">
+    <div className="rounded-2xl border border-slate-200/90 dark:border-slate-800/80 bg-white dark:bg-[#0f172a]/95 shadow-2xs dark:shadow-[0_4px_25px_rgba(0,0,0,0.4)] overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="border-b border-slate-200/80 bg-slate-50/75 text-[11px] font-semibold uppercase tracking-wider text-slate-600">
+            <tr className="border-b border-slate-200/80 dark:border-slate-800/80 bg-slate-50/75 dark:bg-[#0b1120]/80 text-[11px] font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400">
               <th className="py-3.5 pl-6 pr-3">Ticket Priority</th>
               <th className="py-3.5 px-3">Reminder Threshold</th>
               <th className="py-3.5 px-3">Escalation SLA</th>
@@ -94,7 +94,7 @@ export const EscalationPoliciesTable: React.FC<EscalationPoliciesTableProps> = (
               <th className="py-3.5 pl-3 pr-6 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 text-xs">
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-xs">
             {policies.map((policy) => {
               const config = PRIORITY_CONFIG[policy.priority];
               const isSelected = selectedPriority === policy.priority;
@@ -105,10 +105,10 @@ export const EscalationPoliciesTable: React.FC<EscalationPoliciesTableProps> = (
                   key={policy.id}
                   className={`transition-colors duration-100 ${
                     isSelected
-                      ? 'bg-emerald-50/40'
+                      ? 'bg-cyan-50/40 dark:bg-cyan-950/20'
                       : policy.is_active
-                      ? 'hover:bg-slate-50/80'
-                      : 'bg-slate-50/40 hover:bg-slate-50 text-slate-400'
+                      ? 'hover:bg-slate-50/80 dark:hover:bg-slate-800/40'
+                      : 'bg-slate-50/40 dark:bg-[#0b1120]/40 hover:bg-slate-50 dark:hover:bg-[#0b1120] text-slate-400 dark:text-slate-500'
                   }`}
                 >
                   {/* Priority Tier */}
@@ -120,7 +120,7 @@ export const EscalationPoliciesTable: React.FC<EscalationPoliciesTableProps> = (
                         <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${config.dotClass}`} />
                         {policy.priority}
                       </span>
-                      <p className="text-[11px] text-slate-500 max-w-xs truncate">
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 max-w-xs truncate">
                         {config.description}
                       </p>
                     </div>
@@ -129,14 +129,14 @@ export const EscalationPoliciesTable: React.FC<EscalationPoliciesTableProps> = (
                   {/* Reminder Threshold with Quick Edit shortcut */}
                   <td className="py-4 px-3">
                     <div className="flex items-center gap-2">
-                      <div className="p-1 rounded-md bg-amber-50 text-amber-700 border border-amber-200/60">
+                      <div className="p-1 rounded-md bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/60">
                         <Bell className="w-3.5 h-3.5" />
                       </div>
                       <div>
-                        <div className="font-semibold text-slate-800 font-mono">
+                        <div className="font-semibold text-slate-800 dark:text-slate-200 font-mono">
                           {formatDuration(policy.reminder_threshold_minutes)}
                         </div>
-                        <span className="text-[11px] text-slate-400 font-mono">
+                        <span className="text-[11px] text-slate-400 dark:text-slate-500 font-mono">
                           {policy.reminder_threshold_minutes} mins
                         </span>
                       </div>
@@ -145,7 +145,7 @@ export const EscalationPoliciesTable: React.FC<EscalationPoliciesTableProps> = (
                           type="button"
                           onClick={() => onQuickAdjustReminder(policy)}
                           title="Quickly adjust reminder threshold"
-                          className="ml-1 p-1 rounded-md text-amber-700 hover:text-amber-900 hover:bg-amber-50 transition-colors cursor-pointer"
+                          className="ml-1 p-1 rounded-md text-amber-700 dark:text-amber-300 hover:text-amber-900 dark:hover:text-amber-200 hover:bg-amber-50 dark:hover:bg-amber-950/50 transition-colors cursor-pointer"
                         >
                           <Sliders className="w-3.5 h-3.5" />
                         </button>
@@ -156,14 +156,14 @@ export const EscalationPoliciesTable: React.FC<EscalationPoliciesTableProps> = (
                   {/* Escalation SLA */}
                   <td className="py-4 px-3">
                     <div className="flex items-center gap-2">
-                      <div className="p-1 rounded-md bg-rose-50 text-rose-700 border border-rose-200/60">
+                      <div className="p-1 rounded-md bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800/60">
                         <AlertTriangle className="w-3.5 h-3.5" />
                       </div>
                       <div>
-                        <div className="font-semibold text-rose-700 font-mono">
+                        <div className="font-semibold text-rose-700 dark:text-rose-400 font-mono">
                           {formatDuration(policy.escalation_threshold_minutes)}
                         </div>
-                        <span className="text-[11px] text-slate-400 font-mono">
+                        <span className="text-[11px] text-slate-400 dark:text-slate-500 font-mono">
                           {policy.escalation_threshold_minutes} mins
                         </span>
                       </div>
@@ -185,7 +185,7 @@ export const EscalationPoliciesTable: React.FC<EscalationPoliciesTableProps> = (
                           ? 'Business Hours'
                           : 'Calendar 24/7'}
                       </span>
-                      <p className="text-[10px] text-slate-400">
+                      <p className="text-[10px] text-slate-400 dark:text-slate-500">
                         {policy.time_basis === 'business_hours'
                           ? '8:30 - 17:30 ET'
                           : 'Continuous SLA'}
@@ -201,8 +201,8 @@ export const EscalationPoliciesTable: React.FC<EscalationPoliciesTableProps> = (
                         onClick={() => onToggleStatus(policy)}
                         className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors cursor-pointer ${
                           policy.is_active
-                            ? 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100/70'
-                            : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200/70'
+                            ? 'bg-cyan-50 dark:bg-cyan-950/40 text-cyan-800 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800/60 hover:bg-cyan-100/70 dark:hover:bg-cyan-900/60'
+                            : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:bg-slate-200/70 dark:hover:bg-slate-700/70'
                         }`}
                         title={
                           policy.is_active
@@ -212,12 +212,12 @@ export const EscalationPoliciesTable: React.FC<EscalationPoliciesTableProps> = (
                       >
                         {policy.is_active ? (
                           <>
-                            <Power className="w-3 h-3 text-emerald-600" />
+                            <Power className="w-3 h-3 text-cyan-600 dark:text-cyan-400" />
                             <span>Active</span>
                           </>
                         ) : (
                           <>
-                            <PowerOff className="w-3 h-3 text-slate-400" />
+                            <PowerOff className="w-3 h-3 text-slate-400 dark:text-slate-500" />
                             <span>Disabled</span>
                           </>
                         )}
@@ -226,8 +226,8 @@ export const EscalationPoliciesTable: React.FC<EscalationPoliciesTableProps> = (
                       <span
                         className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border ${
                           policy.is_active
-                            ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                            : 'bg-slate-100 text-slate-600 border-slate-200'
+                            ? 'bg-cyan-50 dark:bg-cyan-950/40 text-cyan-800 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800/60'
+                            : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700'
                         }`}
                       >
                         {policy.is_active ? 'Active' : 'Disabled'}
@@ -239,15 +239,15 @@ export const EscalationPoliciesTable: React.FC<EscalationPoliciesTableProps> = (
                   <td className="py-4 px-3">
                     {policy.created_by ? (
                       <div className="space-y-0.5">
-                        <span className="font-medium text-slate-800 block truncate max-w-[130px]">
+                        <span className="font-medium text-slate-800 dark:text-slate-200 block truncate max-w-[130px]">
                           {policy.created_by.name || 'System Admin'}
                         </span>
-                        <span className="text-[10px] text-slate-400 block truncate max-w-[130px]">
+                        <span className="text-[10px] text-slate-400 dark:text-slate-500 block truncate max-w-[130px]">
                           {policy.created_by.email}
                         </span>
                       </div>
                     ) : (
-                      <span className="text-slate-400 italic">System Default</span>
+                      <span className="text-slate-400 dark:text-slate-500 italic">System Default</span>
                     )}
                   </td>
 
@@ -259,7 +259,7 @@ export const EscalationPoliciesTable: React.FC<EscalationPoliciesTableProps> = (
                           <button
                             type="button"
                             onClick={() => onQuickAdjustReminder(policy)}
-                            className="p-1.5 rounded-lg text-slate-500 hover:text-amber-700 hover:bg-amber-50 transition-colors cursor-pointer"
+                            className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-amber-700 dark:hover:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-950/50 transition-colors cursor-pointer"
                             title="Adjust reminder threshold"
                           >
                             <Sliders className="w-4 h-4" />
@@ -268,7 +268,7 @@ export const EscalationPoliciesTable: React.FC<EscalationPoliciesTableProps> = (
                           <button
                             type="button"
                             onClick={() => onEdit(policy)}
-                            className="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
+                            className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
                             title="Edit escalation policy"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -277,7 +277,7 @@ export const EscalationPoliciesTable: React.FC<EscalationPoliciesTableProps> = (
                           <button
                             type="button"
                             onClick={() => onDelete(policy)}
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                            className="p-1.5 rounded-lg text-slate-400 dark:text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-colors cursor-pointer"
                             title="Delete escalation policy"
                           >
                             <Trash2 className="w-4 h-4" />

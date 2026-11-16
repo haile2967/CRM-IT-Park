@@ -37,8 +37,8 @@ export const LeadsTable: React.FC<LeadsTableProps> = ({
 }) => {
   if (isLoading) {
     return (
-      <div className="bg-white rounded-xl border border-slate-200/90 p-12 text-center text-xs text-slate-400">
-        <div className="w-6 h-6 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+      <div className="bg-white dark:bg-[#0f172a]/95 rounded-xl border border-slate-200/90 dark:border-slate-800/80 p-12 text-center text-xs text-slate-400 dark:text-slate-500 shadow-2xs">
+        <div className="w-6 h-6 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
         Loading leads pipeline...
       </div>
     );
@@ -46,12 +46,12 @@ export const LeadsTable: React.FC<LeadsTableProps> = ({
 
   if (leads.length === 0) {
     return (
-      <div className="bg-white rounded-xl border border-slate-200/90 p-12 text-center text-xs text-slate-500 space-y-2">
-        <div className="w-10 h-10 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-2">
+      <div className="bg-white dark:bg-[#0f172a]/95 rounded-xl border border-slate-200/90 dark:border-slate-800/80 p-12 text-center text-xs text-slate-500 dark:text-slate-400 space-y-2 shadow-2xs">
+        <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 flex items-center justify-center mx-auto mb-2">
           <Building2 className="w-5 h-5" />
         </div>
-        <p className="font-semibold text-slate-800">No leads found</p>
-        <p className="text-slate-400 max-w-sm mx-auto">
+        <p className="font-semibold text-slate-800 dark:text-slate-200">No leads found</p>
+        <p className="text-slate-400 dark:text-slate-500 max-w-sm mx-auto">
           No leads match your current search and filter criteria. Adjust your filters or register a new inbound lead.
         </p>
       </div>
@@ -59,10 +59,10 @@ export const LeadsTable: React.FC<LeadsTableProps> = ({
   }
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200/90 shadow-2xs overflow-hidden">
+    <div className="bg-white dark:bg-[#0f172a]/95 rounded-xl border border-slate-200/90 dark:border-slate-800/80 shadow-[0_4px_25px_rgba(0,0,0,0.4)] overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-left text-xs">
-          <thead className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider text-[10.5px]">
+          <thead className="bg-slate-50/80 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider text-[10.5px]">
             <tr>
               <th className="py-3 px-4">Prospect & Organization</th>
               <th className="py-3 px-3">Contact Details</th>
@@ -74,7 +74,7 @@ export const LeadsTable: React.FC<LeadsTableProps> = ({
             </tr>
           </thead>
 
-          <tbody className="divide-y divide-slate-100 text-slate-700">
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80 text-slate-700 dark:text-slate-300">
             {leads.map((lead) => {
               const isSlaBreached =
                 lead.status === 'new' &&
@@ -84,27 +84,27 @@ export const LeadsTable: React.FC<LeadsTableProps> = ({
                 <tr
                   key={lead.id}
                   onClick={() => onSelectLead(lead)}
-                  className="hover:bg-slate-50/80 cursor-pointer transition-colors group"
+                  className="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 cursor-pointer transition-colors group"
                 >
                   {/* Prospect & Company */}
                   <td className="py-3.5 px-4 min-w-[200px]">
                     <div className="space-y-0.5">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">
+                        <span className="font-bold text-slate-900 dark:text-white group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
                           {lead.name}
                         </span>
                         {isSlaBreached && (
                           <span
                             title="Uncontacted > 48 hours"
-                            className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded-sm text-[9.5px] font-bold bg-rose-100 text-rose-800"
+                            className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded-sm text-[9.5px] font-bold bg-rose-100 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300"
                           >
                             <AlertTriangle className="w-2.5 h-2.5" /> SLA
                           </span>
                         )}
                       </div>
 
-                      <div className="text-[11px] text-slate-500 flex items-center gap-1.5">
-                        <Building2 className="w-3 h-3 text-slate-400 shrink-0" />
+                      <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                        <Building2 className="w-3 h-3 text-slate-400 dark:text-slate-500 shrink-0" />
                         <span className="truncate">{lead.organization || 'Individual Inbound'}</span>
                       </div>
                     </div>
@@ -114,19 +114,19 @@ export const LeadsTable: React.FC<LeadsTableProps> = ({
                   <td className="py-3.5 px-3 min-w-[170px]">
                     <div className="space-y-0.5 text-[11px]">
                       {lead.email && (
-                        <div className="flex items-center gap-1.5 text-slate-600 truncate">
-                          <Mail className="w-3 h-3 text-slate-400 shrink-0" />
+                        <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300 truncate">
+                          <Mail className="w-3 h-3 text-slate-400 dark:text-slate-500 shrink-0" />
                           <span className="truncate">{lead.email}</span>
                         </div>
                       )}
                       {lead.phone && (
-                        <div className="flex items-center gap-1.5 text-slate-600 truncate">
-                          <Phone className="w-3 h-3 text-slate-400 shrink-0" />
+                        <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300 truncate">
+                          <Phone className="w-3 h-3 text-slate-400 dark:text-slate-500 shrink-0" />
                           <span>{lead.phone}</span>
                         </div>
                       )}
                       {!lead.email && !lead.phone && (
-                        <span className="text-slate-400 italic">No contact info</span>
+                        <span className="text-slate-400 dark:text-slate-500 italic">No contact info</span>
                       )}
                     </div>
                   </td>
@@ -134,10 +134,10 @@ export const LeadsTable: React.FC<LeadsTableProps> = ({
                   {/* Industry & Source */}
                   <td className="py-3.5 px-3 min-w-[150px]">
                     <div className="space-y-0.5">
-                      <span className="font-medium text-slate-800 block truncate">
+                      <span className="font-medium text-slate-800 dark:text-slate-200 block truncate">
                         {lead.category?.category_name || 'General Tech'}
                       </span>
-                      <span className="text-[10.5px] text-slate-400 block truncate">
+                      <span className="text-[10.5px] text-slate-400 dark:text-slate-500 block truncate">
                         {lead.source?.source_name || 'Inbound'}
                       </span>
                     </div>
@@ -151,8 +151,8 @@ export const LeadsTable: React.FC<LeadsTableProps> = ({
                   {/* Score & Priority */}
                   <td className="py-3.5 px-3 whitespace-nowrap">
                     <div className="flex items-center gap-1.5">
-                      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-sm bg-slate-100 text-[10px] font-mono font-bold text-slate-700">
-                        <Sparkles className="w-2.5 h-2.5 text-emerald-600" />
+                      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-sm bg-slate-100 dark:bg-slate-800 text-[10px] font-mono font-bold text-slate-700 dark:text-slate-300">
+                        <Sparkles className="w-2.5 h-2.5 text-cyan-600 dark:text-cyan-400" />
                         {lead.lead_score}
                       </span>
                       <LeadPriorityBadge priority={lead.priority} />
@@ -162,10 +162,10 @@ export const LeadsTable: React.FC<LeadsTableProps> = ({
                   {/* Owner */}
                   <td className="py-3.5 px-3 whitespace-nowrap min-w-[130px]">
                     <div className="flex items-center gap-1.5">
-                      <div className="w-5 h-5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold flex items-center justify-center">
+                      <div className="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[10px] font-bold flex items-center justify-center">
                         <User className="w-3 h-3" />
                       </div>
-                      <span className="text-xs text-slate-700 truncate">
+                      <span className="text-xs text-slate-700 dark:text-slate-300 truncate">
                         {lead.owner ? lead.owner.first_name : 'Unassigned'}
                       </span>
                     </div>
@@ -181,7 +181,7 @@ export const LeadsTable: React.FC<LeadsTableProps> = ({
                         <button
                           onClick={() => onConvertLead(lead)}
                           title="Convert to Account"
-                          className="px-2 py-1 rounded-md text-[11px] font-semibold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors flex items-center gap-1"
+                          className="px-2 py-1 rounded-md text-[11px] font-semibold bg-cyan-50 dark:bg-cyan-950/40 text-cyan-700 dark:text-cyan-400 hover:bg-cyan-100 dark:hover:bg-cyan-900/60 transition-colors flex items-center gap-1"
                         >
                           <CheckCircle2 className="w-3 h-3" />
                           <span>Convert</span>
@@ -191,7 +191,7 @@ export const LeadsTable: React.FC<LeadsTableProps> = ({
                       <button
                         onClick={() => onAssignLead(lead)}
                         title="Assign Lead"
-                        className="p-1.5 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+                        className="p-1.5 rounded-md text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                       >
                         <UserCheck className="w-3.5 h-3.5" />
                       </button>
@@ -199,7 +199,7 @@ export const LeadsTable: React.FC<LeadsTableProps> = ({
                       <button
                         onClick={() => onEditLead(lead)}
                         title="Edit Lead"
-                        className="p-1.5 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+                        className="p-1.5 rounded-md text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                       >
                         <Edit2 className="w-3.5 h-3.5" />
                       </button>
@@ -211,7 +211,7 @@ export const LeadsTable: React.FC<LeadsTableProps> = ({
                           }
                         }}
                         title="Delete Lead"
-                        className="p-1.5 rounded-md text-slate-400 hover:text-rose-600 hover:bg-rose-50"
+                        className="p-1.5 rounded-md text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
