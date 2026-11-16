@@ -42,7 +42,6 @@ export const DeleteEscalationPolicyModal: React.FC<
         'Failed to delete escalation policy. Please check system integrity rules.';
       setErrorMessage(msg);
 
-      // If tickets have history logged against it, allow one-click deactivation
       if (msg.toLowerCase().includes('deactivate')) {
         setCanDeactivateInstead(true);
       }
@@ -69,19 +68,19 @@ export const DeleteEscalationPolicyModal: React.FC<
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="relative w-full max-w-md rounded-2xl bg-white shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 dark:bg-black/75 backdrop-blur-xs flex items-center justify-center p-4">
+      <div className="relative w-full max-w-md rounded-2xl bg-white dark:bg-[#0f172a] shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-rose-50/50">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-rose-50/50 dark:bg-rose-950/20">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-rose-100 text-rose-700">
+            <div className="p-2 rounded-xl bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400">
               <AlertTriangle className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-slate-900">
+              <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                 Delete Escalation Policy
               </h3>
-              <p className="text-xs text-rose-700 font-medium">
+              <p className="text-xs text-rose-700 dark:text-rose-400 font-medium">
                 SLA configuration for {policy.priority} Priority
               </p>
             </div>
@@ -90,7 +89,7 @@ export const DeleteEscalationPolicyModal: React.FC<
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -104,33 +103,33 @@ export const DeleteEscalationPolicyModal: React.FC<
             </Alert>
           )}
 
-          <p className="text-xs text-slate-600 leading-relaxed">
+          <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
             Are you sure you want to permanently delete the escalation policy for{' '}
-            <strong className="text-slate-900 font-semibold">{policy.priority} Priority</strong>?
+            <strong className="text-slate-900 dark:text-slate-100 font-semibold">{policy.priority} Priority</strong>?
           </p>
 
-          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-1.5 font-mono">
+          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-[#0b1120] border border-slate-200 dark:border-slate-800 text-xs space-y-1.5 font-mono">
             <div className="flex justify-between">
-              <span className="text-slate-500 font-sans">Priority Tier:</span>
+              <span className="text-slate-500 dark:text-slate-400 font-sans">Priority Tier:</span>
               <span className={`px-2 py-0.5 rounded-full border text-[11px] ${priorityMeta.badgeClass}`}>
                 {policy.priority}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-500 font-sans">Reminder Threshold:</span>
-              <span className="text-slate-800 font-semibold">
+              <span className="text-slate-500 dark:text-slate-400 font-sans">Reminder Threshold:</span>
+              <span className="text-slate-800 dark:text-slate-200 font-semibold">
                 {policy.reminder_threshold_minutes} min ({formatDuration(policy.reminder_threshold_minutes)})
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-500 font-sans">Escalation Threshold:</span>
-              <span className="text-rose-700 font-semibold">
+              <span className="text-slate-500 dark:text-slate-400 font-sans">Escalation Threshold:</span>
+              <span className="text-rose-700 dark:text-rose-400 font-semibold">
                 {policy.escalation_threshold_minutes} min ({formatDuration(policy.escalation_threshold_minutes)})
               </span>
             </div>
           </div>
 
-          <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-800 space-y-1">
+          <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-xs text-amber-800 dark:text-amber-300 space-y-1">
             <span className="font-semibold block">⚠️ Data Integrity Rule:</span>
             <span>
               If tickets have already logged escalation history under this policy, deletion will be blocked by the server. In that case, deactivating the policy preserves audit compliance.
@@ -138,7 +137,7 @@ export const DeleteEscalationPolicyModal: React.FC<
           </div>
 
           {/* Actions */}
-          <div className="flex flex-col sm:flex-row items-center justify-end gap-2 pt-4 border-t border-slate-100">
+          <div className="flex flex-col sm:flex-row items-center justify-end gap-2 pt-4 border-t border-slate-100 dark:border-slate-800">
             <Button
               variant="outline"
               size="sm"

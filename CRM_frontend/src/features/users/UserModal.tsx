@@ -183,19 +183,19 @@ export const UserModal: React.FC<UserModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-in fade-in duration-150 overflow-y-auto">
-      <div className="bg-white rounded-2xl shadow-xl border border-slate-200 max-w-lg w-full my-8 overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs animate-in fade-in duration-150 overflow-y-auto">
+      <div className="bg-white dark:bg-[#0f172a] rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 max-w-lg w-full my-8 overflow-hidden transition-colors">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-100">
+            <div className="w-8 h-8 rounded-lg bg-cyan-50 dark:bg-cyan-950/40 text-cyan-700 dark:text-cyan-400 flex items-center justify-center border border-cyan-100 dark:border-cyan-800/50">
               {isEditing ? <UserCheck className="w-4 h-4" /> : <UserPlus className="w-4 h-4" />}
             </div>
             <div>
-              <h3 className="font-semibold text-slate-900 text-sm">
+              <h3 className="font-semibold text-slate-900 dark:text-white text-sm">
                 {isEditing ? 'Edit User Profile & Role' : 'Create New CRM User'}
               </h3>
-              <p className="text-[11px] text-slate-500">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
                 {isEditing
                   ? `Update identity, role permissions, or credentials for ${userToEdit?.full_name}`
                   : 'Register a staff member and grant portal permissions'}
@@ -204,7 +204,7 @@ export const UserModal: React.FC<UserModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-600 p-1 rounded-md hover:bg-slate-50 transition-colors"
+            className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 p-1 rounded-md hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -263,11 +263,11 @@ export const UserModal: React.FC<UserModalProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1">
                 <div className="flex items-center justify-between">
-                  <label className="block text-xs font-medium text-slate-700">
+                  <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">
                     Assigned Role <span className="text-rose-500">*</span>
                   </label>
                   {!canAssignRole && (
-                    <span className="text-[10px] text-slate-400 flex items-center gap-1 font-mono">
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500 flex items-center gap-1 font-mono">
                       <Lock className="w-3 h-3" /> Locked
                     </span>
                   )}
@@ -278,7 +278,7 @@ export const UserModal: React.FC<UserModalProps> = ({
                     onChange={(e) => setRoleId(Number(e.target.value))}
                     required
                     disabled={!canAssignRole || isLoadingRoles}
-                    className="w-full h-9.5 px-3 py-2 text-xs bg-white border border-slate-300 rounded-lg text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-emerald-600/30 focus:border-emerald-600 disabled:bg-slate-50 disabled:text-slate-400 transition-colors"
+                    className="w-full h-9.5 px-3 py-2 text-xs bg-white dark:bg-slate-900/90 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-100 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 disabled:bg-slate-50 dark:disabled:bg-slate-800/50 disabled:text-slate-400 dark:disabled:text-slate-600 transition-colors"
                   >
                     <option value="" disabled>
                       {isLoadingRoles ? 'Loading available roles...' : 'Select a role'}
@@ -291,7 +291,7 @@ export const UserModal: React.FC<UserModalProps> = ({
                   </select>
                 </div>
                 {!canAssignRole && (
-                  <p className="text-[10px] text-slate-400">
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500">
                     Modifying user roles requires the <code>users.assign_role</code> permission.
                   </p>
                 )}
@@ -299,13 +299,13 @@ export const UserModal: React.FC<UserModalProps> = ({
 
               {isEditing && (
                 <div className="space-y-1">
-                  <label className="block text-xs font-medium text-slate-700">
+                  <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">
                     Account Status <span className="text-rose-500">*</span>
                   </label>
                   <select
                     value={status}
                     onChange={(e) => setStatus(e.target.value as UserStatus)}
-                    className="w-full h-9.5 px-3 py-2 text-xs bg-white border border-slate-300 rounded-lg text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-emerald-600/30 focus:border-emerald-600 transition-colors"
+                    className="w-full h-9.5 px-3 py-2 text-xs bg-white dark:bg-slate-900/90 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-100 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-colors"
                   >
                     <option value="active">Active (Access Allowed)</option>
                     <option value="inactive">Inactive (Access Suspended)</option>
@@ -316,12 +316,12 @@ export const UserModal: React.FC<UserModalProps> = ({
 
             {/* Password Section (Only for New User Creation) */}
             {!isEditing && (
-              <div className="pt-2 border-t border-slate-100 space-y-3">
+              <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 space-y-3">
                 <div>
-                  <span className="text-xs font-semibold text-slate-900 block">
+                  <span className="text-xs font-semibold text-slate-900 dark:text-white block">
                     Security Credentials
                   </span>
-                  <span className="text-[11px] text-slate-500">
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400">
                     Minimum 8 characters. User will use this to sign in.
                   </span>
                 </div>
@@ -351,7 +351,7 @@ export const UserModal: React.FC<UserModalProps> = ({
           </div>
 
           {/* Footer */}
-          <div className="px-6 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-2.5">
+          <div className="px-6 py-3.5 bg-slate-50 dark:bg-slate-900/90 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-end gap-2.5">
             <Button variant="outline" size="sm" onClick={onClose} disabled={isSubmitting} type="button">
               Cancel
             </Button>

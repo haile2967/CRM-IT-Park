@@ -8,11 +8,11 @@ export const LeadStatusBadge: React.FC<{ status: LeadStatus; size?: 'sm' | 'md' 
 }) => {
   const configs: Record<
     LeadStatus,
-    { label: string; variant: 'slate' | 'blue' | 'purple' | 'emerald' | 'rose' }
+    { label: string; variant: 'slate' | 'blue' | 'purple' | 'emerald' | 'rose' | 'cyan' }
   > = {
     new: { label: 'New Inbound', variant: 'blue' },
     contacted: { label: 'Contacted', variant: 'purple' },
-    qualified: { label: 'Qualified', variant: 'emerald' },
+    qualified: { label: 'Qualified', variant: 'cyan' },
     converted: { label: 'Converted', variant: 'emerald' },
     unqualified: { label: 'Unqualified', variant: 'rose' },
   };

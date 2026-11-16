@@ -85,20 +85,20 @@ export const QuickReminderModal: React.FC<QuickReminderModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="relative w-full max-w-md rounded-2xl bg-white shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 dark:bg-black/75 backdrop-blur-xs flex items-center justify-center p-4">
+      <div className="relative w-full max-w-md rounded-2xl bg-white dark:bg-[#0f172a] shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50/80">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-[#0b1120]">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-amber-50 text-amber-700 border border-amber-200/80">
+            <div className="p-2 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200/80 dark:border-amber-800/60">
               <Sliders className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-slate-900">
+              <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                 Adjust Reminder Threshold
               </h3>
-              <p className="text-xs text-slate-500">
-                Quick SLA update for <strong className="text-slate-800">{policy.priority}</strong> priority
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Quick SLA update for <strong className="text-slate-800 dark:text-slate-200">{policy.priority}</strong> priority
               </p>
             </div>
           </div>
@@ -106,7 +106,7 @@ export const QuickReminderModal: React.FC<QuickReminderModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -121,9 +121,9 @@ export const QuickReminderModal: React.FC<QuickReminderModalProps> = ({
           )}
 
           {/* Current SLA Context Banner */}
-          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-2">
+          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-[#0b1120] border border-slate-200 dark:border-slate-800 text-xs space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-slate-600 font-medium">Ticket Priority:</span>
+              <span className="text-slate-600 dark:text-slate-400 font-medium">Ticket Priority:</span>
               <span
                 className={`inline-flex items-center px-2 py-0.5 rounded-full font-semibold border ${priorityMeta.badgeClass}`}
               >
@@ -132,12 +132,12 @@ export const QuickReminderModal: React.FC<QuickReminderModalProps> = ({
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-600 font-medium">Fixed Escalation SLA:</span>
-              <span className="font-mono font-bold text-rose-700">
+              <span className="text-slate-600 dark:text-slate-400 font-medium">Fixed Escalation SLA:</span>
+              <span className="font-mono font-bold text-rose-700 dark:text-rose-400">
                 {policy.escalation_threshold_minutes} mins ({formatDuration(maxEscalationMin)})
               </span>
             </div>
-            <p className="text-[11px] text-slate-500 pt-1 border-t border-slate-200/70">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 pt-1 border-t border-slate-200/70 dark:border-slate-800">
               The reminder must fire <strong>before</strong> the {formatDuration(maxEscalationMin)}{' '}
               escalation mark so the assigned officer can respond in time.
             </p>
@@ -160,7 +160,7 @@ export const QuickReminderModal: React.FC<QuickReminderModalProps> = ({
           {/* Quick Preset Buttons */}
           {presets.length > 0 && (
             <div className="space-y-1.5">
-              <span className="text-xs font-medium text-slate-700">Quick Presets:</span>
+              <span className="text-xs font-medium text-slate-700 dark:text-slate-300">Quick Presets:</span>
               <div className="flex flex-wrap gap-1.5">
                 {presets.map((val) => (
                   <button
@@ -169,8 +169,8 @@ export const QuickReminderModal: React.FC<QuickReminderModalProps> = ({
                     onClick={() => setMinutes(val)}
                     className={`px-2.5 py-1 text-xs font-mono rounded-lg border transition-colors cursor-pointer ${
                       minutes === val
-                        ? 'bg-amber-100 text-amber-900 border-amber-300 font-bold'
-                        : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                        ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 border-amber-300 dark:border-amber-700 font-bold'
+                        : 'bg-white dark:bg-slate-900/80 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
                     }`}
                   >
                     {formatDuration(val)}
@@ -181,7 +181,7 @@ export const QuickReminderModal: React.FC<QuickReminderModalProps> = ({
           )}
 
           {/* Actions */}
-          <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100">
+          <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100 dark:border-slate-800">
             <Button variant="outline" size="sm" type="button" onClick={onClose} disabled={isSubmitting}>
               Cancel
             </Button>

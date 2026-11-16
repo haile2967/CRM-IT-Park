@@ -80,19 +80,19 @@ export const DeleteStageModal: React.FC<DeleteStageModalProps> = ({
     <div className="fixed inset-0 z-50 overflow-y-auto">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity"
+        className="fixed inset-0 bg-slate-950/70 backdrop-blur-xs transition-opacity"
         onClick={onClose}
       />
 
       <div className="flex min-h-full items-center justify-center p-4">
         <div
-          className="relative w-full max-w-md rounded-2xl bg-white shadow-2xl border border-slate-200/90 overflow-hidden transform transition-all"
+          className="relative w-full max-w-md rounded-2xl bg-white dark:bg-[#0f172a] shadow-2xl border border-slate-200/90 dark:border-slate-800 overflow-hidden transform transition-all"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-            <div className="flex items-center gap-2.5 text-rose-600">
-              <div className="p-2 rounded-xl bg-rose-100 text-rose-600">
+          <div className="px-6 py-4 bg-slate-50 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+            <div className="flex items-center gap-2.5 text-rose-600 dark:text-rose-400">
+              <div className="p-2 rounded-xl bg-rose-100 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400">
                 {hasLinkedOpportunities ? (
                   <ShieldAlert className="w-5 h-5" />
                 ) : (
@@ -100,19 +100,19 @@ export const DeleteStageModal: React.FC<DeleteStageModalProps> = ({
                 )}
               </div>
               <div>
-                <h3 className="font-bold text-sm text-slate-900">
+                <h3 className="font-bold text-sm text-slate-900 dark:text-white">
                   {hasLinkedOpportunities
                     ? 'Deletion Blocked: Active Opportunities'
                     : 'Confirm Stage Deletion'}
                 </h3>
-                <p className="text-[11px] text-slate-500">Pipeline Stage: {stage.stage_name}</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">Pipeline Stage: {stage.stage_name}</p>
               </div>
             </div>
 
             <button
               type="button"
               onClick={onClose}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition-colors"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -128,34 +128,34 @@ export const DeleteStageModal: React.FC<DeleteStageModalProps> = ({
 
             {hasLinkedOpportunities ? (
               <div className="space-y-3">
-                <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-1.5 leading-relaxed">
-                  <div className="flex items-center gap-2 font-semibold text-amber-800">
-                    <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                <div className="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 text-amber-900 dark:text-amber-200 text-xs space-y-1.5 leading-relaxed">
+                  <div className="flex items-center gap-2 font-semibold text-amber-800 dark:text-amber-300">
+                    <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
                     <span>Integrity Protection Active</span>
                   </div>
                   <p>
-                    Stage <strong className="font-semibold text-slate-900">"{stage.stage_name}"</strong> currently has{' '}
-                    <strong className="text-amber-800 font-bold">{linkedOpportunities} linked {linkedOpportunities === 1 ? 'deal' : 'deals'}</strong>.
+                    Stage <strong className="font-semibold text-slate-900 dark:text-white">"{stage.stage_name}"</strong> currently has{' '}
+                    <strong className="text-amber-800 dark:text-amber-300 font-bold">{linkedOpportunities} linked {linkedOpportunities === 1 ? 'deal' : 'deals'}</strong>.
                   </p>
-                  <p className="text-[11px] text-amber-700">
+                  <p className="text-[11px] text-amber-700 dark:text-amber-400">
                     To maintain audit trails and CRM contract reporting, stages with active deals cannot be permanently deleted. Instead, deactivate this stage so it is hidden from future pipeline selections without affecting existing records.
                   </p>
                 </div>
               </div>
             ) : (
-              <div className="space-y-3 text-xs text-slate-600 leading-relaxed">
+              <div className="space-y-3 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
                 <p>
                   Are you sure you want to permanently delete{' '}
-                  <strong className="font-semibold text-slate-900">"{stage.stage_name}"</strong>?
+                  <strong className="font-semibold text-slate-900 dark:text-white">"{stage.stage_name}"</strong>?
                 </p>
-                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-[11px]">
+                <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/60 text-rose-800 dark:text-rose-300 text-[11px]">
                   <strong>Warning:</strong> This action cannot be undone. Once deleted, this stage and its display order position will be removed permanently.
                 </div>
               </div>
             )}
 
             {/* Actions */}
-            <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
+            <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-800">
               <Button type="button" variant="outline" size="sm" onClick={onClose} disabled={isDeleting || isDeactivating}>
                 Cancel
               </Button>
