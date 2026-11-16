@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\EscalationPolicyController;
 use App\Http\Controllers\Api\LeadController;
 use App\Http\Controllers\Api\PermissionController;
@@ -108,6 +110,28 @@ $registerRoutes = function () {
         // Reference Data Dropdowns
         Route::get('/lead-sources', [ReferenceDataController::class, 'leadSources']);
         Route::get('/lead-categories', [ReferenceDataController::class, 'leadCategories']);
+        Route::get('/account-types', [ReferenceDataController::class, 'accountTypes']);
+
+        // Accounts Management
+        Route::prefix('accounts')->group(function () {
+            Route::get('/metrics', [AccountController::class, 'metrics']);
+            Route::get('/', [AccountController::class, 'index']);
+            Route::post('/', [AccountController::class, 'store']);
+            Route::get('/{account}', [AccountController::class, 'show']);
+            Route::put('/{account}', [AccountController::class, 'update']);
+            Route::patch('/{account}/transfer-ownership', [AccountController::class, 'transferOwnership']);
+            Route::delete('/{account}', [AccountController::class, 'destroy']);
+        });
+
+        // Contacts Management
+        Route::prefix('contacts')->group(function () {
+            Route::get('/', [ContactController::class, 'index']);
+            Route::post('/', [ContactController::class, 'store']);
+            Route::get('/{contact}', [ContactController::class, 'show']);
+            Route::put('/{contact}', [ContactController::class, 'update']);
+            Route::patch('/{contact}/primary', [ContactController::class, 'setPrimary']);
+            Route::delete('/{contact}', [ContactController::class, 'destroy']);
+        });
 
         // Leads Pipeline Management
         Route::prefix('leads')->group(function () {

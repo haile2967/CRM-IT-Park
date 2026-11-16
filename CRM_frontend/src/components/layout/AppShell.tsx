@@ -3,6 +3,8 @@ import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutGrid,
   Users2,
+  Building2,
+  Contact2,
   LogOut,
   ChevronRight,
   ChevronDown,
@@ -45,6 +47,8 @@ interface NavItemDef {
 const navDefinitions: NavItemDef[] = [
   { key: 'dashboard', to: '/dashboard', icon: LayoutGrid },
   { key: 'leads', to: '/leads', icon: Users2 },
+  { key: 'accounts', to: '/accounts', icon: Building2 },
+  { key: 'contacts', to: '/contacts', icon: Contact2 },
   { key: 'stages', to: '/pipeline-stages', icon: Layers },
   { key: 'escalations', to: '/escalations', icon: Clock },
   { key: 'users', to: '/users', icon: UserCog, permission: 'users.view' },
@@ -55,6 +59,8 @@ const translations = {
   en: {
     dashboard: 'Dashboard',
     leads: 'Leads Pipeline',
+    accounts: 'Corporate Accounts',
+    contacts: 'Contacts Directory',
     stages: 'Pipeline Stages',
     escalations: 'Escalation Policies',
     users: 'User Management',
@@ -77,6 +83,8 @@ const translations = {
   am: {
     dashboard: 'ዳሽቦርድ',
     leads: 'የመሪዎች መስመር',
+    accounts: 'የድርጅቶች ሂሳቦች',
+    contacts: 'የተወካዮች ማውጫ',
     stages: 'የሂደት ደረጃዎች',
     escalations: 'የማስጠንቀቂያ ፖሊሲዎች',
     users: 'የተጠቃሚዎች አስተዳደር',

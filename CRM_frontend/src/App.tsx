@@ -7,6 +7,8 @@ import ChangePasswordPage from './features/auth/ChangePasswordPage';
 import OAuthCallbackPage from './features/auth/OAuthCallbackPage';
 import DashboardPage from './features/dashboard/DashboardPage';
 import LeadsPage from './features/leads/LeadsPage';
+import AccountsPage from './features/accounts/AccountsPage';
+import ContactsPage from './features/contacts/ContactsPage';
 import UsersPage from './features/users/UsersPage';
 import RolesPage from './features/roles/RolesPage';
 import PipelineStagesPage from './features/pipelineStages/PipelineStagesPage';
@@ -30,12 +32,12 @@ export default function App() {
             <Route path="/change-password" element={<ChangePasswordPage />} />
             <Route path="/settings/security" element={<ChangePasswordPage />} />
             <Route path="/leads" element={<LeadsPage />} />
-            <Route path="/users" element={<UsersPage />} />
-            <Route path="/roles" element={<RolesPage />} />
+            <Route path="/accounts" element={<AccountsPage />} />
+            <Route path="/contacts" element={<ContactsPage />} />
             <Route path="/pipeline-stages" element={<PipelineStagesPage />} />
             <Route path="/escalations" element={<EscalationPoliciesPage />} />
-            <Route path="/accounts" element={<Navigate to="/dashboard" replace />} />
-            <Route path="/contacts" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/users" element={<UsersPage />} />
+            <Route path="/roles" element={<RolesPage />} />
             <Route path="/opportunities" element={<Navigate to="/dashboard" replace />} />
             <Route path="/tickets" element={<Navigate to="/dashboard" replace />} />
           </Route>
