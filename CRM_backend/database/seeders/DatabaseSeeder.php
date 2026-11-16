@@ -53,5 +53,8 @@ class DatabaseSeeder extends Seeder
 
         // 5. Seed Account Types, Demo Corporate Accounts and Primary Contacts
         $this->call(AccountReferenceSeeder::class);
+
+        // 6. Seed Opportunity Types, Demo Commercial Deals and Stage Histories
+        $this->call(OpportunityReferenceSeeder::class);
     }
 }

@@ -5,6 +5,7 @@ import {
   Users2,
   Building2,
   Contact2,
+  Briefcase,
   LogOut,
   ChevronRight,
   ChevronDown,
@@ -35,6 +36,7 @@ interface AppShellProps {
   children: React.ReactNode;
   title?: string;
   subtitle?: string;
+  fullWidth?: boolean;
 }
 
 interface NavItemDef {
@@ -47,6 +49,7 @@ interface NavItemDef {
 const navDefinitions: NavItemDef[] = [
   { key: 'dashboard', to: '/dashboard', icon: LayoutGrid },
   { key: 'leads', to: '/leads', icon: Users2 },
+  { key: 'opportunities', to: '/opportunities', icon: Briefcase },
   { key: 'accounts', to: '/accounts', icon: Building2 },
   { key: 'contacts', to: '/contacts', icon: Contact2 },
   { key: 'stages', to: '/pipeline-stages', icon: Layers },
@@ -59,6 +62,7 @@ const translations = {
   en: {
     dashboard: 'Dashboard',
     leads: 'Leads Pipeline',
+    opportunities: 'Deals & Pipeline',
     accounts: 'Corporate Accounts',
     contacts: 'Contacts Directory',
     stages: 'Pipeline Stages',
@@ -83,6 +87,7 @@ const translations = {
   am: {
     dashboard: 'ዳሽቦርድ',
     leads: 'የመሪዎች መስመር',
+    opportunities: 'የንግድ እድሎችና ስምምነቶች',
     accounts: 'የድርጅቶች ሂሳቦች',
     contacts: 'የተወካዮች ማውጫ',
     stages: 'የሂደት ደረጃዎች',
@@ -110,6 +115,7 @@ export const AppShell: React.FC<AppShellProps> = ({
   children,
   title = 'Overview',
   subtitle = 'Ethiopian IT Park Relationship Management',
+  fullWidth = false,
 }) => {
   const { user, logout } = useAuth();
   const { can } = usePermission();
@@ -585,7 +591,7 @@ export const AppShell: React.FC<AppShellProps> = ({
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 p-6 lg:p-8 max-w-7xl w-full mx-auto">
+        <main className={`flex-1 p-6 lg:p-8 w-full mx-auto ${fullWidth ? 'max-w-[1700px]' : 'max-w-7xl'}`}>
           {children}
         </main>
       </div>
