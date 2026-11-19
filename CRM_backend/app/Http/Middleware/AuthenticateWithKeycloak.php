@@ -101,20 +101,19 @@ class AuthenticateWithKeycloak
                     $user->update($updateData);
                 }
             } else {
-                $fallbackRole = $matchedRole ?? Role::first();
-
-                $user = User::create([
+                // Approach 2: Strict Enterprise Security — Pre-provisioned accounts only.
+                // Reject logins for emails that have not been explicitly authorized by a CRM Administrator.
+                Log::warning('SSO Login Rejected: Unprovisioned Account', [
+                    'email' => $email,
                     'keycloak_id' => $keycloakId,
-                    'email'       => $email,
-                    'first_name'  => $firstName,
-                    'last_name'   => $lastName,
-                    'status'      => 'active',
-                    'last_login_at' => now(),
+                    'ip' => $request->ip(),
                 ]);
 
-                if ($fallbackRole) {
-                    $user->syncRoles([$fallbackRole->name]);
-                }
+                return new \Illuminate\Http\JsonResponse([
+                    'success' => false,
+                    'message' => "Access Denied: The account ({$email}) has not been provisioned in the Ethiopian IT Park CRM. Please contact your system administrator to register your account.",
+                    'code' => 'ACCOUNT_NOT_PROVISIONED',
+                ], 403);
             }
 
             // 6. Check active status
