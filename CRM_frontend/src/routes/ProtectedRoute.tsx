@@ -6,20 +6,13 @@ export const ProtectedRoute: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
 
-  // Detect if an authentication session exists or is currently completing code exchange from Keycloak
-  const hasAuthHint = Boolean(
-    localStorage.getItem('crm_token') ||
-    window.location.hash.includes('code=') ||
-    window.location.search.includes('code=')
-  );
-
-  // During brief initialization:
-  // If the user has an active session or is returning from Keycloak login, render destination page directly
   if (isLoading) {
-    if (hasAuthHint) {
-      return <Outlet />;
-    }
-    return <div className="min-h-screen bg-slate-50" />;
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center gap-3">
+        <div className="w-7 h-7 border-2 border-slate-900 dark:border-white border-t-transparent rounded-full animate-spin" />
+        <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Verifying session...</p>
+      </div>
+    );
   }
 
   if (!isAuthenticated) {

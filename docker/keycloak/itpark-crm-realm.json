@@ -5,45 +5,6 @@
   "notBefore" : 0,
   "defaultSignatureAlgorithm" : "RS256",
   "loginTheme" : "itpark-crm",
-  "identityProviders" : [
-    {
-      "alias" : "google",
-      "displayName" : "Google",
-      "providerId" : "google",
-      "enabled" : true,
-      "updateProfileFirstLoginMode" : "on",
-      "trustEmail" : true,
-      "storeToken" : false,
-      "addReadTokenRoleOnCreate" : false,
-      "authenticateByDefault" : false,
-      "linkOnly" : false,
-      "firstBrokerLoginFlowAlias" : "first broker login",
-      "config" : {
-        "syncMode" : "IMPORT",
-        "clientSecret" : "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",
-        "clientId" : "906226513804-hhfspfgrjie1h360vmh4vuachv15sn8q.apps.googleusercontent.com",
-        "useJwksUrl" : "true"
-      }
-    },
-    {
-      "alias" : "github",
-      "displayName" : "GitHub",
-      "providerId" : "github",
-      "enabled" : true,
-      "updateProfileFirstLoginMode" : "on",
-      "trustEmail" : true,
-      "storeToken" : false,
-      "addReadTokenRoleOnCreate" : false,
-      "authenticateByDefault" : false,
-      "linkOnly" : false,
-      "firstBrokerLoginFlowAlias" : "first broker login",
-      "config" : {
-        "syncMode" : "IMPORT",
-        "clientSecret" : "b1a6fde467431a6ed1e184690b835918281ca7e1",
-        "clientId" : "Ov23liV5zfKvxX8FSv5D"
-      }
-    }
-  ],
   "revokeRefreshToken" : false,
   "refreshTokenMaxReuse" : 0,
   "accessTokenLifespan" : 300,
@@ -1335,13 +1296,14 @@
     "internalId" : "c4d8c1e2-16cf-41cd-83b8-d22853a8b3b6",
     "providerId" : "github",
     "enabled" : true,
-    "updateProfileFirstLoginMode" : "on",
-    "trustEmail" : false,
+    "updateProfileFirstLoginMode" : "off",
+    "trustEmail" : true,
     "storeToken" : false,
     "addReadTokenRoleOnCreate" : false,
     "authenticateByDefault" : false,
     "linkOnly" : false,
     "hideOnLogin" : false,
+    "firstBrokerLoginFlowAlias" : "first broker login",
     "config" : {
       "syncMode" : "IMPORT",
       "clientSecret" : "b1a6fde467431a6ed1e184690b835918281ca7e1",
@@ -1354,21 +1316,41 @@
     "internalId" : "7e9ef3f2-5923-459d-a18b-c602ed326840",
     "providerId" : "google",
     "enabled" : true,
-    "updateProfileFirstLoginMode" : "on",
-    "trustEmail" : false,
+    "updateProfileFirstLoginMode" : "off",
+    "trustEmail" : true,
     "storeToken" : false,
     "addReadTokenRoleOnCreate" : false,
     "authenticateByDefault" : false,
     "linkOnly" : false,
     "hideOnLogin" : false,
+    "firstBrokerLoginFlowAlias" : "first broker login",
     "config" : {
       "syncMode" : "IMPORT",
       "clientSecret" : "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",
       "clientId" : "906226513804-hhfspfgrjie1h360vmh4vuachv15sn8q.apps.googleusercontent.com",
+      "useJwksUrl" : "true",
       "guiOrder" : "1"
     }
   } ],
-  "identityProviderMappers" : [ ],
+  "identityProviderMappers" : [ {
+    "id" : "0e4a0299-9b05-4b85-b96c-bf65dad1a56a",
+    "name" : "github-name-to-lastname",
+    "identityProviderAlias" : "github",
+    "identityProviderMapper" : "github-user-attribute-mapper",
+    "config" : {
+      "userAttribute" : "lastName",
+      "jsonField" : "name"
+    }
+  }, {
+    "id" : "9c699e7d-f70e-4325-8e35-e6fd449dcce8",
+    "name" : "github-login-to-firstname",
+    "identityProviderAlias" : "github",
+    "identityProviderMapper" : "github-user-attribute-mapper",
+    "config" : {
+      "userAttribute" : "firstName",
+      "jsonField" : "login"
+    }
+  } ],
   "components" : {
     "org.keycloak.services.clientregistration.policy.ClientRegistrationPolicy" : [ {
       "id" : "e51eba65-9119-4595-b6ed-86e38e5375e0",
@@ -1857,7 +1839,7 @@
       "authenticatorConfig" : "review profile config",
       "authenticator" : "idp-review-profile",
       "authenticatorFlow" : false,
-      "requirement" : "REQUIRED",
+      "requirement" : "DISABLED",
       "priority" : 10,
       "autheticatorFlow" : false,
       "userSetupAllowed" : false

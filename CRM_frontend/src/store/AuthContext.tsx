@@ -72,49 +72,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setToken(keycloak.token);
           localStorage.setItem('crm_token', keycloak.token);
 
-          // Immediately construct an initial user profile from Keycloak token claims
-          const parsed = keycloak.tokenParsed as any;
-          if (parsed) {
-            const fallbackUser: User = {
-              id: 0,
-              first_name: parsed.given_name || parsed.preferred_username || 'User',
-              last_name: parsed.family_name || '',
-              full_name:
-                parsed.name ||
-                `${parsed.given_name || ''} ${parsed.family_name || ''}`.trim() ||
-                'User',
-              email: parsed.email || parsed.preferred_username || '',
-              phone: parsed.attributes?.phone?.[0] || null,
-              status: 'active',
-              last_login_at: new Date().toISOString(),
-              role: {
-                id: 1,
-                role_name:
-                  (parsed.realm_access?.roles || []).find((r: string) =>
-                    [
-                      'System Administrator',
-                      'CRM Manager',
-                      'Support Agent',
-                      'Business Development Officer',
-                    ].includes(r)
-                  ) || 'System Administrator',
-                description: null,
-                role_tier: 1,
-              },
-            };
-            setUser((prev) => prev || fallbackUser);
-          }
-
-          // Unblock the UI immediately so the user does not wait on a blank page
-          setIsLoading(false);
-
-          // Asynchronously enrich with the official persisted profile from the backend database
+          // Asynchronously enrich and verify with the official persisted profile from the backend database
           try {
             const profile = await authService.getMe();
             setUser(profile);
             localStorage.setItem('crm_user', JSON.stringify(profile));
-          } catch (e) {
+            setIsLoading(false);
+          } catch (e: any) {
             console.error('Failed to load synced user profile from backend', e);
+
+            const status = e?.response?.status;
+            const errorMsg =
+              e?.response?.data?.message ||
+              'Access Denied: Your account has not been provisioned in the Ethiopian IT Park CRM.';
+
+            // Approach 2: Strict Enterprise Security — Reject unprovisioned or deactivated accounts
+            localStorage.removeItem('crm_token');
+            localStorage.removeItem('crm_user');
+            setToken(null);
+            setUser(null);
+            setIsLoading(false);
+
+            if (status === 403 || status === 401) {
+              const redirectUri = `${window.location.origin}/login?error=${encodeURIComponent(errorMsg)}`;
+              try {
+                await keycloak.logout({ redirectUri });
+              } catch {
+                window.location.replace(redirectUri);
+              }
+              return;
+            }
           }
         } else {
           setToken(null);
@@ -126,6 +113,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       })
       .catch((err) => {
         console.error('Keycloak initialization error', err);
+        setToken(null);
+        setUser(null);
+        localStorage.removeItem('crm_token');
+        localStorage.removeItem('crm_user');
         setIsLoading(false);
       });
 
