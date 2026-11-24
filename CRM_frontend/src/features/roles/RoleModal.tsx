@@ -1,22 +1,17 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   X,
-  Shield,
+  Key,
   ShieldCheck,
   Check,
   Lock,
-  Layers,
-  Key,
-  Info,
-  CheckSquare,
-  Square,
 } from 'lucide-react';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Alert from '../../components/ui/Alert';
 import Badge from '../../components/ui/Badge';
 import roleService from '../../services/roleService';
-import type { Role, PermissionGroup } from '../../types/role';
+import type { Role } from '../../types/role';
 
 interface RoleModalProps {
   isOpen: boolean;
@@ -38,92 +33,21 @@ export const RoleModal: React.FC<RoleModalProps> = ({
 
   const [roleName, setRoleName] = useState('');
   const [description, setDescription] = useState('');
-  const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
-
-  const [permissionGroups, setPermissionGroups] = useState<PermissionGroup[]>([]);
-  const [isLoadingCatalog, setIsLoadingCatalog] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  // Load permission catalog whenever modal opens
-  useEffect(() => {
-    if (isOpen) {
-      setIsLoadingCatalog(true);
-      roleService
-        .getPermissions()
-        .then((groups) => {
-          setPermissionGroups(groups);
-        })
-        .catch((err) => {
-          console.error('Failed to load permission catalog:', err);
-          setErrorMessage('Could not load permission catalog from server.');
-        })
-        .finally(() => {
-          setIsLoadingCatalog(false);
-        });
-    }
-  }, [isOpen]);
 
   // Sync state when roleToEdit changes
   useEffect(() => {
     if (roleToEdit) {
       setRoleName(roleToEdit.name || roleToEdit.role_name || '');
       setDescription(roleToEdit.description || '');
-      setSelectedPermissions(roleToEdit.permissions || []);
       setErrorMessage(null);
     } else {
       setRoleName('');
       setDescription('');
-      setSelectedPermissions([]);
       setErrorMessage(null);
     }
   }, [roleToEdit, isOpen]);
-
-  // All permission names across all groups
-  const allPermissionNames = useMemo(() => {
-    return permissionGroups.flatMap((g) => g.permissions.map((p) => p.name));
-  }, [permissionGroups]);
-
-  const totalPermissions = allPermissionNames.length;
-  const isAllSelected =
-    totalPermissions > 0 && selectedPermissions.length === totalPermissions;
-
-  // Toggle individual permission
-  const handleTogglePermission = (name: string) => {
-    if (isSystemRole) return;
-    setSelectedPermissions((prev) =>
-      prev.includes(name) ? prev.filter((p) => p !== name) : [...prev, name]
-    );
-  };
-
-  // Toggle all permissions for an entire group
-  const handleToggleGroup = (group: PermissionGroup) => {
-    if (isSystemRole) return;
-    const groupPermNames = group.permissions.map((p) => p.name);
-    const hasAll = groupPermNames.every((p) => selectedPermissions.includes(p));
-
-    if (hasAll) {
-      // Unselect group
-      setSelectedPermissions((prev) =>
-        prev.filter((p) => !groupPermNames.includes(p))
-      );
-    } else {
-      // Select all in group
-      setSelectedPermissions((prev) =>
-        Array.from(new Set([...prev, ...groupPermNames]))
-      );
-    }
-  };
-
-  // Select / Deselect All globally
-  const handleToggleAll = () => {
-    if (isSystemRole) return;
-    if (isAllSelected) {
-      setSelectedPermissions([]);
-    } else {
-      setSelectedPermissions([...allPermissionNames]);
-    }
-  };
 
   // Form submission
   const handleSubmit = async (e: React.FormEvent) => {
@@ -146,14 +70,12 @@ export const RoleModal: React.FC<RoleModalProps> = ({
         const updated = await roleService.updateRole(roleToEdit.id, {
           name: roleName.trim(),
           description: description.trim() || undefined,
-          permissions: selectedPermissions,
         });
         onSaved(updated);
       } else {
         const created = await roleService.createRole({
           name: roleName.trim(),
           description: description.trim() || undefined,
-          permissions: selectedPermissions,
         });
         onSaved(created);
       }
@@ -178,11 +100,11 @@ export const RoleModal: React.FC<RoleModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs animate-in fade-in duration-150 overflow-y-auto">
-      <div className="bg-white dark:bg-[#0f172a] rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 max-w-3xl w-full my-8 overflow-hidden flex flex-col max-h-[90vh] transition-colors">
+      <div className="bg-white dark:bg-[#0f172a] rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 max-w-lg w-full my-8 overflow-hidden flex flex-col transition-colors">
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-cyan-50 dark:bg-cyan-950/40 text-cyan-700 dark:text-cyan-400 flex items-center justify-center border border-cyan-100 dark:border-cyan-800/50 shadow-2xs">
+            <div className="w-10 h-10 rounded-xl bg-cyan-50 dark:bg-cyan-950/40 text-cyan-700 dark:text-cyan-400 flex items-center justify-center border border-cyan-100 dark:border-cyan-800/50 shadow-2xs shrink-0">
               {isSystemRole ? (
                 <Lock className="w-4 h-4 text-purple-600 dark:text-purple-400" />
               ) : isEditing ? (
@@ -204,8 +126,8 @@ export const RoleModal: React.FC<RoleModalProps> = ({
               </div>
               <p className="text-[11px] text-slate-500 dark:text-slate-400">
                 {isEditing
-                  ? 'Configure role title, description, and fine-grained permissions'
-                  : 'Define a custom organizational role and configure capabilities'}
+                  ? 'Update role title and organizational description'
+                  : 'Define a new role for your CRM system'}
               </p>
             </div>
           </div>
@@ -218,8 +140,8 @@ export const RoleModal: React.FC<RoleModalProps> = ({
         </div>
 
         {/* Modal Body */}
-        <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
-          <div className="p-6 space-y-5 overflow-y-auto flex-1">
+        <form onSubmit={handleSubmit} className="flex flex-col">
+          <div className="p-6 space-y-4">
             {errorMessage && (
               <Alert
                 variant="error"
@@ -236,7 +158,7 @@ export const RoleModal: React.FC<RoleModalProps> = ({
                 <div>
                   <p className="font-semibold text-purple-900 dark:text-purple-100">Immutable System Role</p>
                   <p className="text-purple-700 dark:text-purple-300 text-[11px] mt-0.5 leading-relaxed">
-                    The System Administrator role is protected by system security rules and automatically possesses all current and future capabilities across the CRM.
+                    The System Administrator role is protected by system security rules and cannot be renamed or modified.
                   </p>
                 </div>
               </div>
@@ -249,7 +171,7 @@ export const RoleModal: React.FC<RoleModalProps> = ({
                   label="Role Title"
                   value={roleName}
                   onChange={(e) => setRoleName(e.target.value)}
-                  placeholder="e.g. Facilities Operations Officer"
+                  placeholder="e.g. Sales Representative"
                   disabled={isSystemRole}
                   required
                 />
@@ -260,7 +182,7 @@ export const RoleModal: React.FC<RoleModalProps> = ({
                   Description & Scope
                 </label>
                 <textarea
-                  rows={2}
+                  rows={3}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   disabled={isSystemRole}
@@ -269,164 +191,31 @@ export const RoleModal: React.FC<RoleModalProps> = ({
                 />
               </div>
             </div>
-
-            {/* Permission Checkbox Matrix */}
-            <div className="border-t border-slate-100 dark:border-slate-800/80 pt-5 space-y-3">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <div>
-                  <h4 className="text-xs font-semibold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
-                    <span>Permission Matrix</span>
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700/60 font-normal">
-                      {selectedPermissions.length} of {totalPermissions} granted
-                    </span>
-                  </h4>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                    Grant or revoke specific functional capabilities for staff assigned to this role.
-                  </p>
-                </div>
-
-                {!isSystemRole && totalPermissions > 0 && (
-                  <button
-                    type="button"
-                    onClick={handleToggleAll}
-                    className="inline-flex items-center gap-1.5 text-xs text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 font-medium px-2 py-1 rounded-md hover:bg-cyan-50 dark:hover:bg-cyan-950/30 transition-colors cursor-pointer self-start sm:self-auto"
-                  >
-                    {isAllSelected ? (
-                      <>
-                        <Square className="w-3.5 h-3.5" />
-                        <span>Deselect All</span>
-                      </>
-                    ) : (
-                      <>
-                        <CheckSquare className="w-3.5 h-3.5" />
-                        <span>Select All</span>
-                      </>
-                    )}
-                  </button>
-                )}
-              </div>
-
-              {isLoadingCatalog ? (
-                <div className="p-8 text-center text-xs text-slate-400 dark:text-slate-500 bg-slate-50/50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800">
-                  <div className="w-5 h-5 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-                  Loading system permission catalog...
-                </div>
-              ) : permissionGroups.length === 0 ? (
-                <div className="p-6 text-center text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800">
-                  No permission modules found in catalog.
-                </div>
-              ) : (
-                <div className="space-y-3.5">
-                  {permissionGroups.map((group) => {
-                    const groupPermNames = group.permissions.map((p) => p.name);
-                    const selectedCount = groupPermNames.filter((p) =>
-                      selectedPermissions.includes(p)
-                    ).length;
-                    const isAllInGroup =
-                      groupPermNames.length > 0 &&
-                      selectedCount === groupPermNames.length;
-
-                    return (
-                      <div
-                        key={group.name}
-                        className="rounded-xl border border-slate-200/90 dark:border-slate-800/80 bg-white dark:bg-[#0b1120] overflow-hidden shadow-2xs"
-                      >
-                        {/* Domain Group Header */}
-                        <div className="px-4 py-2.5 bg-slate-50/80 dark:bg-slate-900/80 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <span className="font-semibold text-xs text-slate-800 dark:text-slate-200">
-                              {group.name} Domain
-                            </span>
-                            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-md bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400">
-                              {selectedCount}/{group.permissions.length} active
-                            </span>
-                          </div>
-
-                          {!isSystemRole && (
-                            <button
-                              type="button"
-                              onClick={() => handleToggleGroup(group)}
-                              className="text-[11px] font-medium text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 hover:underline cursor-pointer"
-                            >
-                              {isAllInGroup ? 'Clear Domain' : 'Select Domain'}
-                            </button>
-                          )}
-                        </div>
-
-                        {/* Domain Permission Items */}
-                        <div className="p-3 divide-y divide-slate-100 dark:divide-slate-800/60">
-                          {group.permissions.map((perm) => {
-                            const isChecked = selectedPermissions.includes(perm.name);
-
-                            return (
-                              <label
-                                key={perm.name}
-                                className={`flex items-start gap-3 py-2 px-2 rounded-lg transition-colors cursor-pointer ${
-                                  isChecked
-                                    ? 'bg-cyan-50/40 dark:bg-cyan-950/30 hover:bg-cyan-50/60 dark:hover:bg-cyan-950/50'
-                                    : 'hover:bg-slate-50 dark:hover:bg-slate-850/60 dark:hover:bg-slate-800/40'
-                                } ${isSystemRole ? 'cursor-not-allowed opacity-90' : ''}`}
-                              >
-                                <input
-                                  type="checkbox"
-                                  checked={isChecked}
-                                  disabled={isSystemRole}
-                                  onChange={() => handleTogglePermission(perm.name)}
-                                  className="mt-0.5 h-4 w-4 rounded border-slate-300 dark:border-slate-700 text-cyan-600 focus:ring-cyan-500 cursor-pointer disabled:cursor-not-allowed"
-                                />
-                                <div className="min-w-0 flex-1">
-                                  <div className="flex items-center gap-2">
-                                    <span className="text-xs font-semibold text-slate-900 dark:text-slate-100 font-mono">
-                                      {perm.name}
-                                    </span>
-                                  </div>
-                                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">
-                                    {perm.description}
-                                  </p>
-                                </div>
-                              </label>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
           </div>
 
           {/* Footer Actions */}
-          <div className="px-6 py-4 bg-slate-50 dark:bg-slate-900/90 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between shrink-0">
-            <span className="text-[11px] text-slate-500 dark:text-slate-400">
-              {isSystemRole
-                ? 'System roles are read-only'
-                : `${selectedPermissions.length} permissions configured`}
-            </span>
+          <div className="px-6 py-4 bg-slate-50 dark:bg-slate-900/90 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-end gap-2.5 shrink-0">
+            <Button
+              variant="outline"
+              size="sm"
+              type="button"
+              onClick={onClose}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
 
-            <div className="flex items-center gap-2.5">
+            {!isSystemRole && (
               <Button
-                variant="outline"
+                variant="primary"
                 size="sm"
-                type="button"
-                onClick={onClose}
-                disabled={isSubmitting}
+                type="submit"
+                isLoading={isSubmitting}
+                leftIcon={<Check className="w-3.5 h-3.5" />}
               >
-                {isSystemRole ? 'Close' : 'Cancel'}
+                {isEditing ? 'Save Changes' : 'Create Role'}
               </Button>
-
-              {!isSystemRole && (
-                <Button
-                  variant="primary"
-                  size="sm"
-                  type="submit"
-                  isLoading={isSubmitting}
-                  leftIcon={<Check className="w-3.5 h-3.5" />}
-                >
-                  {isEditing ? 'Save Role Changes' : 'Create System Role'}
-                </Button>
-              )}
-            </div>
+            )}
           </div>
         </form>
       </div>
@@ -435,4 +224,3 @@ export const RoleModal: React.FC<RoleModalProps> = ({
 };
 
 export default RoleModal;
-

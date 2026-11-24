@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
   Key,
   ShieldCheck,
@@ -15,6 +14,7 @@ import Button from '../../components/ui/Button';
 import Can from '../../components/auth/Can';
 import RolesTable from './RolesTable';
 import RoleModal from './RoleModal';
+import RolePermissionsModal from './RolePermissionsModal';
 import DeleteRoleModal from './DeleteRoleModal';
 import roleService from '../../services/roleService';
 import userService from '../../services/userService';
@@ -22,8 +22,6 @@ import type { Role } from '../../types/role';
 import type { User } from '../../types/user';
 
 export const RolesPage: React.FC = () => {
-  const navigate = useNavigate();
-
   const [roles, setRoles] = useState<Role[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -34,6 +32,7 @@ export const RolesPage: React.FC = () => {
   const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
   const [editingRole, setEditingRole] = useState<Role | null>(null);
   const [deletingRole, setDeletingRole] = useState<Role | null>(null);
+  const [permissionsTargetRole, setPermissionsTargetRole] = useState<Role | null>(null);
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -134,6 +133,10 @@ export const RolesPage: React.FC = () => {
     fetchData();
   };
 
+  const handlePermissionsSaved = () => {
+    fetchData();
+  };
+
   const handleRoleDeleted = () => {
     fetchData();
   };
@@ -147,16 +150,11 @@ export const RolesPage: React.FC = () => {
         {/* Header Banner */}
         <div className="p-6 rounded-2xl bg-white dark:bg-[#0f172a]/95 border border-slate-200/90 dark:border-slate-800/80 shadow-xs dark:shadow-[0_4px_25px_rgba(0,0,0,0.4)] flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors">
           <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                System Role Directory
-              </h1>
-              <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-cyan-50 dark:bg-cyan-950/40 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800/50 font-mono">
-                {roles.length} Active Roles
-              </span>
-            </div>
+            <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+              System Role Directory
+            </h1>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Overview of system roles, permissions, and staff member allocations.
+              Overview of system roles, permissions, and access allocations.
             </p>
           </div>
 
@@ -181,15 +179,6 @@ export const RolesPage: React.FC = () => {
                 Create New Role
               </Button>
             </Can>
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => navigate('/users')}
-              leftIcon={<UsersIcon className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />}
-            >
-              Staff Directory
-            </Button>
           </div>
         </div>
 
@@ -210,7 +199,7 @@ export const RolesPage: React.FC = () => {
 
           <div className="p-4 rounded-2xl bg-white dark:bg-[#0f172a]/95 border border-slate-200/90 dark:border-slate-800/80 shadow-xs dark:shadow-[0_4px_25px_rgba(0,0,0,0.4)] transition-colors">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Staff Assigned</span>
+              <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Users Assigned</span>
               <div className="p-1.5 rounded-lg bg-cyan-50 dark:bg-cyan-950/40 text-cyan-600 dark:text-cyan-400 border border-cyan-100 dark:border-cyan-800/50">
                 <UsersIcon className="w-4 h-4" />
               </div>
@@ -306,14 +295,23 @@ export const RolesPage: React.FC = () => {
           isLoading={isLoading}
           onEditRole={handleOpenEditModal}
           onDeleteRole={handleOpenDeleteModal}
+          onManagePermissions={(role) => setPermissionsTargetRole(role)}
         />
 
-        {/* Role Builder & Permission Matrix Modal */}
+        {/* Role Create / Basic Edit Modal */}
         <RoleModal
           isOpen={isRoleModalOpen}
           onClose={() => setIsRoleModalOpen(false)}
           roleToEdit={editingRole}
           onSaved={handleRoleSaved}
+        />
+
+        {/* Dedicated Permissions & Grants Modal */}
+        <RolePermissionsModal
+          isOpen={Boolean(permissionsTargetRole)}
+          onClose={() => setPermissionsTargetRole(null)}
+          role={permissionsTargetRole}
+          onSaved={handlePermissionsSaved}
         />
 
         {/* Delete Role Modal */}

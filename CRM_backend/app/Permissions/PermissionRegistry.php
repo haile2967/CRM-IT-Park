@@ -2,7 +2,12 @@
 
 namespace App\Permissions;
 
+use App\Permissions\Modules\AccountPermissions;
+use App\Permissions\Modules\ContactPermissions;
+use App\Permissions\Modules\LeadPermissions;
+use App\Permissions\Modules\OpportunityPermissions;
 use App\Permissions\Modules\RolePermissions;
+use App\Permissions\Modules\TicketPermissions;
 use App\Permissions\Modules\UserPermissions;
 
 class PermissionRegistry
@@ -14,6 +19,11 @@ class PermissionRegistry
      * @var array<class-string<PermissionModuleInterface>>
      */
     protected static array $modules = [
+        LeadPermissions::class,
+        AccountPermissions::class,
+        ContactPermissions::class,
+        OpportunityPermissions::class,
+        TicketPermissions::class,
         UserPermissions::class,
         RolePermissions::class,
     ];
