@@ -54,7 +54,7 @@ class UserService
      */
     public function updateUser(User $user, array $data): User
     {
-        $fillable = ['first_name', 'last_name', 'email', 'phone', 'status'];
+        $fillable = ['first_name', 'last_name', 'email', 'phone', 'status', 'role_id'];
 
         if (isset($data['password'])) {
             $fillable[] = 'password';
@@ -71,6 +71,14 @@ class UserService
         }
 
         $user->update(array_intersect_key($data, array_flip($fillable)));
+
+        // Synchronize role in local CRM database (Spatie pivot table)
+        if (isset($data['role_id'])) {
+            $role = Role::find($data['role_id']);
+            if ($role) {
+                $user->syncRoles([$role]);
+            }
+        }
 
         // Synchronize updates to Keycloak
         $keycloakId = $user->keycloak_id;
@@ -101,6 +109,7 @@ class UserService
             }
         }
 
+        $user->unsetRelation('roles');
         return $user->load('roles.permissions');
     }
 
