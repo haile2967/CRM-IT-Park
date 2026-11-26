@@ -131,20 +131,8 @@ export const LoginPage: React.FC = () => {
     );
   }
 
-  // Connecting state during initial redirection
-  return (
-    <div className="min-h-screen w-full bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center gap-4 transition-colors">
-      <div className="w-12 h-12 rounded-2xl bg-white dark:bg-slate-900 shadow-md border border-slate-200 dark:border-slate-800 flex items-center justify-center p-2.5">
-        <ItParkGlobeEmblem className="w-full h-full" />
-      </div>
-      <div className="flex items-center gap-2">
-        <div className="w-4 h-4 border-2 border-slate-900 dark:border-white border-t-transparent rounded-full animate-spin" />
-        <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
-          Connecting to Ethiopian IT Park IAM SSO...
-        </span>
-      </div>
-    </div>
-  );
+  // Redirecting straight to Keycloak SSO without an intermediate loading card
+  return null;
 };
 
 export default LoginPage;

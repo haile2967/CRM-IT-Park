@@ -2,15 +2,14 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Key,
+  Shield,
   ShieldCheck,
   Edit3,
   Trash2,
   Lock,
-  ArrowRight,
   Users as UsersIcon,
 } from 'lucide-react';
 import Badge from '../../components/ui/Badge';
-import Button from '../../components/ui/Button';
 import Can from '../../components/auth/Can';
 import type { Role } from '../../types/role';
 
@@ -23,6 +22,7 @@ interface RolesTableProps {
   isLoading: boolean;
   onEditRole?: (role: Role) => void;
   onDeleteRole?: (role: Role) => void;
+  onManagePermissions?: (role: Role) => void;
 }
 
 export const RolesTable: React.FC<RolesTableProps> = ({
@@ -30,6 +30,7 @@ export const RolesTable: React.FC<RolesTableProps> = ({
   isLoading,
   onEditRole,
   onDeleteRole,
+  onManagePermissions,
 }) => {
   const navigate = useNavigate();
 
@@ -87,8 +88,7 @@ export const RolesTable: React.FC<RolesTableProps> = ({
               <th className="py-3 px-4">Role Title</th>
               <th className="py-3 px-4">Type</th>
               <th className="py-3 px-4">Description</th>
-              <th className="py-3 px-4">Assigned Staff</th>
-              <th className="py-3 px-4">Permissions</th>
+              <th className="py-3 px-4">Users</th>
               <th className="py-3 px-4 text-right">Actions</th>
             </tr>
           </thead>
@@ -100,7 +100,6 @@ export const RolesTable: React.FC<RolesTableProps> = ({
               const isSystemRole = Boolean(
                 role.is_system || role.role_name === 'System Administrator'
               );
-              const permissionsCount = role.permissions?.length ?? 0;
 
               return (
                 <tr
@@ -151,37 +150,42 @@ export const RolesTable: React.FC<RolesTableProps> = ({
                     </p>
                   </td>
 
-                  {/* Assigned Staff Count */}
+                  {/* Users Count */}
                   <td className="py-3.5 px-4 whitespace-nowrap">
                     <button
                       type="button"
                       onClick={() => navigate(`/users?role=${role.id}`)}
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700/60 text-xs font-medium transition-colors cursor-pointer"
-                      title="Click to view staff holding this role"
+                      className="inline-flex items-center gap-2 text-slate-700 dark:text-slate-200 hover:text-cyan-600 dark:hover:text-cyan-400 font-medium transition-colors cursor-pointer group/user-count"
+                      title="Click to view users assigned to this role"
                     >
-                      <UsersIcon className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
-                      <span>{count} staff {count === 1 ? 'member' : 'members'}</span>
+                      <UsersIcon className="w-4 h-4 text-slate-400 dark:text-slate-500 group-hover/user-count:text-cyan-600 dark:group-hover/user-count:text-cyan-400 transition-colors" />
+                      <span className="font-mono text-xs">{count}</span>
                     </button>
-                  </td>
-
-                  {/* Permissions Granted */}
-                  <td className="py-3.5 px-4 whitespace-nowrap">
-                    {isSystemRole ? (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/50 font-mono">
-                        <ShieldCheck className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
-                        All Capabilities
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-cyan-50 dark:bg-cyan-950/40 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800/50 font-mono">
-                        {permissionsCount} granted
-                      </span>
-                    )}
                   </td>
 
                   {/* Actions */}
                   <td className="py-3.5 px-4 text-right whitespace-nowrap">
-                    <div className="flex items-center justify-end gap-1.5">
-                      {/* View / Edit Permissions Button */}
+                    <div className="flex items-center justify-end gap-2">
+                      {/* Configure Permissions Action Button */}
+                      <button
+                        type="button"
+                        onClick={() => onManagePermissions?.(role)}
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors cursor-pointer ${
+                          isSystemRole
+                            ? 'text-purple-700 dark:text-purple-300 bg-purple-50/80 dark:bg-purple-950/40 hover:bg-purple-100 dark:hover:bg-purple-900/60 border-purple-200/80 dark:border-purple-800/50'
+                            : 'text-cyan-700 dark:text-cyan-300 bg-cyan-50/80 dark:bg-cyan-950/40 hover:bg-cyan-100 dark:hover:bg-cyan-900/60 border-cyan-200/80 dark:border-cyan-800/50'
+                        }`}
+                        title={isSystemRole ? 'View System Permissions' : 'Configure Permissions'}
+                      >
+                        {isSystemRole ? (
+                          <ShieldCheck className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                        ) : (
+                          <Shield className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
+                        )}
+                        <span>Permissions</span>
+                      </button>
+
+                      {/* Edit Role Details Button */}
                       <Can
                         permission="roles.edit"
                         fallback={
@@ -189,7 +193,7 @@ export const RolesTable: React.FC<RolesTableProps> = ({
                             type="button"
                             onClick={() => onEditRole?.(role)}
                             className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-                            title="Inspect role permissions"
+                            title="Inspect role details"
                           >
                             <Edit3 className="w-3.5 h-3.5" />
                           </button>
@@ -199,7 +203,7 @@ export const RolesTable: React.FC<RolesTableProps> = ({
                           type="button"
                           onClick={() => onEditRole?.(role)}
                           className="p-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-cyan-50 dark:hover:bg-cyan-950/30 transition-colors cursor-pointer"
-                          title={isSystemRole ? 'Inspect System Role' : 'Edit Role & Permissions'}
+                          title={isSystemRole ? 'Inspect System Role' : 'Edit Role Details'}
                         >
                           <Edit3 className="w-3.5 h-3.5" />
                         </button>
@@ -225,7 +229,7 @@ export const RolesTable: React.FC<RolesTableProps> = ({
                             }`}
                             title={
                               count > 0
-                                ? `Cannot delete: ${count} staff member(s) assigned`
+                                ? `Cannot delete: ${count} user(s) assigned`
                                 : 'Delete custom role'
                             }
                           >
@@ -233,18 +237,6 @@ export const RolesTable: React.FC<RolesTableProps> = ({
                           </button>
                         </Can>
                       )}
-
-                      {/* View Staff in Directory */}
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => navigate(`/users?role=${role.id}`)}
-                        rightIcon={
-                          <ArrowRight className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 group-hover:translate-x-0.5 transition-transform" />
-                        }
-                      >
-                        Staff
-                      </Button>
                     </div>
                   </td>
                 </tr>

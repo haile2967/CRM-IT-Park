@@ -111,10 +111,10 @@ export const DeleteRoleModal: React.FC<DeleteRoleModalProps> = ({
             <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 text-xs text-amber-900 dark:text-amber-200 space-y-2">
               <div className="flex items-center gap-1.5 font-semibold text-amber-900 dark:text-amber-100">
                 <Users className="w-4 h-4 text-amber-700 dark:text-amber-400" />
-                <span>Active Staff Currently Assigned ({assignedUsersCount})</span>
+                <span>Active Users Currently Assigned ({assignedUsersCount})</span>
               </div>
               <p className="text-amber-800 dark:text-amber-300 text-[11px] leading-relaxed">
-                This role cannot be deleted because <strong>{assignedUsersCount} staff member(s)</strong> are currently assigned to it. Please reassign those users to another role before deleting.
+                This role cannot be deleted because <strong>{assignedUsersCount} user(s)</strong> are currently assigned to it. Please reassign those users to another role before deleting.
               </p>
             </div>
           ) : (

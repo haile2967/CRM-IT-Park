@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\OpportunityController;
 use App\Http\Controllers\Api\EscalationPolicyController;
+use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\LeadController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\PipelineStageController;
@@ -14,8 +15,6 @@ use App\Http\Controllers\Api\SocialAuthController;
 use App\Http\Controllers\Api\TicketCategoryController;
 use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\UserController;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -26,48 +25,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Health & System Diagnostic Endpoint
-Route::get('/health', function () {
-    $dbStatus = 'disconnected';
-    $dbVersion = null;
-    try {
-        DB::connection()->getPdo();
-        $dbStatus = 'connected';
-        $dbVersion = DB::selectOne("SELECT version() as version")->version ?? 'PostgreSQL';
-        $dbVersion = explode(',', $dbVersion)[0];
-    } catch (\Throwable $e) {
-        $dbStatus = 'error: ' . $e->getMessage();
-    }
-
-    $redisStatus = 'disconnected';
-    try {
-        $redis = Redis::connection();
-        $pong = $redis->ping();
-        $redisStatus = ($pong === true || $pong === 'PONG' || $pong === '+PONG') ? 'connected' : 'reachable';
-    } catch (\Throwable $e) {
-        $redisStatus = 'disconnected';
-    }
-
-    return response()->json([
-        'status' => ($dbStatus === 'connected') ? 'online' : 'degraded',
-        'app' => config('app.name', 'Ethiopian IT Park CRM'),
-        'environment' => config('app.env'),
-        'timestamp' => now()->toIso8601String(),
-        'services' => [
-            'postgres' => [
-                'status' => $dbStatus,
-                'version' => $dbVersion,
-            ],
-            'redis' => [
-                'status' => $redisStatus,
-            ],
-            'mailpit' => [
-                'status' => 'connected',
-                'host' => config('mail.mailers.smtp.host'),
-                'port' => config('mail.mailers.smtp.port'),
-            ],
-        ],
-    ]);
-});
+Route::get('/health', [HealthController::class, 'health']);
 
 $registerRoutes = function () {
     // -------------------------------------------------------------------------

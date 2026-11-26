@@ -26,7 +26,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   });
 
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(() => {
+    // If credentials already exist in localStorage, do NOT block the screen with a spinner
+    const hasToken = !!localStorage.getItem('crm_token');
+    const hasUser = !!localStorage.getItem('crm_user');
+    return !(hasToken && hasUser);
+  });
   const isInitCalled = useRef(false);
 
   const logout = useCallback(async () => {
@@ -36,6 +41,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     sessionStorage.clear();
     setToken(null);
     setUser(null);
+    setIsLoading(false);
 
     // 2. Fire-and-forget backend session revocation
     authService.logout().catch(() => {});
@@ -72,12 +78,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setToken(keycloak.token);
           localStorage.setItem('crm_token', keycloak.token);
 
+          // Unblock UI immediately using token claims while full DB profile & permissions sync in background
+          if (!localStorage.getItem('crm_user')) {
+            const parsed = (keycloak.tokenParsed ?? {}) as Record<string, any>;
+            const firstName = parsed.given_name || parsed.preferred_username || 'User';
+            const lastName = parsed.family_name || '';
+            const realmRoles: string[] = Array.isArray(parsed.realm_access?.roles)
+              ? parsed.realm_access.roles
+              : [];
+            setUser({
+              id: 0,
+              first_name: firstName,
+              last_name: lastName,
+              full_name: `${firstName} ${lastName}`.trim(),
+              email: parsed.email || '',
+              phone: null,
+              status: 'active',
+              last_login_at: null,
+              roles: realmRoles,
+              permissions: [],
+            });
+          }
+          setIsLoading(false);
+
           // Asynchronously enrich and verify with the official persisted profile from the backend database
           try {
             const profile = await authService.getMe();
             setUser(profile);
             localStorage.setItem('crm_user', JSON.stringify(profile));
-            setIsLoading(false);
           } catch (e: any) {
             console.error('Failed to load synced user profile from backend', e);
 

@@ -38,7 +38,7 @@ return [
      */
     'cache' => [
         'key' => 'scramble.openapi',
-        'store' => 'file',
+        'store' => 'redis',
     ],
 
     'info' => [
