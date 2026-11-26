@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Http\Middleware\AuthenticateWithKeycloak;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -46,6 +47,7 @@ class UserService
             $user->syncRoles([$role]);
         }
 
+        AuthenticateWithKeycloak::forgetUserCache($user);
         return $user->load('roles.permissions');
     }
 
@@ -109,7 +111,9 @@ class UserService
             }
         }
 
+        AuthenticateWithKeycloak::forgetUserCache($user);
         $user->unsetRelation('roles');
+        AuthenticateWithKeycloak::forgetUserCache($user);
         return $user->load('roles.permissions');
     }
 
@@ -153,6 +157,7 @@ class UserService
             }
         }
 
+        AuthenticateWithKeycloak::forgetUserCache($user);
         return $user->load('roles.permissions');
     }
 
@@ -184,6 +189,7 @@ class UserService
             }
         }
 
+        AuthenticateWithKeycloak::forgetUserCache($user);
         return $user->load('roles.permissions');
     }
 }

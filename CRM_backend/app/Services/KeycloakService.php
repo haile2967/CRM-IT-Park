@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
@@ -23,24 +24,26 @@ class KeycloakService
     }
 
     /**
-     * Obtain master realm admin access token.
+     * Obtain master realm admin access token (cached in Redis for 50s).
      */
     public function getAdminToken(): string
     {
-        $tokenUrl = "{$this->baseUrl}/realms/master/protocol/openid-connect/token";
+        return Cache::remember('keycloak_admin_token', 50, function () {
+            $tokenUrl = "{$this->baseUrl}/realms/master/protocol/openid-connect/token";
 
-        $response = Http::asForm()->post($tokenUrl, [
-            'client_id'  => 'admin-cli',
-            'username'   => $this->adminUser,
-            'password'   => $this->adminPassword,
-            'grant_type' => 'password',
-        ]);
+            $response = Http::asForm()->post($tokenUrl, [
+                'client_id'  => 'admin-cli',
+                'username'   => $this->adminUser,
+                'password'   => $this->adminPassword,
+                'grant_type' => 'password',
+            ]);
 
-        if (! $response->successful()) {
-            throw new RuntimeException("Failed to obtain Keycloak admin token from {$tokenUrl}: " . $response->body());
-        }
+            if (! $response->successful()) {
+                throw new RuntimeException("Failed to obtain Keycloak admin token from {$tokenUrl}: " . $response->body());
+            }
 
-        return (string) $response->json('access_token');
+            return (string) $response->json('access_token');
+        });
     }
 
     /**
@@ -219,16 +222,22 @@ class KeycloakService
     {
         $adminToken = $adminToken ?: $this->getAdminToken();
 
-        // 1. Fetch role representation from Keycloak
-        $roleRes = Http::withToken($adminToken)
-            ->get("{$this->baseUrl}/admin/realms/{$this->realm}/roles/{$roleName}");
+        // 1. Fetch role representation from Keycloak (cached in Redis for 1 hour)
+        $roleCacheKey = "keycloak_realm_role_{$this->realm}_{$roleName}";
+        $roleData = Cache::get($roleCacheKey);
 
-        if (! $roleRes->successful()) {
-            Log::warning("Keycloak role '{$roleName}' not found in realm {$this->realm}");
-            return;
+        if (! $roleData) {
+            $roleRes = Http::withToken($adminToken)
+                ->get("{$this->baseUrl}/admin/realms/{$this->realm}/roles/{$roleName}");
+
+            if (! $roleRes->successful()) {
+                Log::warning("Keycloak role '{$roleName}' not found in realm {$this->realm}");
+                return;
+            }
+
+            $roleData = $roleRes->json();
+            Cache::put($roleCacheKey, $roleData, 3600);
         }
-
-        $roleData = $roleRes->json();
 
         // 2. Fetch existing realm roles for user to remove previous CRM roles
         $userRolesRes = Http::withToken($adminToken)

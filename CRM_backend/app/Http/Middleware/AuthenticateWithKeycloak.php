@@ -62,45 +62,61 @@ class AuthenticateWithKeycloak
             $clientRoles = (array) ($decoded->resource_access?->{$clientId}?->roles ?? []);
             $roles = array_unique(array_merge($realmRoles, $clientRoles));
 
-            // 4. Resolve matching role in CRM database (matching either Spatie name or legacy role_name)
-            $matchedRole = Role::whereIn('name', $roles)
-                ->orWhereIn('role_name', $roles)
-                ->first();
+            // 4. Resolve user & permissions (cache keycloak_id -> user_id in Redis to skip claim-role & email lookups)
+            $cacheKey = $keycloakId ? self::userCacheKey($keycloakId) : null;
+            $cachedUserId = $cacheKey ? Cache::get($cacheKey) : null;
+            $user = is_int($cachedUserId)
+                ? User::with(['roles.permissions'])->find($cachedUserId)
+                : null;
 
-            // 5. Just-In-Time (JIT) Provisioning
-            // Look up by keycloak_id first, then by email (eager load role & Spatie roles.permissions)
-            $user = null;
-            if ($keycloakId) {
-                $user = User::with(['roles.permissions'])->where('keycloak_id', $keycloakId)->first();
+            if (! $user) {
+                if ($keycloakId) {
+                    $user = User::with(['roles.permissions'])->where('keycloak_id', $keycloakId)->first();
+                }
+                if (! $user && $email) {
+                    $user = User::with(['roles.permissions'])->where('email', $email)->first();
+                }
+
+                if ($user) {
+                    $updateData = [];
+
+                    if ($keycloakId && $user->keycloak_id !== $keycloakId) {
+                        $updateData['keycloak_id'] = $keycloakId;
+                    }
+                    if ($firstName && $user->first_name !== $firstName) {
+                        $updateData['first_name'] = $firstName;
+                    }
+                    if ($lastName && $user->last_name !== $lastName) {
+                        $updateData['last_name'] = $lastName;
+                    }
+
+                    // Only resolve Keycloak claim role if user has no local CRM role yet
+                    if ($user->roles->isEmpty() && ! empty($roles)) {
+                        $matchedRole = Role::whereIn('name', $roles)
+                            ->orWhereIn('role_name', $roles)
+                            ->first();
+                        if ($matchedRole) {
+                            $user->syncRoles([$matchedRole->name]);
+                            $user->load('roles.permissions');
+                        }
+                    }
+
+                    // Throttle last_login_at updates to once every 15 minutes to eliminate write locks on read requests
+                    if (! $user->last_login_at || $user->last_login_at->diffInMinutes(now()) >= 15) {
+                        $updateData['last_login_at'] = now();
+                    }
+
+                    if (! empty($updateData)) {
+                        $user->update($updateData);
+                    }
+
+                    if ($user->keycloak_id) {
+                        Cache::put(self::userCacheKey($user->keycloak_id), (int) $user->id, 300);
+                    }
+                }
             }
-            if (! $user && $email) {
-                $user = User::with(['roles.permissions'])->where('email', $email)->first();
-            }
 
-            if ($user) {
-                $updateData = [];
-
-                if ($keycloakId && $user->keycloak_id !== $keycloakId) {
-                    $updateData['keycloak_id'] = $keycloakId;
-                }
-                if ($firstName && $user->first_name !== $firstName) {
-                    $updateData['first_name'] = $firstName;
-                }
-                if ($lastName && $user->last_name !== $lastName) {
-                    $updateData['last_name'] = $lastName;
-                }
-                if ($matchedRole && ! $user->hasRole($matchedRole->name)) {
-                    $user->syncRoles([$matchedRole->name]);
-                }
-                // Throttle last_login_at updates to once every 15 minutes to eliminate write locks on read requests
-                if (! $user->last_login_at || $user->last_login_at->diffInMinutes(now()) >= 15) {
-                    $updateData['last_login_at'] = now();
-                }
-
-                if (! empty($updateData)) {
-                    $user->update($updateData);
-                }
-            } else {
+            if (! $user) {
                 // Approach 2: Strict Enterprise Security — Pre-provisioned accounts only.
                 // Reject logins for emails that have not been explicitly authorized by a CRM Administrator.
                 Log::warning('SSO Login Rejected: Unprovisioned Account', [
@@ -147,5 +163,20 @@ class AuthenticateWithKeycloak
         }
 
         return $next($request);
+    }
+
+    public static function userCacheKey(string $keycloakId): string
+    {
+        return "auth_kc_uid:{$keycloakId}";
+    }
+
+    /**
+     * Invalidate cached auth profile for a user after profile, role, or status changes.
+     */
+    public static function forgetUserCache(User $user): void
+    {
+        if ($user->keycloak_id) {
+            Cache::forget(self::userCacheKey($user->keycloak_id));
+        }
     }
 }

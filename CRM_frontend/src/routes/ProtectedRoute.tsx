@@ -7,12 +7,7 @@ export const ProtectedRoute: React.FC = () => {
   const location = useLocation();
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center gap-3">
-        <div className="w-7 h-7 border-2 border-slate-900 dark:border-white border-t-transparent rounded-full animate-spin" />
-        <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Verifying session...</p>
-      </div>
-    );
+    return null;
   }
 
   if (!isAuthenticated) {

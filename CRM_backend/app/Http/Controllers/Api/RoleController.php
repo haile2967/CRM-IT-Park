@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Middleware\AuthenticateWithKeycloak;
 use App\Http\Requests\Role\CreateRoleRequest;
 use App\Http\Requests\Role\UpdateRoleRequest;
 use App\Http\Resources\RoleResource;
@@ -106,6 +107,11 @@ class RoleController extends Controller
         if (isset($validated['permissions'])) {
             $role->syncPermissions($validated['permissions']);
         }
+
+        // Invalidate cached auth profiles for users holding this role
+        $role->users()->whereNotNull('keycloak_id')->each(function ($user) {
+            AuthenticateWithKeycloak::forgetUserCache($user);
+        });
 
         $role->load('permissions');
 
