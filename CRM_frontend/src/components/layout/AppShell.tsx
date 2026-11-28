@@ -44,18 +44,19 @@ interface NavItemDef {
   key: string;
   to: string;
   icon: React.ComponentType<{ className?: string }>;
-  permission?: string;
+  permission?: string | string[];
+  role?: string | string[];
 }
 
 const navDefinitions: NavItemDef[] = [
   { key: 'dashboard', to: '/dashboard', icon: LayoutGrid },
-  { key: 'leads', to: '/leads', icon: Users2 },
-  { key: 'opportunities', to: '/opportunities', icon: Briefcase },
-  { key: 'accounts', to: '/accounts', icon: Building2 },
-  { key: 'contacts', to: '/contacts', icon: Contact2 },
-  { key: 'tickets', to: '/tickets', icon: Headphones },
-  { key: 'stages', to: '/pipeline-stages', icon: Layers },
-  { key: 'escalations', to: '/escalations', icon: Clock },
+  { key: 'leads', to: '/leads', icon: Users2, permission: 'leads.view' },
+  { key: 'opportunities', to: '/opportunities', icon: Briefcase, permission: 'opportunities.view' },
+  { key: 'accounts', to: '/accounts', icon: Building2, permission: 'accounts.view' },
+  { key: 'contacts', to: '/contacts', icon: Contact2, permission: 'contacts.view' },
+  { key: 'tickets', to: '/tickets', icon: Headphones, permission: 'tickets.view' },
+  { key: 'stages', to: '/pipeline-stages', icon: Layers, role: 'System Administrator' },
+  { key: 'escalations', to: '/escalations', icon: Clock, role: 'System Administrator' },
   { key: 'users', to: '/users', icon: UserCog, permission: 'users.view' },
   { key: 'roles', to: '/roles', icon: Key, permission: 'roles.view' },
 ];
@@ -122,7 +123,7 @@ export const AppShell: React.FC<AppShellProps> = ({
   fullWidth = false,
 }) => {
   const { user, logout } = useAuth();
-  const { can } = usePermission();
+  const { can, canAny, hasRole } = usePermission();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -217,10 +218,13 @@ export const AppShell: React.FC<AppShellProps> = ({
   // Filter navigation items by active user capabilities
   const visibleItems = useMemo(() => {
     return navDefinitions.filter((item) => {
-      if (!item.permission) return true;
-      return can(item.permission);
+      if (item.role && !hasRole(item.role)) return false;
+      if (item.permission) {
+        return Array.isArray(item.permission) ? canAny(item.permission) : can(item.permission);
+      }
+      return true;
     });
-  }, [can]);
+  }, [can, canAny, hasRole]);
 
   const userMenuRef = useRef<HTMLDivElement>(null);
 

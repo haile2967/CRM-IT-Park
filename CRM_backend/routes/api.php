@@ -75,66 +75,66 @@ $registerRoutes = function () {
 
         // Commercial Opportunities & Deals Pipeline
         Route::prefix('opportunities')->group(function () {
-            Route::get('/metrics', [OpportunityController::class, 'metrics']);
-            Route::get('/kanban', [OpportunityController::class, 'kanban']);
-            Route::get('/', [OpportunityController::class, 'index']);
-            Route::post('/', [OpportunityController::class, 'store']);
-            Route::get('/{opportunity}', [OpportunityController::class, 'show']);
-            Route::put('/{opportunity}', [OpportunityController::class, 'update']);
-            Route::patch('/{opportunity}/stage', [OpportunityController::class, 'transitionStage']);
-            Route::patch('/{opportunity}/transfer-ownership', [OpportunityController::class, 'transferOwnership']);
-            Route::delete('/{opportunity}', [OpportunityController::class, 'destroy']);
-            Route::get('/{opportunity}/pms-export', [OpportunityController::class, 'exportPms']);
+            Route::get('/metrics', [OpportunityController::class, 'metrics'])->middleware('permission:opportunities.view');
+            Route::get('/kanban', [OpportunityController::class, 'kanban'])->middleware('permission:opportunities.view');
+            Route::get('/', [OpportunityController::class, 'index'])->middleware('permission:opportunities.view');
+            Route::post('/', [OpportunityController::class, 'store'])->middleware('permission:opportunities.create');
+            Route::get('/{opportunity}', [OpportunityController::class, 'show'])->middleware('permission:opportunities.view');
+            Route::put('/{opportunity}', [OpportunityController::class, 'update'])->middleware('permission:opportunities.edit');
+            Route::patch('/{opportunity}/stage', [OpportunityController::class, 'transitionStage'])->middleware('permission:opportunities.edit');
+            Route::patch('/{opportunity}/transfer-ownership', [OpportunityController::class, 'transferOwnership'])->middleware('permission:opportunities.edit');
+            Route::delete('/{opportunity}', [OpportunityController::class, 'destroy'])->middleware('permission:opportunities.delete');
+            Route::get('/{opportunity}/pms-export', [OpportunityController::class, 'exportPms'])->middleware('permission:opportunities.view');
         });
 
         // Accounts Management
         Route::prefix('accounts')->group(function () {
-            Route::get('/metrics', [AccountController::class, 'metrics']);
-            Route::get('/', [AccountController::class, 'index']);
-            Route::post('/', [AccountController::class, 'store']);
-            Route::get('/{account}', [AccountController::class, 'show']);
-            Route::put('/{account}', [AccountController::class, 'update']);
-            Route::patch('/{account}/transfer-ownership', [AccountController::class, 'transferOwnership']);
-            Route::delete('/{account}', [AccountController::class, 'destroy']);
+            Route::get('/metrics', [AccountController::class, 'metrics'])->middleware('permission:accounts.view');
+            Route::get('/', [AccountController::class, 'index'])->middleware('permission:accounts.view');
+            Route::post('/', [AccountController::class, 'store'])->middleware('permission:accounts.create');
+            Route::get('/{account}', [AccountController::class, 'show'])->middleware('permission:accounts.view');
+            Route::put('/{account}', [AccountController::class, 'update'])->middleware('permission:accounts.edit');
+            Route::patch('/{account}/transfer-ownership', [AccountController::class, 'transferOwnership'])->middleware('permission:accounts.edit');
+            Route::delete('/{account}', [AccountController::class, 'destroy'])->middleware('permission:accounts.delete');
         });
 
         // Contacts Management
         Route::prefix('contacts')->group(function () {
-            Route::get('/', [ContactController::class, 'index']);
-            Route::post('/', [ContactController::class, 'store']);
-            Route::get('/{contact}', [ContactController::class, 'show']);
-            Route::put('/{contact}', [ContactController::class, 'update']);
-            Route::patch('/{contact}/primary', [ContactController::class, 'setPrimary']);
-            Route::delete('/{contact}', [ContactController::class, 'destroy']);
+            Route::get('/', [ContactController::class, 'index'])->middleware('permission:contacts.view');
+            Route::post('/', [ContactController::class, 'store'])->middleware('permission:contacts.create');
+            Route::get('/{contact}', [ContactController::class, 'show'])->middleware('permission:contacts.view');
+            Route::put('/{contact}', [ContactController::class, 'update'])->middleware('permission:contacts.edit');
+            Route::patch('/{contact}/primary', [ContactController::class, 'setPrimary'])->middleware('permission:contacts.edit');
+            Route::delete('/{contact}', [ContactController::class, 'destroy'])->middleware('permission:contacts.delete');
         });
 
         // Leads Pipeline Management
         Route::prefix('leads')->group(function () {
-            Route::get('/metrics', [LeadController::class, 'metrics']);
-            Route::get('/check-duplicate', [LeadController::class, 'checkDuplicate']);
-            Route::get('/', [LeadController::class, 'index']);
-            Route::post('/', [LeadController::class, 'store']);
-            Route::get('/{lead}', [LeadController::class, 'show']);
-            Route::put('/{lead}', [LeadController::class, 'update']);
-            Route::patch('/{lead}/status', [LeadController::class, 'updateStatus']);
-            Route::patch('/{lead}/assign', [LeadController::class, 'assign']);
-            Route::post('/{lead}/convert', [LeadController::class, 'convert']);
-            Route::delete('/{lead}', [LeadController::class, 'destroy']);
+            Route::get('/metrics', [LeadController::class, 'metrics'])->middleware('permission:leads.view');
+            Route::get('/check-duplicate', [LeadController::class, 'checkDuplicate'])->middleware('permission:leads.view|leads.create|leads.edit');
+            Route::get('/', [LeadController::class, 'index'])->middleware('permission:leads.view');
+            Route::post('/', [LeadController::class, 'store'])->middleware('permission:leads.create');
+            Route::get('/{lead}', [LeadController::class, 'show'])->middleware('permission:leads.view');
+            Route::put('/{lead}', [LeadController::class, 'update'])->middleware('permission:leads.edit');
+            Route::patch('/{lead}/status', [LeadController::class, 'updateStatus'])->middleware('permission:leads.edit');
+            Route::patch('/{lead}/assign', [LeadController::class, 'assign'])->middleware('permission:leads.assign');
+            Route::post('/{lead}/convert', [LeadController::class, 'convert'])->middleware('permission:leads.convert');
+            Route::delete('/{lead}', [LeadController::class, 'destroy'])->middleware('permission:leads.delete');
         });
 
         // Customer Service & Support Ticketing Hub
         Route::prefix('tickets')->group(function () {
-            Route::get('/metrics', [TicketController::class, 'metrics']);
-            Route::get('/', [TicketController::class, 'index']);
-            Route::post('/', [TicketController::class, 'store']);
-            Route::get('/{ticket}', [TicketController::class, 'show']);
-            Route::put('/{ticket}', [TicketController::class, 'update']);
-            Route::post('/{ticket}/claim', [TicketController::class, 'claim']);
-            Route::patch('/{ticket}/assign', [TicketController::class, 'assign']);
-            Route::post('/{ticket}/comments', [TicketController::class, 'addComment']);
-            Route::patch('/{ticket}/status', [TicketController::class, 'updateStatus']);
-            Route::post('/{ticket}/escalate', [TicketController::class, 'escalate']);
-            Route::delete('/{ticket}', [TicketController::class, 'destroy']);
+            Route::get('/metrics', [TicketController::class, 'metrics'])->middleware('permission:tickets.view');
+            Route::get('/', [TicketController::class, 'index'])->middleware('permission:tickets.view');
+            Route::post('/', [TicketController::class, 'store'])->middleware('permission:tickets.create');
+            Route::get('/{ticket}', [TicketController::class, 'show'])->middleware('permission:tickets.view');
+            Route::put('/{ticket}', [TicketController::class, 'update'])->middleware('permission:tickets.edit');
+            Route::post('/{ticket}/claim', [TicketController::class, 'claim'])->middleware('permission:tickets.assign');
+            Route::patch('/{ticket}/assign', [TicketController::class, 'assign'])->middleware('permission:tickets.assign');
+            Route::post('/{ticket}/comments', [TicketController::class, 'addComment'])->middleware('permission:tickets.edit');
+            Route::patch('/{ticket}/status', [TicketController::class, 'updateStatus'])->middleware('permission:tickets.edit');
+            Route::post('/{ticket}/escalate', [TicketController::class, 'escalate'])->middleware('permission:tickets.escalate');
+            Route::delete('/{ticket}', [TicketController::class, 'destroy'])->middleware('permission:tickets.delete');
         });
 
         // Ticket Categories — Listing & Details (Viewable by authenticated users)

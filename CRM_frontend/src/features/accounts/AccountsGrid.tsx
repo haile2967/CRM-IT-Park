@@ -13,6 +13,7 @@ import {
   Users,
   ChevronRight,
 } from 'lucide-react';
+import { usePermission } from '../../hooks/usePermission';
 import type { Account } from '../../types/account';
 
 interface AccountsGridProps {
@@ -22,7 +23,6 @@ interface AccountsGridProps {
   onEditAccount: (account: Account) => void;
   onDeleteAccount: (account: Account) => void;
   onTransferOwnership: (account: Account) => void;
-  canManage?: boolean;
 }
 
 export const AccountsGrid: React.FC<AccountsGridProps> = ({
@@ -31,9 +31,10 @@ export const AccountsGrid: React.FC<AccountsGridProps> = ({
   onSelectAccount,
   onEditAccount,
   onDeleteAccount,
-  onTransferOwnership,
-  canManage = true,
 }) => {
+  const { can } = usePermission();
+  const canEdit = can('accounts.edit');
+  const canDelete = can('accounts.delete');
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -117,27 +118,31 @@ export const AccountsGrid: React.FC<AccountsGridProps> = ({
                 </div>
 
                 {/* Card Action Buttons */}
-                {canManage && (
+                {(canEdit || canDelete) && (
                   <div
                     className="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <button
-                      type="button"
-                      onClick={() => onEditAccount(account)}
-                      title="Edit Account"
-                      className="p-1 rounded-md text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                    >
-                      <Edit2 className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => onDeleteAccount(account)}
-                      title="Delete Account"
-                      className="p-1 rounded-md text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-colors"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                    {canEdit && (
+                      <button
+                        type="button"
+                        onClick={() => onEditAccount(account)}
+                        title="Edit Account"
+                        className="p-1 rounded-md text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                      >
+                        <Edit2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                    {canDelete && (
+                      <button
+                        type="button"
+                        onClick={() => onDeleteAccount(account)}
+                        title="Delete Account"
+                        className="p-1 rounded-md text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-colors"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
                   </div>
                 )}
               </div>

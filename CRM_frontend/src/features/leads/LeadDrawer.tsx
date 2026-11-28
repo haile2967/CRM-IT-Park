@@ -18,6 +18,8 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import Button from '../../components/ui/Button';
+import Can from '../../components/auth/Can';
+import { usePermission } from '../../hooks/usePermission';
 import { LeadStatusBadge, LeadPriorityBadge } from './LeadBadges';
 import leadService from '../../services/leadService';
 import type { Lead, LeadStatus } from '../../types/lead';
@@ -43,6 +45,7 @@ export const LeadDrawer: React.FC<LeadDrawerProps> = ({
   onDeleted,
   onStatusUpdated,
 }) => {
+  const { can } = usePermission();
   const [lead, setLead] = useState<Lead | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
@@ -154,22 +157,26 @@ export const LeadDrawer: React.FC<LeadDrawerProps> = ({
 
           <div className="flex items-center gap-1">
             {lead && (
-              <button
-                onClick={() => onEdit(lead)}
-                title="Edit Lead"
-                className="p-2 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition-colors"
-              >
-                <Edit2 className="w-4 h-4" />
-              </button>
+              <Can permission="leads.edit">
+                <button
+                  onClick={() => onEdit(lead)}
+                  title="Edit Lead"
+                  className="p-2 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition-colors"
+                >
+                  <Edit2 className="w-4 h-4" />
+                </button>
+              </Can>
             )}
             {lead && (
-              <button
-                onClick={handleDelete}
-                title="Delete Lead"
-                className="p-2 rounded-lg text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
+              <Can permission="leads.delete">
+                <button
+                  onClick={handleDelete}
+                  title="Delete Lead"
+                  className="p-2 rounded-lg text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </Can>
             )}
             <button
               onClick={onClose}
@@ -191,7 +198,7 @@ export const LeadDrawer: React.FC<LeadDrawerProps> = ({
               return (
                 <button
                   key={stg.key}
-                  disabled={isUpdatingStatus}
+                  disabled={isUpdatingStatus || !can('leads.edit')}
                   onClick={() => handleStatusChange(stg.key)}
                   className={`flex-1 min-w-[95px] text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all border ${
                     isCurrent
@@ -210,7 +217,7 @@ export const LeadDrawer: React.FC<LeadDrawerProps> = ({
         )}
 
         {/* 1-Click Conversion Banner if Qualified */}
-        {lead && lead.status === 'qualified' && (
+        {lead && lead.status === 'qualified' && can('leads.convert') && (
           <div className="mx-6 mt-4 p-3.5 rounded-xl bg-gradient-to-r from-cyan-50 to-teal-50 dark:from-cyan-950/30 dark:to-slate-900 border border-cyan-200 dark:border-cyan-800/60 flex items-center justify-between gap-3 shadow-2xs">
             <div className="space-y-0.5">
               <span className="text-xs font-bold text-cyan-950 dark:text-cyan-200 flex items-center gap-1.5">
@@ -287,9 +294,11 @@ export const LeadDrawer: React.FC<LeadDrawerProps> = ({
                   </div>
                 </div>
 
-                <Button variant="outline" size="sm" onClick={() => onAssign(lead)}>
-                  Reassign
-                </Button>
+                <Can permission="leads.assign">
+                  <Button variant="outline" size="sm" onClick={() => onAssign(lead)}>
+                    Reassign
+                  </Button>
+                </Can>
               </div>
 
               {/* Lead Details Grid */}
@@ -360,24 +369,26 @@ export const LeadDrawer: React.FC<LeadDrawerProps> = ({
                 </span>
 
                 {/* Quick Add Note Form */}
-                <form onSubmit={handleAddNote} className="flex gap-2">
-                  <input
-                    type="text"
-                    value={newNote}
-                    onChange={(e) => setNewNote(e.target.value)}
-                    placeholder="Log a call, meeting, or quick update..."
-                    className="flex-1 text-xs rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                  />
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    type="submit"
-                    isLoading={isAddingNote}
-                    disabled={!newNote.trim()}
-                  >
-                    <Send className="w-3.5 h-3.5" />
-                  </Button>
-                </form>
+                <Can permission="leads.edit">
+                  <form onSubmit={handleAddNote} className="flex gap-2">
+                    <input
+                      type="text"
+                      value={newNote}
+                      onChange={(e) => setNewNote(e.target.value)}
+                      placeholder="Log a call, meeting, or quick update..."
+                      className="flex-1 text-xs rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    />
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      type="submit"
+                      isLoading={isAddingNote}
+                      disabled={!newNote.trim()}
+                    >
+                      <Send className="w-3.5 h-3.5" />
+                    </Button>
+                  </form>
+                </Can>
 
                 {/* Activity List */}
                 <div className="space-y-2.5 pt-1">

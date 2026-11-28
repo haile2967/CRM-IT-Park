@@ -9,6 +9,7 @@ import {
   UserCheck,
   UserPlus,
 } from 'lucide-react';
+import { usePermission } from '../../hooks/usePermission';
 import type { Ticket } from '../../types/ticket';
 import { PriorityBadge, StatusBadge, InactivityBadge } from './TicketStatusBadge';
 
@@ -23,7 +24,6 @@ interface TicketsTableProps {
   lastPage: number;
   totalRecords: number;
   onPageChange: (page: number) => void;
-  canManage: boolean;
 }
 
 export const TicketsTable: React.FC<TicketsTableProps> = ({
@@ -32,13 +32,14 @@ export const TicketsTable: React.FC<TicketsTableProps> = ({
   onSelectTicket,
   onClaimTicket,
   onEscalateTicket,
-  onDeleteTicket,
   currentPage,
   lastPage,
   totalRecords,
   onPageChange,
-  canManage,
 }) => {
+  const { can } = usePermission();
+  const canAssign = can('tickets.assign');
+  const canEscalate = can('tickets.escalate');
   if (isLoading) {
     return (
       <div className="rounded-2xl border border-slate-200/90 dark:border-slate-800/80 bg-white dark:bg-[#0f172a]/95 p-8 text-center shadow-xs">
@@ -159,15 +160,17 @@ export const TicketsTable: React.FC<TicketsTableProps> = ({
                         <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40">
                           Unassigned
                         </span>
-                        <button
-                          type="button"
-                          onClick={() => onClaimTicket(ticket)}
-                          className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold rounded bg-cyan-600 hover:bg-cyan-500 text-white transition-colors shadow-xs"
-                          title="Claim this ticket to your queue"
-                        >
-                          <UserPlus className="w-3 h-3" />
-                          <span>Claim</span>
-                        </button>
+                        {canAssign && (
+                          <button
+                            type="button"
+                            onClick={() => onClaimTicket(ticket)}
+                            className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold rounded bg-cyan-600 hover:bg-cyan-500 text-white transition-colors shadow-xs"
+                            title="Claim this ticket to your queue"
+                          >
+                            <UserPlus className="w-3 h-3" />
+                            <span>Claim</span>
+                          </button>
+                        )}
                       </div>
                     )}
                   </td>
@@ -184,7 +187,7 @@ export const TicketsTable: React.FC<TicketsTableProps> = ({
                         <Eye className="w-4 h-4" />
                       </button>
 
-                      {canManage && !ticket.escalated && ticket.status !== 'resolved' && ticket.status !== 'closed' && onEscalateTicket && (
+                      {canEscalate && !ticket.escalated && ticket.status !== 'resolved' && ticket.status !== 'closed' && onEscalateTicket && (
                         <button
                           type="button"
                           onClick={() => onEscalateTicket(ticket)}

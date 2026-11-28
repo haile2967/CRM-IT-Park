@@ -8,6 +8,7 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import { LeadPriorityBadge } from './LeadBadges';
+import Can from '../../components/auth/Can';
 import type { Lead, LeadStatus } from '../../types/lead';
 
 interface LeadsKanbanProps {
@@ -168,30 +169,34 @@ export const LeadsKanban: React.FC<LeadsKanbanProps> = ({
 
                         {/* Stage Progression Buttons */}
                         {col.status === 'qualified' ? (
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onConvertLead(lead);
-                            }}
-                            className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-cyan-600 dark:bg-cyan-500 text-white dark:text-slate-950 hover:bg-cyan-500 dark:hover:bg-cyan-400 shadow-2xs transition-colors"
-                          >
-                            <span>Convert</span>
-                            <CheckCircle2 className="w-2.5 h-2.5" />
-                          </button>
+                          <Can permission="leads.convert">
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onConvertLead(lead);
+                              }}
+                              className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-cyan-600 dark:bg-cyan-500 text-white dark:text-slate-950 hover:bg-cyan-500 dark:hover:bg-cyan-400 shadow-2xs transition-colors"
+                            >
+                              <span>Convert</span>
+                              <CheckCircle2 className="w-2.5 h-2.5" />
+                            </button>
+                          </Can>
                         ) : col.nextStatus ? (
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onAdvanceStatus(lead, col.nextStatus!);
-                            }}
-                            title={`Advance to ${col.nextStatus}`}
-                            className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-slate-500 dark:text-slate-400 hover:text-cyan-700 dark:hover:text-cyan-400 hover:bg-cyan-50 dark:hover:bg-cyan-950/50 px-1.5 py-0.5 rounded-md transition-colors"
-                          >
-                            <span>Next</span>
-                            <ArrowRight className="w-2.5 h-2.5" />
-                          </button>
+                          <Can permission="leads.edit">
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onAdvanceStatus(lead, col.nextStatus!);
+                              }}
+                              title={`Advance to ${col.nextStatus}`}
+                              className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-slate-500 dark:text-slate-400 hover:text-cyan-700 dark:hover:text-cyan-400 hover:bg-cyan-50 dark:hover:bg-cyan-950/50 px-1.5 py-0.5 rounded-md transition-colors"
+                            >
+                              <span>Next</span>
+                              <ArrowRight className="w-2.5 h-2.5" />
+                            </button>
+                          </Can>
                         ) : null}
                       </div>
                     </div>

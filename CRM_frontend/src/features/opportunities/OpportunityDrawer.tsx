@@ -16,6 +16,7 @@ import {
   AlertCircle,
   ExternalLink,
 } from 'lucide-react';
+import { usePermission } from '../../hooks/usePermission';
 import type { Opportunity } from '../../types/opportunity';
 import { opportunityService } from '../../services/opportunityService';
 
@@ -36,6 +37,8 @@ export const OpportunityDrawer: React.FC<OpportunityDrawerProps> = ({
   onTransferOwnership,
   onExportPms,
 }) => {
+  const { can } = usePermission();
+  const canEdit = can('opportunities.edit');
   const [activeTab, setActiveTab] = useState<'overview' | 'history' | 'pms'>('overview');
   const [isExporting, setIsExporting] = useState(false);
 
@@ -109,14 +112,16 @@ export const OpportunityDrawer: React.FC<OpportunityDrawerProps> = ({
                 <div className="text-xs text-slate-500 dark:text-slate-400">
                   Current Stage: <span className="font-semibold text-cyan-700 dark:text-cyan-300">{opportunity.stage?.stage_name}</span>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => onAdvanceStage(opportunity)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 dark:bg-cyan-500 dark:hover:bg-cyan-400 text-white dark:text-slate-950 font-semibold text-xs transition-colors shadow-xs"
-                >
-                  <span>Advance Stage</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
+                {canEdit && (
+                  <button
+                    type="button"
+                    onClick={() => onAdvanceStage(opportunity)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 dark:bg-cyan-500 dark:hover:bg-cyan-400 text-white dark:text-slate-950 font-semibold text-xs transition-colors shadow-xs"
+                  >
+                    <span>Advance Stage</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                )}
               </div>
             )}
 
@@ -210,14 +215,16 @@ export const OpportunityDrawer: React.FC<OpportunityDrawerProps> = ({
                             ? `${opportunity.owner.first_name} ${opportunity.owner.last_name}`
                             : 'Unassigned'}
                         </span>
-                        <button
-                          type="button"
-                          onClick={() => onTransferOwnership(opportunity)}
-                          className="text-[11px] text-cyan-600 dark:text-cyan-400 hover:underline flex items-center gap-1 font-medium"
-                        >
-                          <Share2 className="w-3 h-3" />
-                          Transfer
-                        </button>
+                        {canEdit && (
+                          <button
+                            type="button"
+                            onClick={() => onTransferOwnership(opportunity)}
+                            className="text-[11px] text-cyan-600 dark:text-cyan-400 hover:underline flex items-center gap-1 font-medium"
+                          >
+                            <Share2 className="w-3 h-3" />
+                            Transfer
+                          </button>
+                        )}
                       </div>
                     </div>
                   </div>

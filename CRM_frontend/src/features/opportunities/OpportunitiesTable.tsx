@@ -10,6 +10,7 @@ import {
   ExternalLink,
   DollarSign,
 } from 'lucide-react';
+import { usePermission } from '../../hooks/usePermission';
 import type { Opportunity } from '../../types/opportunity';
 
 interface OpportunitiesTableProps {
@@ -20,7 +21,6 @@ interface OpportunitiesTableProps {
   onDeleteOpportunity: (opportunity: Opportunity) => void;
   onAdvanceStage: (opportunity: Opportunity) => void;
   onExportPms: (opportunity: Opportunity) => void;
-  canManage?: boolean;
 }
 
 export const OpportunitiesTable: React.FC<OpportunitiesTableProps> = ({
@@ -31,8 +31,10 @@ export const OpportunitiesTable: React.FC<OpportunitiesTableProps> = ({
   onDeleteOpportunity,
   onAdvanceStage,
   onExportPms,
-  canManage = true,
 }) => {
+  const { can } = usePermission();
+  const canEdit = can('opportunities.edit');
+  const canDelete = can('opportunities.delete');
   const formatCurrency = (val: number) => {
     return `ETB ${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
@@ -195,7 +197,7 @@ export const OpportunitiesTable: React.FC<OpportunitiesTableProps> = ({
                         </button>
                       )}
 
-                      {!isWon && !isLost && (
+                      {!isWon && !isLost && canEdit && (
                         <button
                           type="button"
                           onClick={() => onAdvanceStage(opp)}
@@ -206,25 +208,26 @@ export const OpportunitiesTable: React.FC<OpportunitiesTableProps> = ({
                         </button>
                       )}
 
-                      {canManage && (
-                        <>
-                          <button
-                            type="button"
-                            onClick={() => onEditOpportunity(opp)}
-                            title="Edit Deal"
-                            className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors"
-                          >
-                            <Edit2 className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => onDeleteOpportunity(opp)}
-                            title="Delete Deal"
-                            className="p-1.5 rounded-lg bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-500/30 transition-colors"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </>
+                      {canEdit && (
+                        <button
+                          type="button"
+                          onClick={() => onEditOpportunity(opp)}
+                          title="Edit Deal"
+                          className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+
+                      {canDelete && (
+                        <button
+                          type="button"
+                          onClick={() => onDeleteOpportunity(opp)}
+                          title="Delete Deal"
+                          className="p-1.5 rounded-lg bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-500/30 transition-colors"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
                       )}
                     </div>
                   </td>
