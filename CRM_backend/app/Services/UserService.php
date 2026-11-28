@@ -72,48 +72,59 @@ class UserService
             }
         }
 
+        $targetRole = isset($data['role_id']) ? Role::find($data['role_id']) : null;
+        $roleChanged = $targetRole && (
+            (int) $user->role_id !== (int) $targetRole->id
+            || ! $user->hasRole($targetRole->name)
+        );
+
         $user->update(array_intersect_key($data, array_flip($fillable)));
 
         // Synchronize role in local CRM database (Spatie pivot table)
-        if (isset($data['role_id'])) {
-            $role = Role::find($data['role_id']);
-            if ($role) {
-                $user->syncRoles([$role]);
+        if ($targetRole && $roleChanged) {
+            $user->syncRoles([$targetRole]);
+        }
+
+        // Only push actually modified profile fields to Keycloak
+        $keycloakPayload = [];
+        foreach (['first_name', 'last_name', 'email', 'phone', 'status'] as $field) {
+            if ($user->wasChanged($field)) {
+                $keycloakPayload[$field] = $user->{$field};
             }
         }
 
-        // Synchronize updates to Keycloak
-        $keycloakId = $user->keycloak_id;
-        if (! $keycloakId) {
-            $existing = $this->keycloakService->findUserByEmail($user->email);
-            if ($existing && ! empty($existing['id'])) {
-                $keycloakId = $existing['id'];
-                $user->update(['keycloak_id' => $keycloakId]);
-            }
-        }
-
-        if ($keycloakId) {
-            try {
-                $this->keycloakService->updateUser($keycloakId, $data);
-
-                if (isset($data['password'])) {
-                    $this->keycloakService->updatePassword($keycloakId, $data['password']);
+        // Synchronize updates to Keycloak only when something relevant changed
+        if (! empty($keycloakPayload) || isset($data['password']) || $roleChanged) {
+            $keycloakId = $user->keycloak_id;
+            if (! $keycloakId) {
+                $existing = $this->keycloakService->findUserByEmail($user->email);
+                if ($existing && ! empty($existing['id'])) {
+                    $keycloakId = $existing['id'];
+                    $user->update(['keycloak_id' => $keycloakId]);
                 }
+            }
 
-                if (isset($data['role_id'])) {
-                    $role = Role::find($data['role_id']);
-                    if ($role) {
-                        $this->keycloakService->assignRole($keycloakId, $role->role_name);
+            if ($keycloakId) {
+                try {
+                    if (! empty($keycloakPayload)) {
+                        $this->keycloakService->updateUser($keycloakId, $keycloakPayload);
                     }
+
+                    if (isset($data['password'])) {
+                        $this->keycloakService->updatePassword($keycloakId, $data['password']);
+                    }
+
+                    if ($roleChanged && $targetRole) {
+                        $this->keycloakService->assignRole($keycloakId, $targetRole->role_name);
+                    }
+                } catch (\Throwable $e) {
+                    Log::error("Failed to sync updated user {$user->id} to Keycloak: " . $e->getMessage());
                 }
-            } catch (\Throwable $e) {
-                Log::error("Failed to sync updated user {$user->id} to Keycloak: " . $e->getMessage());
             }
         }
 
         AuthenticateWithKeycloak::forgetUserCache($user);
         $user->unsetRelation('roles');
-        AuthenticateWithKeycloak::forgetUserCache($user);
         return $user->load('roles.permissions');
     }
 

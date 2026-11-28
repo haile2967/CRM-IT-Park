@@ -80,7 +80,10 @@ class KeycloakService
 
         $keycloakId = null;
 
+        $isNewUser = false;
+
         if ($res->status() === 201) {
+            $isNewUser = true;
             $location = $res->header('Location');
             if ($location) {
                 $keycloakId = substr(strrchr($location, '/'), 1);
@@ -112,7 +115,7 @@ class KeycloakService
         // Assign realm role if specified
         if ($roleName) {
             try {
-                $this->assignRole($keycloakId, $roleName, $adminToken);
+                $this->assignRole($keycloakId, $roleName, $adminToken, $isNewUser);
             } catch (\Throwable $e) {
                 Log::warning("Could not assign Keycloak role '{$roleName}' to user '{$keycloakId}': " . $e->getMessage());
             }
@@ -218,7 +221,7 @@ class KeycloakService
     /**
      * Assign a realm role to a user in Keycloak and remove previous CRM roles.
      */
-    public function assignRole(string $keycloakId, string $roleName, ?string $adminToken = null): void
+    public function assignRole(string $keycloakId, string $roleName, ?string $adminToken = null, bool $skipExistingCheck = false): void
     {
         $adminToken = $adminToken ?: $this->getAdminToken();
 
@@ -239,19 +242,21 @@ class KeycloakService
             Cache::put($roleCacheKey, $roleData, 3600);
         }
 
-        // 2. Fetch existing realm roles for user to remove previous CRM roles
-        $userRolesRes = Http::withToken($adminToken)
-            ->get("{$this->baseUrl}/admin/realms/{$this->realm}/users/{$keycloakId}/role-mappings/realm");
+        // 2. Fetch existing realm roles for user to remove previous CRM roles (skip for brand-new users)
+        if (! $skipExistingCheck) {
+            $userRolesRes = Http::withToken($adminToken)
+                ->get("{$this->baseUrl}/admin/realms/{$this->realm}/users/{$keycloakId}/role-mappings/realm");
 
-        if ($userRolesRes->successful() && is_array($userRolesRes->json())) {
-            $crmRoles = ['System Administrator', 'CRM Manager', 'Support Agent', 'Business Development Officer'];
-            $rolesToRemove = array_values(array_filter($userRolesRes->json(), function ($r) use ($crmRoles, $roleName) {
-                return in_array($r['name'] ?? '', $crmRoles) && ($r['name'] !== $roleName);
-            }));
+            if ($userRolesRes->successful() && is_array($userRolesRes->json())) {
+                $crmRoles = ['System Administrator', 'CRM Manager', 'Support Agent', 'Business Development Officer'];
+                $rolesToRemove = array_values(array_filter($userRolesRes->json(), function ($r) use ($crmRoles, $roleName) {
+                    return in_array($r['name'] ?? '', $crmRoles) && ($r['name'] !== $roleName);
+                }));
 
-            if (! empty($rolesToRemove)) {
-                Http::withToken($adminToken)
-                    ->delete("{$this->baseUrl}/admin/realms/{$this->realm}/users/{$keycloakId}/role-mappings/realm", $rolesToRemove);
+                if (! empty($rolesToRemove)) {
+                    Http::withToken($adminToken)
+                        ->delete("{$this->baseUrl}/admin/realms/{$this->realm}/users/{$keycloakId}/role-mappings/realm", $rolesToRemove);
+                }
             }
         }
 

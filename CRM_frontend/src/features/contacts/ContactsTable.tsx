@@ -8,6 +8,7 @@ import {
   Edit2,
   Trash2,
 } from 'lucide-react';
+import { usePermission } from '../../hooks/usePermission';
 import type { Contact } from '../../types/contact';
 
 interface ContactsTableProps {
@@ -16,7 +17,6 @@ interface ContactsTableProps {
   onEditContact: (contact: Contact) => void;
   onDeleteContact: (contact: Contact) => void;
   onSetPrimary: (contact: Contact) => void;
-  canManage?: boolean;
 }
 
 export const ContactsTable: React.FC<ContactsTableProps> = ({
@@ -25,8 +25,10 @@ export const ContactsTable: React.FC<ContactsTableProps> = ({
   onEditContact,
   onDeleteContact,
   onSetPrimary,
-  canManage = true,
 }) => {
+  const { can } = usePermission();
+  const canEdit = can('contacts.edit');
+  const canDelete = can('contacts.delete');
   if (isLoading) {
     return (
       <div className="rounded-2xl border border-slate-200/90 dark:border-slate-800/80 bg-white dark:bg-[#0f172a]/95 overflow-hidden shadow-2xs dark:shadow-[0_4px_25px_rgba(0,0,0,0.4)]">
@@ -161,7 +163,7 @@ export const ContactsTable: React.FC<ContactsTableProps> = ({
                 {/* Actions */}
                 <td className="py-4 pl-3 pr-6 text-right">
                   <div className="flex items-center justify-end gap-1">
-                    {canManage && (
+                    {canEdit && (
                       <>
                         {!contact.is_primary && (
                           <button
@@ -182,16 +184,18 @@ export const ContactsTable: React.FC<ContactsTableProps> = ({
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
-
-                        <button
-                          type="button"
-                          onClick={() => onDeleteContact(contact)}
-                          title="Delete Contact"
-                          className="p-1.5 rounded-lg text-slate-400 dark:text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-colors cursor-pointer"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
                       </>
+                    )}
+
+                    {canDelete && (
+                      <button
+                        type="button"
+                        onClick={() => onDeleteContact(contact)}
+                        title="Delete Contact"
+                        className="p-1.5 rounded-lg text-slate-400 dark:text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-colors cursor-pointer"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     )}
                   </div>
                 </td>

@@ -16,6 +16,7 @@ import {
   Share2,
   CheckCircle2,
 } from 'lucide-react';
+import { usePermission } from '../../hooks/usePermission';
 import type { Account } from '../../types/account';
 import type { Contact } from '../../types/contact';
 
@@ -26,7 +27,6 @@ interface AccountDrawerProps {
   onEditAccount: (account: Account) => void;
   onAddContact: (account: Account) => void;
   onTransferOwnership: (account: Account) => void;
-  canManage?: boolean;
 }
 
 export const AccountDrawer: React.FC<AccountDrawerProps> = ({
@@ -36,8 +36,10 @@ export const AccountDrawer: React.FC<AccountDrawerProps> = ({
   onEditAccount,
   onAddContact,
   onTransferOwnership,
-  canManage = true,
 }) => {
+  const { can } = usePermission();
+  const canEditAccount = can('accounts.edit');
+  const canCreateContact = can('contacts.create');
   const [activeTab, setActiveTab] = useState<'profile' | 'contacts' | 'deals'>('profile');
 
   if (!isOpen || !account) return null;
@@ -70,7 +72,7 @@ export const AccountDrawer: React.FC<AccountDrawerProps> = ({
           </div>
 
           <div className="flex items-center gap-1.5">
-            {canManage && (
+            {canEditAccount && (
               <button
                 type="button"
                 onClick={() => onEditAccount(account)}
@@ -240,7 +242,7 @@ export const AccountDrawer: React.FC<AccountDrawerProps> = ({
                 <span className="text-xs font-bold text-slate-900 dark:text-slate-200 uppercase tracking-wider">
                   Associated Contacts ({contacts.length})
                 </span>
-                {canManage && (
+                {canCreateContact && (
                   <button
                     type="button"
                     onClick={() => onAddContact(account)}
@@ -351,7 +353,7 @@ export const AccountDrawer: React.FC<AccountDrawerProps> = ({
 
         {/* Footer Actions */}
         <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-[#0b1120] flex items-center justify-between gap-3">
-          {canManage && (
+          {canEditAccount && (
             <button
               type="button"
               onClick={() => onTransferOwnership(account)}

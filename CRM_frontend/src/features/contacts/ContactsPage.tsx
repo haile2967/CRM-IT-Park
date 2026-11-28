@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   UserCheck,
   Plus,
@@ -16,12 +16,13 @@ import ContactModal from './ContactModal';
 import DeleteContactModal from './DeleteContactModal';
 import contactService from '../../services/contactService';
 import accountService from '../../services/accountService';
-import { useAuth } from '../../hooks/useAuth';
+import { usePermission } from '../../hooks/usePermission';
 import type { Contact, ContactFilters } from '../../types/contact';
 import type { Account } from '../../types/account';
 
 export const ContactsPage: React.FC = () => {
-  const { user } = useAuth();
+  const { can } = usePermission();
+  const canCreateContact = can('contacts.create');
 
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [accounts, setAccounts] = useState<Account[]>([]);
@@ -46,13 +47,9 @@ export const ContactsPage: React.FC = () => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const canManage = useMemo(() => {
-    const roleName = user?.role?.role_name?.toLowerCase() || user?.role?.name?.toLowerCase() || '';
-    return roleName.includes('admin') || roleName.includes('manager') || roleName.includes('officer');
-  }, [user]);
-
-  // Fetch Accounts for dropdown filter
+  // Fetch Accounts for dropdown filter (only when user can view accounts)
   useEffect(() => {
+    if (!can('accounts.view')) return;
     const loadAccounts = async () => {
       try {
         const res = await accountService.getAccounts({ per_page: 100 });
@@ -62,7 +59,7 @@ export const ContactsPage: React.FC = () => {
       }
     };
     loadAccounts();
-  }, []);
+  }, [can]);
 
   // Fetch Contacts
   const fetchContacts = useCallback(async () => {
@@ -185,7 +182,7 @@ export const ContactsPage: React.FC = () => {
               Refresh
             </Button>
 
-            {canManage && (
+            {canCreateContact && (
               <Button
                 variant="primary"
                 size="sm"
@@ -280,7 +277,6 @@ export const ContactsPage: React.FC = () => {
           onEditContact={handleOpenEditModal}
           onDeleteContact={handleOpenDeleteModal}
           onSetPrimary={handleSetPrimary}
-          canManage={canManage}
         />
 
         {/* Pagination */}

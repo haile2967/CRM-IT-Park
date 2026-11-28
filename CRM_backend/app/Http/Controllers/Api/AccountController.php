@@ -247,8 +247,8 @@ class AccountController extends Controller
     public function destroy(Account $account, Request $request): JsonResponse
     {
         $user = $request->user();
-        if (!$user->hasRole(['System Administrator', 'CRM Manager'])) {
-            return response()->json(['message' => 'Only CRM Managers and Administrators can delete accounts.'], 403);
+        if (!$user->hasRole(['System Administrator', 'CRM Manager']) && $account->owner_user_id !== $user->id) {
+            return response()->json(['message' => 'Unauthorized to delete this account.'], 403);
         }
 
         // Integrity safeguard: check active open opportunities

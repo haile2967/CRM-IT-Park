@@ -1,5 +1,6 @@
 import React from 'react';
 import { OpportunityCard } from './OpportunityCard';
+import { usePermission } from '../../hooks/usePermission';
 import type { KanbanColumn, Opportunity } from '../../types/opportunity';
 import { Layers, Plus, CheckCircle2, XCircle } from 'lucide-react';
 
@@ -20,6 +21,9 @@ export const OpportunityKanban: React.FC<OpportunityKanbanProps> = ({
   onExportPms,
   onCreateInStage,
 }) => {
+  const { can } = usePermission();
+  const canCreate = can('opportunities.create');
+  const canEdit = can('opportunities.edit');
   const formatStageValue = (val: number) => {
     if (val >= 1000000) {
       return `ETB ${(val / 1000000).toFixed(1)}M`;
@@ -103,7 +107,7 @@ export const OpportunityKanban: React.FC<OpportunityKanbanProps> = ({
                     key={deal.id}
                     opportunity={deal}
                     onSelect={onSelectOpportunity}
-                    onAdvanceStage={!isWon && !isLost ? onAdvanceStage : undefined}
+                    onAdvanceStage={!isWon && !isLost && canEdit ? onAdvanceStage : undefined}
                     onExportPms={isWon ? onExportPms : undefined}
                   />
                 ))
@@ -111,7 +115,7 @@ export const OpportunityKanban: React.FC<OpportunityKanbanProps> = ({
                 <div className="flex flex-col items-center justify-center py-12 px-4 text-center border-2 border-dashed border-slate-200 dark:border-slate-800/60 rounded-xl my-auto">
                   <Layers className="w-8 h-8 text-slate-400 dark:text-slate-600 mb-2" />
                   <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">No deals in this stage</p>
-                  {onCreateInStage && !isWon && !isLost && (
+                  {canCreate && onCreateInStage && !isWon && !isLost && (
                     <button
                       type="button"
                       onClick={() => onCreateInStage(column.stage_id)}

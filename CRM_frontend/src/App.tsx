@@ -33,15 +33,32 @@ export default function App() {
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/change-password" element={<ChangePasswordPage />} />
             <Route path="/settings/security" element={<ChangePasswordPage />} />
-            <Route path="/leads" element={<LeadsPage />} />
-            <Route path="/accounts" element={<AccountsPage />} />
-            <Route path="/contacts" element={<ContactsPage />} />
-            <Route path="/pipeline-stages" element={<PipelineStagesPage />} />
-            <Route path="/escalations" element={<EscalationPoliciesPage />} />
-            <Route path="/users" element={<UsersPage />} />
-            <Route path="/roles" element={<RolesPage />} />
-            <Route path="/opportunities" element={<OpportunitiesPage />} />
-            <Route path="/tickets" element={<TicketsPage />} />
+
+            <Route element={<ProtectedRoute requiredPermission="leads.view" />}>
+              <Route path="/leads" element={<LeadsPage />} />
+            </Route>
+            <Route element={<ProtectedRoute requiredPermission="accounts.view" />}>
+              <Route path="/accounts" element={<AccountsPage />} />
+            </Route>
+            <Route element={<ProtectedRoute requiredPermission="contacts.view" />}>
+              <Route path="/contacts" element={<ContactsPage />} />
+            </Route>
+            <Route element={<ProtectedRoute requiredPermission="opportunities.view" />}>
+              <Route path="/opportunities" element={<OpportunitiesPage />} />
+            </Route>
+            <Route element={<ProtectedRoute requiredPermission="tickets.view" />}>
+              <Route path="/tickets" element={<TicketsPage />} />
+            </Route>
+            <Route element={<ProtectedRoute requiredRole="System Administrator" />}>
+              <Route path="/pipeline-stages" element={<PipelineStagesPage />} />
+              <Route path="/escalations" element={<EscalationPoliciesPage />} />
+            </Route>
+            <Route element={<ProtectedRoute requiredPermission="users.view" />}>
+              <Route path="/users" element={<UsersPage />} />
+            </Route>
+            <Route element={<ProtectedRoute requiredPermission="roles.view" />}>
+              <Route path="/roles" element={<RolesPage />} />
+            </Route>
           </Route>
 
           {/* Root & Catch-all Redirects */}

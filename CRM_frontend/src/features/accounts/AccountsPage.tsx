@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Building2,
   Plus,
@@ -23,12 +23,12 @@ import DeleteAccountModal from './DeleteAccountModal';
 import TransferOwnershipModal from './TransferOwnershipModal';
 import ContactModal from '../contacts/ContactModal';
 import accountService from '../../services/accountService';
-import { useAuth } from '../../hooks/useAuth';
+import { usePermission } from '../../hooks/usePermission';
 import type { Account, AccountMetrics, AccountType, AccountFilters } from '../../types/account';
 import type { Contact } from '../../types/contact';
 
 export const AccountsPage: React.FC = () => {
-  const { user } = useAuth();
+  const { can } = usePermission();
 
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [metrics, setMetrics] = useState<AccountMetrics>({
@@ -71,10 +71,7 @@ export const AccountsPage: React.FC = () => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const canManage = useMemo(() => {
-    const roleName = user?.role?.role_name?.toLowerCase() || user?.role?.name?.toLowerCase() || '';
-    return roleName.includes('admin') || roleName.includes('manager') || roleName.includes('officer');
-  }, [user]);
+  const canCreateAccount = can('accounts.create');
 
   // Fetch Accounts and Metrics
   const fetchData = useCallback(async () => {
@@ -249,7 +246,7 @@ export const AccountsPage: React.FC = () => {
               Refresh
             </Button>
 
-            {canManage && (
+            {canCreateAccount && (
               <Button
                 variant="primary"
                 size="sm"
@@ -426,7 +423,6 @@ export const AccountsPage: React.FC = () => {
             onEditAccount={handleOpenEditModal}
             onDeleteAccount={handleOpenDeleteModal}
             onTransferOwnership={handleOpenTransferModal}
-            canManage={canManage}
           />
         ) : (
           <AccountsGrid
@@ -436,7 +432,6 @@ export const AccountsPage: React.FC = () => {
             onEditAccount={handleOpenEditModal}
             onDeleteAccount={handleOpenDeleteModal}
             onTransferOwnership={handleOpenTransferModal}
-            canManage={canManage}
           />
         )}
 
@@ -477,7 +472,6 @@ export const AccountsPage: React.FC = () => {
           onEditAccount={handleOpenEditModal}
           onAddContact={handleOpenAddContactModal}
           onTransferOwnership={handleOpenTransferModal}
-          canManage={canManage}
         />
 
         <AccountModal

@@ -15,6 +15,8 @@ import {
 } from 'lucide-react';
 import AppShell from '../../components/layout/AppShell';
 import Button from '../../components/ui/Button';
+import Can from '../../components/auth/Can';
+import { usePermission } from '../../hooks/usePermission';
 import LeadsTable from './LeadsTable';
 import LeadsKanban from './LeadsKanban';
 import LeadModal from './LeadModal';
@@ -31,6 +33,7 @@ import type {
 } from '../../types/lead';
 
 export const LeadsPage: React.FC = () => {
+  const { can } = usePermission();
   // Views
   const [viewMode, setViewMode] = useState<'table' | 'kanban'>('table');
 
@@ -76,9 +79,11 @@ export const LeadsPage: React.FC = () => {
 
   // Load team members and metrics on mount
   useEffect(() => {
-    leadService.getTeamMembers().then(setTeamMembers).catch(console.error);
+    if (can('users.view')) {
+      leadService.getTeamMembers().then(setTeamMembers).catch(console.error);
+    }
     fetchMetrics();
-  }, []);
+  }, [can]);
 
   const fetchMetrics = async () => {
     try {
@@ -236,14 +241,16 @@ export const LeadsPage: React.FC = () => {
               <RefreshCw className="w-3.5 h-3.5" />
             </Button>
 
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={handleOpenCreateModal}
-              leftIcon={<Plus className="w-4 h-4" />}
-            >
-              New Inbound Lead
-            </Button>
+            <Can permission="leads.create">
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleOpenCreateModal}
+                leftIcon={<Plus className="w-4 h-4" />}
+              >
+                New Inbound Lead
+              </Button>
+            </Can>
           </div>
         </div>
 

@@ -17,6 +17,7 @@ import {
   Mail,
   ArrowRight,
 } from 'lucide-react';
+import { usePermission } from '../../hooks/usePermission';
 import type { Ticket, TicketComment, TicketStatus } from '../../types/ticket';
 import { PriorityBadge, StatusBadge, InactivityBadge } from './TicketStatusBadge';
 import { ticketService } from '../../services/ticketService';
@@ -27,7 +28,6 @@ interface TicketDrawerProps {
   onClose: () => void;
   onTicketUpdated: (ticket: Ticket) => void;
   currentUserId?: number;
-  canManage: boolean;
 }
 
 export const TicketDrawer: React.FC<TicketDrawerProps> = ({
@@ -36,8 +36,11 @@ export const TicketDrawer: React.FC<TicketDrawerProps> = ({
   onClose,
   onTicketUpdated,
   currentUserId,
-  canManage,
 }) => {
+  const { can } = usePermission();
+  const canEdit = can('tickets.edit');
+  const canAssign = can('tickets.assign');
+  const canEscalate = can('tickets.escalate');
   const [activeTab, setActiveTab] = useState<'conversation' | 'details' | 'escalation'>('conversation');
   const [commentText, setCommentText] = useState('');
   const [isInternal, setIsInternal] = useState(false);
@@ -185,7 +188,7 @@ export const TicketDrawer: React.FC<TicketDrawerProps> = ({
               />
 
               <div className="flex items-center gap-2">
-                {!ticket.assignee_user_id && (
+                {!ticket.assignee_user_id && canAssign && (
                   <button
                     type="button"
                     onClick={handleClaim}
@@ -197,7 +200,7 @@ export const TicketDrawer: React.FC<TicketDrawerProps> = ({
                   </button>
                 )}
 
-                {canManage && !ticket.escalated && !isResolvedOrClosed && (
+                {canEscalate && !ticket.escalated && !isResolvedOrClosed && (
                   <button
                     type="button"
                     onClick={() => setIsEscalateModalOpen(true)}
@@ -218,49 +221,51 @@ export const TicketDrawer: React.FC<TicketDrawerProps> = ({
               <span className="text-slate-500 dark:text-slate-400 font-medium">Status:</span>
               <StatusBadge status={ticket.status} size="sm" />
             </div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-slate-400 dark:text-slate-500 text-[11px] mr-1 hidden sm:inline">Set Status:</span>
-              {ticket.status !== 'open' && (
-                <button
-                  type="button"
-                  onClick={() => handleUpdateStatus('open')}
-                  disabled={isSubmitting}
-                  className="px-2.5 py-1 rounded-md bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 font-medium text-slate-700 dark:text-slate-300 transition-colors"
-                >
-                  Open
-                </button>
-              )}
-              {ticket.status !== 'in_progress' && (
-                <button
-                  type="button"
-                  onClick={() => handleUpdateStatus('in_progress')}
-                  disabled={isSubmitting}
-                  className="px-2.5 py-1 rounded-md bg-white dark:bg-slate-800 hover:bg-amber-50 dark:hover:bg-amber-950/30 border border-slate-200 dark:border-slate-700 font-medium text-amber-600 dark:text-amber-400 transition-colors"
-                >
-                  In Progress
-                </button>
-              )}
-              {ticket.status !== 'resolved' && (
-                <button
-                  type="button"
-                  onClick={() => handleUpdateStatus('resolved')}
-                  disabled={isSubmitting}
-                  className="px-2.5 py-1 rounded-md bg-emerald-600 hover:bg-emerald-500 font-semibold text-white shadow-xs transition-colors"
-                >
-                  Resolve
-                </button>
-              )}
-              {ticket.status !== 'closed' && (
-                <button
-                  type="button"
-                  onClick={() => handleUpdateStatus('closed')}
-                  disabled={isSubmitting}
-                  className="px-2.5 py-1 rounded-md bg-slate-600 hover:bg-slate-500 font-semibold text-white shadow-xs transition-colors"
-                >
-                  Close
-                </button>
-              )}
-            </div>
+            {canEdit && (
+              <div className="flex items-center gap-1.5">
+                <span className="text-slate-400 dark:text-slate-500 text-[11px] mr-1 hidden sm:inline">Set Status:</span>
+                {ticket.status !== 'open' && (
+                  <button
+                    type="button"
+                    onClick={() => handleUpdateStatus('open')}
+                    disabled={isSubmitting}
+                    className="px-2.5 py-1 rounded-md bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 font-medium text-slate-700 dark:text-slate-300 transition-colors"
+                  >
+                    Open
+                  </button>
+                )}
+                {ticket.status !== 'in_progress' && (
+                  <button
+                    type="button"
+                    onClick={() => handleUpdateStatus('in_progress')}
+                    disabled={isSubmitting}
+                    className="px-2.5 py-1 rounded-md bg-white dark:bg-slate-800 hover:bg-amber-50 dark:hover:bg-amber-950/30 border border-slate-200 dark:border-slate-700 font-medium text-amber-600 dark:text-amber-400 transition-colors"
+                  >
+                    In Progress
+                  </button>
+                )}
+                {ticket.status !== 'resolved' && (
+                  <button
+                    type="button"
+                    onClick={() => handleUpdateStatus('resolved')}
+                    disabled={isSubmitting}
+                    className="px-2.5 py-1 rounded-md bg-emerald-600 hover:bg-emerald-500 font-semibold text-white shadow-xs transition-colors"
+                  >
+                    Resolve
+                  </button>
+                )}
+                {ticket.status !== 'closed' && (
+                  <button
+                    type="button"
+                    onClick={() => handleUpdateStatus('closed')}
+                    disabled={isSubmitting}
+                    className="px-2.5 py-1 rounded-md bg-slate-600 hover:bg-slate-500 font-semibold text-white shadow-xs transition-colors"
+                  >
+                    Close
+                  </button>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Tab Navigation */}
@@ -384,7 +389,8 @@ export const TicketDrawer: React.FC<TicketDrawerProps> = ({
                 </div>
 
                 {/* Reply Form */}
-                <form onSubmit={handlePostComment} className="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-3">
+                {canEdit && (
+                  <form onSubmit={handlePostComment} className="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">
                       Add Reply or Team Note:
@@ -452,6 +458,7 @@ export const TicketDrawer: React.FC<TicketDrawerProps> = ({
                     </button>
                   </div>
                 </form>
+                )}
               </div>
             )}
 

@@ -17,6 +17,8 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { usePermission } from '../../hooks/usePermission';
+import Can from '../../components/auth/Can';
 import AppShell from '../../components/layout/AppShell';
 import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
@@ -24,6 +26,7 @@ import { apiClient } from '../../services/api';
 
 export const DashboardPage: React.FC = () => {
   const { user } = useAuth();
+  const { can } = usePermission();
   const navigate = useNavigate();
 
   const [leadMetrics, setLeadMetrics] = useState<{
@@ -36,6 +39,7 @@ export const DashboardPage: React.FC = () => {
   } | null>(null);
 
   useEffect(() => {
+    if (!can('leads.view')) return;
     apiClient
       .get('/leads/metrics')
       .then((res) => {
@@ -46,7 +50,7 @@ export const DashboardPage: React.FC = () => {
       .catch(() => {
         // Fall back gracefully if server is busy or offline
       });
-  }, []);
+  }, [can]);
 
   const displayName =
     user?.first_name && user.first_name.toLowerCase() !== 'system'
@@ -214,22 +218,26 @@ export const DashboardPage: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-2.5">
-            <Button
-              variant="outline"
-              size="sm"
-              rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
-              onClick={() => navigate('/leads')}
-            >
-              View Pipeline
-            </Button>
-            <Button
-              variant="primary"
-              size="sm"
-              leftIcon={<Plus className="w-3.5 h-3.5" />}
-              onClick={() => navigate('/leads')}
-            >
-              New Inbound Lead
-            </Button>
+            <Can permission="leads.view">
+              <Button
+                variant="outline"
+                size="sm"
+                rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
+                onClick={() => navigate('/leads')}
+              >
+                View Pipeline
+              </Button>
+            </Can>
+            <Can permission="leads.create">
+              <Button
+                variant="primary"
+                size="sm"
+                leftIcon={<Plus className="w-3.5 h-3.5" />}
+                onClick={() => navigate('/leads')}
+              >
+                New Inbound Lead
+              </Button>
+            </Can>
           </div>
         </div>
 

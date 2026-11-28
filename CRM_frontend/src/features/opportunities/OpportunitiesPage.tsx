@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   DollarSign,
   TrendingUp,
@@ -29,11 +29,12 @@ import { OpportunityDrawer } from './OpportunityDrawer';
 import { OpportunityModal } from './OpportunityModal';
 import { StageTransitionModal } from './StageTransitionModal';
 import { DeleteOpportunityModal } from './DeleteOpportunityModal';
-import { useAuth } from '../../hooks/useAuth';
+import { usePermission } from '../../hooks/usePermission';
 import AppShell from '../../components/layout/AppShell';
 
 export const OpportunitiesPage: React.FC = () => {
-  const { user } = useAuth();
+  const { can } = usePermission();
+  const canCreateOpportunity = can('opportunities.create');
   const [viewMode, setViewMode] = useState<'kanban' | 'table'>('kanban');
 
   // Data State
@@ -66,11 +67,6 @@ export const OpportunitiesPage: React.FC = () => {
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [opportunityToDelete, setOpportunityToDelete] = useState<Opportunity | null>(null);
-
-  const canManage = useMemo(() => {
-    const roleName = user?.role?.role_name?.toLowerCase() || user?.role?.name?.toLowerCase() || '';
-    return roleName.includes('admin') || roleName.includes('manager') || roleName.includes('officer');
-  }, [user]);
 
   // Load Dropdowns (Types & Stages)
   useEffect(() => {
@@ -237,7 +233,7 @@ export const OpportunitiesPage: React.FC = () => {
               <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
             </button>
 
-            {canManage && (
+            {canCreateOpportunity && (
               <button
                 type="button"
                 onClick={() => handleOpenCreate()}
@@ -436,7 +432,6 @@ export const OpportunitiesPage: React.FC = () => {
             onDeleteOpportunity={handleOpenDelete}
             onAdvanceStage={handleOpenAdvance}
             onExportPms={handleExportPms}
-            canManage={canManage}
           />
         )}
 

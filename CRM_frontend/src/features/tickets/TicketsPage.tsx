@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   AlertTriangle,
   CheckCircle2,
@@ -27,10 +27,13 @@ import { TicketsTable } from './TicketsTable';
 import { TicketDrawer } from './TicketDrawer';
 import { TicketModal } from './TicketModal';
 import { useAuth } from '../../hooks/useAuth';
+import { usePermission } from '../../hooks/usePermission';
 import AppShell from '../../components/layout/AppShell';
 
 export const TicketsPage: React.FC = () => {
   const { user } = useAuth();
+  const { can } = usePermission();
+  const canCreateTicket = can('tickets.create');
 
   // Data State
   const [tickets, setTickets] = useState<Ticket[]>([]);
@@ -61,11 +64,6 @@ export const TicketsPage: React.FC = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [ticketToEdit, setTicketToEdit] = useState<Ticket | null>(null);
-
-  const canManage = useMemo(() => {
-    const roleName = user?.role?.role_name?.toLowerCase() || user?.role?.name?.toLowerCase() || '';
-    return roleName.includes('admin') || roleName.includes('manager') || roleName.includes('support');
-  }, [user]);
 
   // Load Categories Dropdown
   useEffect(() => {
@@ -198,7 +196,7 @@ export const TicketsPage: React.FC = () => {
               <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin text-cyan-600' : ''}`} />
             </button>
 
-            {canManage && (
+            {canCreateTicket && (
               <button
                 type="button"
                 onClick={() => {
@@ -489,7 +487,6 @@ export const TicketsPage: React.FC = () => {
           lastPage={lastPage}
           totalRecords={totalRecords}
           onPageChange={(page) => setCurrentPage(page)}
-          canManage={canManage}
         />
 
         {/* Slide-over Ticket Drawer */}
@@ -499,7 +496,6 @@ export const TicketsPage: React.FC = () => {
           onClose={() => setIsDrawerOpen(false)}
           onTicketUpdated={handleTicketUpdated}
           currentUserId={user?.id}
-          canManage={canManage}
         />
 
         {/* Ticket Create / Edit Modal */}

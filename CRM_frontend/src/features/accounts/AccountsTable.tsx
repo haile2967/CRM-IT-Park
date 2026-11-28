@@ -12,6 +12,7 @@ import {
   ExternalLink,
   Users,
 } from 'lucide-react';
+import { usePermission } from '../../hooks/usePermission';
 import type { Account } from '../../types/account';
 
 interface AccountsTableProps {
@@ -21,7 +22,6 @@ interface AccountsTableProps {
   onEditAccount: (account: Account) => void;
   onDeleteAccount: (account: Account) => void;
   onTransferOwnership: (account: Account) => void;
-  canManage?: boolean;
 }
 
 export const AccountsTable: React.FC<AccountsTableProps> = ({
@@ -31,8 +31,10 @@ export const AccountsTable: React.FC<AccountsTableProps> = ({
   onEditAccount,
   onDeleteAccount,
   onTransferOwnership,
-  canManage = true,
 }) => {
+  const { can } = usePermission();
+  const canEdit = can('accounts.edit');
+  const canDelete = can('accounts.delete');
   if (isLoading) {
     return (
       <div className="rounded-2xl border border-slate-200/90 dark:border-slate-800/80 bg-white dark:bg-[#0f172a]/95 overflow-hidden shadow-2xs dark:shadow-[0_4px_25px_rgba(0,0,0,0.4)]">
@@ -217,7 +219,7 @@ export const AccountsTable: React.FC<AccountsTableProps> = ({
                         <Users className="w-4 h-4" />
                       </button>
 
-                      {canManage && (
+                      {canEdit && (
                         <>
                           <button
                             type="button"
@@ -236,16 +238,18 @@ export const AccountsTable: React.FC<AccountsTableProps> = ({
                           >
                             <Edit2 className="w-4 h-4" />
                           </button>
-
-                          <button
-                            type="button"
-                            onClick={() => onDeleteAccount(account)}
-                            title="Delete Account"
-                            className="p-1.5 rounded-lg text-slate-400 dark:text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-colors cursor-pointer"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
                         </>
+                      )}
+
+                      {canDelete && (
+                        <button
+                          type="button"
+                          onClick={() => onDeleteAccount(account)}
+                          title="Delete Account"
+                          className="p-1.5 rounded-lg text-slate-400 dark:text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-colors cursor-pointer"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       )}
                     </div>
                   </td>
